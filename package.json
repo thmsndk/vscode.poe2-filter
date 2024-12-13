@@ -7,6 +7,8 @@
     "vscode": "^1.96.0"
   },
   "categories": [
+    "Programming Languages",
+    "Formatters",
     "Other"
   ],
   "activationEvents": [],
@@ -22,8 +24,14 @@
           "Path of Exile 2 Filter",
           "poe2-filter"
         ],
-        "command": "poe2-filter.helloWorld",
-        "title": "Hello World"
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "poe2-filter",
+        "scopeName": "source.poe2-filter",
+        "path": "./syntaxes/poe2filter.tmLanguage.json"
       }
     ]
   },

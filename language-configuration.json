@@ -1,0 +1,18 @@
+{
+  "comments": {
+    "lineComment": "#"
+  },
+  "brackets": [],
+  "autoClosingPairs": [{ "open": "\"", "close": "\"" }],
+  "surroundingPairs": [{ "open": "\"", "close": "\"" }],
+  "indentationRules": {
+    "increaseIndentPattern": "^(Show|Hide|Minimal)\\b",
+    "decreaseIndentPattern": "^(?=(Show|Hide|Minimal)\\b|$)"
+  },
+  "folding": {
+    "markers": {
+      "start": "^(Show|Hide|Minimal)\\b.*$",
+      "end": "^(?=Show|Hide|Minimal|$)"
+    }
+  }
+}

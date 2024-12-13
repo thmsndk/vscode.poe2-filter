@@ -1,0 +1,79 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Path of Exile 2 Filter",
+  "scopeName": "source.poe2-filter",
+  "patterns": [
+    {
+      "include": "#comments"
+    },
+    {
+      "include": "#blocks"
+    },
+    {
+      "include": "#conditions"
+    },
+    {
+      "include": "#actions"
+    },
+    {
+      "include": "#values"
+    }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        {
+          "name": "comment.line.number-sign.poe2filter",
+          "match": "#.*$"
+        }
+      ]
+    },
+    "blocks": {
+      "patterns": [
+        {
+          "name": "keyword.control.poe2filter",
+          "match": "^(Show|Hide|Minimal|Continue)\\b"
+        }
+      ]
+    },
+    "conditions": {
+      "patterns": [
+        {
+          "name": "support.function.poe2filter",
+          "match": "\\b(BaseType|Rarity|ItemLevel|DropLevel|Quality|Class|Sockets|LinkedSockets|SocketGroup|Width|Height|StackSize|GemLevel|MapTier|AreaLevel|Corrupted|Identified|Mirrored|ElderItem|ShaperItem|HasInfluence|FracturedItem|SynthesisedItem|AnyEnchantment|BlightedMap|UberBlightedMap|EnchantmentPassiveNum|HasExplicitMod)\\b"
+        }
+      ]
+    },
+    "actions": {
+      "patterns": [
+        {
+          "name": "storage.type.poe2filter",
+          "match": "\\b(SetFontSize|SetTextColor|SetBorderColor|SetBackgroundColor|PlayAlertSound|PlayAlertSoundPositional|CustomAlertSound|PlayEffect|MinimapIcon|DisableDropSound|EnableDropSound)\\b"
+        }
+      ]
+    },
+    "values": {
+      "patterns": [
+        {
+          "name": "constant.numeric.poe2filter",
+          "match": "\\b\\d+\\b"
+        },
+        {
+          "name": "string.quoted.double.poe2filter",
+          "begin": "\"",
+          "end": "\"",
+          "patterns": [
+            {
+              "name": "constant.character.escape.poe2filter",
+              "match": "\\\\."
+            }
+          ]
+        },
+        {
+          "name": "constant.language.poe2filter",
+          "match": "\\b(True|False|Normal|Magic|Rare|Unique|Red|Green|Blue|Brown|White|Yellow|Cyan|Grey|Orange|Pink|Purple|Circle|Diamond|Hexagon|Square|Star|Triangle|Cross|Moon|Raindrop|Kite|Pentagon|UpsideDownHouse|None|Temp)\\b"
+        }
+      ]
+    }
+  }
+}
