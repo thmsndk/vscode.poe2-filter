@@ -7,4 +7,5 @@ SetBorderColor 255 0 0 255
 Hide
 ItemLevel < 50
 Class "Body Armour"
+SetBorderColor 255 0 0
 SetFontSize 18 
