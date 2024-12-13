@@ -1,0 +1,10 @@
+#Comment
+Show
+BaseType "Mirror of Kalandra" "Divine Orb"
+SetTextColor 255 0 0 255
+SetBorderColor 255 0 0 255
+# Comment
+Hide
+ItemLevel < 50
+Class "Body Armour"
+SetFontSize 18 

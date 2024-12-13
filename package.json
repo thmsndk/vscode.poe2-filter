@@ -12,8 +12,16 @@
   "activationEvents": [],
   "main": "./dist/extension.js",
   "contributes": {
-    "commands": [
+    "languages": [
       {
+        "id": "poe2-filter",
+        "extensions": [
+          "filter"
+        ],
+        "aliases": [
+          "Path of Exile 2 Filter",
+          "poe2-filter"
+        ],
         "command": "poe2-filter.helloWorld",
         "title": "Hello World"
       }
