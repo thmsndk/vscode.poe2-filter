@@ -11,16 +11,6 @@ A Visual Studio Code extension for Path of Exile 2 item filter files.
 
 ![Color Preview](images/color-preview.png)
 
-## Requirements
-
-- Visual Studio Code 1.x.x or higher
-
-## Extension Settings
-
-This extension contributes the following settings:
-
-- `poe2-filter.enable`: Enable/disable this extension
-
 ## Known Issues
 
 - None currently reported
@@ -29,7 +19,7 @@ This extension contributes the following settings:
 
 See [CHANGELOG.md](CHANGELOG.md) for detailed release notes.
 
-### 1.0.0
+### 0.0.1
 
 Initial release:
 
@@ -40,7 +30,3 @@ Initial release:
 ## Contributing
 
 Feel free to open issues or PRs on the [GitHub repository](https://github.com/thmsndk/vscode.poe2-filter).
-
-## License
-
-[MIT License](LICENSE)
