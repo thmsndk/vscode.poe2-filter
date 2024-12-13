@@ -47,8 +47,19 @@
     "actions": {
       "patterns": [
         {
+          "name": "meta.color.poe2filter",
+          "match": "(SetTextColor|SetBorderColor|SetBackgroundColor)\\s+(\\d+)\\s+(\\d+)\\s+(\\d+)(?:\\s+(\\d+))?\\b",
+          "captures": {
+            "1": { "name": "storage.type.color.poe2filter" },
+            "2": { "name": "constant.numeric.color.r.poe2filter" },
+            "3": { "name": "constant.numeric.color.g.poe2filter" },
+            "4": { "name": "constant.numeric.color.b.poe2filter" },
+            "5": { "name": "constant.numeric.color.a.poe2filter" }
+          }
+        },
+        {
           "name": "storage.type.poe2filter",
-          "match": "\\b(SetFontSize|SetTextColor|SetBorderColor|SetBackgroundColor|PlayAlertSound|PlayAlertSoundPositional|CustomAlertSound|PlayEffect|MinimapIcon|DisableDropSound|EnableDropSound)\\b"
+          "match": "\\b(SetFontSize|PlayAlertSound|PlayAlertSoundPositional|CustomAlertSound|PlayEffect|MinimapIcon|DisableDropSound|EnableDropSound)\\b"
         }
       ]
     },
