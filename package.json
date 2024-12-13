@@ -1,8 +1,16 @@
 {
   "name": "poe2-filter",
-  "displayName": "poe2-filter",
-  "description": "",
+  "publisher": "thmsn",
+  "displayName": "Path of Exile 2 Filter",
+  "description": "A Visual Studio Code extension for Path of Exile 2 item filter files",
   "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/thmsndk/vscode.poe2-filter"
+  },
+  "bugs": {
+    "url": "https://github.com/thmsndk/vscode.poe2-filter/issues"
+  },
   "engines": {
     "vscode": "^1.96.0"
   },
