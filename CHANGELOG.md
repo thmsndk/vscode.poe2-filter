@@ -2,6 +2,15 @@
 
 All notable changes to the "poe2-filter" extension will be documented in this file.
 
+## [0.0.3] - Unreleased
+
+### Added
+
+- Document Outline view
+  - Navigation through filter sections
+  - Hierarchical structure display
+  - Folding/unfolding support
+
 ## [0.0.2] - 2024-12-13
 
 - lowered vscode requirement as cursor is at 1.93.1

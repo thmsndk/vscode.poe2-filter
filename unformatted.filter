@@ -9,3 +9,11 @@ ItemLevel < 50
 Class "Body Armour"
 SetBorderColor 255 0 0
 SetFontSize 18 
+
+#--------------------------
+# Test Section
+#--------------------------
+Show
+BaseType "Mirror of Kalandra" "Divine Orb"
+SetTextColor 255 0 0 255
+SetBorderColor 255 0 0 255
