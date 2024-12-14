@@ -7,6 +7,7 @@ All notable changes to the "poe2-filter" extension will be documented in this fi
 ### Fixed
 
 - Fixed command validation where certain commands (like DisableDropSound) were incorrectly flagged as invalid due to regex pattern stripping
+- Fixed WaystoneTier condition not being recognized as a valid filter condition
 
 ## [0.0.3] - 2024-12-14
 

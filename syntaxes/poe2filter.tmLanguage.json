@@ -40,7 +40,7 @@
       "patterns": [
         {
           "name": "support.function.poe2filter",
-          "match": "\\b(BaseType|Rarity|ItemLevel|DropLevel|Quality|Class|Sockets|LinkedSockets|SocketGroup|Width|Height|StackSize|GemLevel|MapTier|AreaLevel|Corrupted|Identified|Mirrored|ElderItem|ShaperItem|HasInfluence|FracturedItem|SynthesisedItem|AnyEnchantment|BlightedMap|UberBlightedMap|EnchantmentPassiveNum|HasExplicitMod)\\b"
+          "match": "\\b(BaseType|Rarity|ItemLevel|DropLevel|Quality|Class|Sockets|WaystoneTier|LinkedSockets|SocketGroup|Width|Height|StackSize|GemLevel|MapTier|AreaLevel|Corrupted|Identified|Mirrored|ElderItem|ShaperItem|HasInfluence|FracturedItem|SynthesisedItem|AnyEnchantment|BlightedMap|UberBlightedMap|EnchantmentPassiveNum|HasExplicitMod)\\b"
         }
       ]
     },
