@@ -1,19 +1,110 @@
 import * as vscode from "vscode";
+import * as path from "path";
+import * as fs from "fs";
+
+// Function to extract commands from the grammar file
+function extractCommandsFromGrammar(): Record<
+  string,
+  { params: { type: string; required: boolean }[] }
+> {
+  try {
+    // Read the grammar file
+    const grammarPath = path.join(
+      __dirname,
+      "..",
+      "syntaxes",
+      "poe2filter.tmLanguage.json"
+    );
+    const grammarContent = fs.readFileSync(grammarPath, "utf8");
+    const grammar = JSON.parse(grammarContent);
+
+    const commands: Record<
+      string,
+      { params: { type: string; required: boolean }[] }
+    > = {};
+
+    // Extract block commands (Show/Hide/etc)
+    const blocks = grammar.repository.blocks.patterns.find(
+      (p: any) => p.name === "keyword.control.poe2filter"
+    );
+    if (blocks?.match) {
+      // Extract just the command names from the pattern
+      const blockCommandsMatch = blocks.match.match(/\((.*?)\)/)?.[1];
+      if (blockCommandsMatch) {
+        const blockCommands = blockCommandsMatch.split("|");
+        blockCommands.forEach((cmd: string) => {
+          commands[cmd] = { params: [] };
+        });
+      }
+    }
+
+    // Log the extracted commands for debugging
+    console.log("Extracted commands:", commands);
+
+    // Extract conditions
+    const conditions = grammar.repository.conditions.patterns.find(
+      (p: any) => p.name === "support.function.poe2filter"
+    );
+    if (conditions?.match) {
+      const conditionCommands = conditions.match
+        .replace(/[()\\b]/g, "")
+        .split("|");
+      conditionCommands.forEach((cmd: string) => {
+        commands[cmd] = {
+          params: [{ type: "value", required: true }],
+        };
+      });
+    }
+
+    // Extract color commands
+    const colorActions = grammar.repository.actions.patterns.find(
+      (p: any) => p.name === "meta.color.poe2filter"
+    );
+    if (colorActions?.match) {
+      // Extract just the command names from the pattern
+      const colorCommandsMatch = colorActions.match.match(/\((.*?)\)/)?.[1];
+      if (colorCommandsMatch) {
+        const colorCommands = colorCommandsMatch.split("|");
+        colorCommands.forEach((cmd: string) => {
+          commands[cmd] = {
+            params: [
+              { type: "color", required: true },
+              { type: "color", required: true },
+              { type: "color", required: true },
+              { type: "color", required: false }, // Alpha is optional
+            ],
+          };
+        });
+      }
+    }
+
+    // Extract other action commands
+    const otherActions = grammar.repository.actions.patterns.find(
+      (p: any) => p.name === "storage.type.poe2filter"
+    );
+    if (otherActions?.match) {
+      const actionCommands = otherActions.match
+        .replace(/[()\\b]/g, "")
+        .split("|");
+      actionCommands.forEach((cmd: string) => {
+        commands[cmd] = {
+          params: [{ type: "number", required: true }],
+        };
+      });
+    }
+
+    return commands;
+  } catch (error) {
+    console.error("Error loading grammar file:", error);
+    return {};
+  }
+}
+
+// Use the extracted commands
+const VALID_COMMANDS = extractCommandsFromGrammar();
 
 // TODO: detect definitions later that is being overriden earlier? e.g. doing something explicit later in the file, but a previous rule catches it instead
 // TODO: empty show or hide blocks should trigger an error
-
-// TODO: can we get this from the grammar?
-// Define valid commands and their parameter requirements
-const VALID_COMMANDS = {
-  Show: { params: [] },
-  Hide: { params: [] },
-  SetTextColor: { params: [{ type: "color", required: true }] },
-  SetBorderColor: { params: [{ type: "color", required: true }] },
-  SetBackgroundColor: { params: [{ type: "color", required: true }] },
-  SetFontSize: { params: [{ type: "number", required: true }] },
-  // Add more commands as needed
-} as const;
 
 // Common misspellings or incorrect casing
 const COMMON_MISTAKES = {
