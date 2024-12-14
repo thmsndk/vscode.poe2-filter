@@ -2,11 +2,20 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
 import { FilterFormatter } from "./formatter/formatter";
+import { FilterSymbolProvider } from "./outline/filterSymbolProvider";
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
   console.log("POE2 Filter extension is now active");
+
+  // Register document symbol provider for outline
+  context.subscriptions.push(
+    vscode.languages.registerDocumentSymbolProvider(
+      "poe2-filter",
+      new FilterSymbolProvider()
+    )
+  );
 
   // Register the formatter
   const formatter = new FilterFormatter();
