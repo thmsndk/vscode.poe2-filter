@@ -2,6 +2,15 @@
 
 All notable changes to the "poe2-filter" extension will be documented in this file.
 
+## [0.0.5] - Unreleased
+
+### Added
+
+- Added proper support for Continue command
+  - Syntax highlighting as control flow statement
+  - Proper indentation within Show/Hide blocks
+  - Command validation support
+
 ## [0.0.4] - 2024-12-14 15:30
 
 ### Fixed

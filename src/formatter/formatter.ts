@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-
+// TODO: Continue is a control key that is used inside a show/hide block, and should be indeted, we also need to color it in the language file
 export class FilterFormatter {
   private indentationString: string;
 
@@ -32,7 +32,7 @@ export class FilterFormatter {
         continue;
       }
 
-      const isBlock = /^(Show|Hide|Minimal|Continue)\b/.test(formattedLine);
+      const isBlock = /^(Show|Hide|Minimal)\b/.test(formattedLine);
       const isComment = formattedLine.startsWith("#");
 
       // Add empty line if needed (before blocks or comments)
@@ -77,12 +77,12 @@ export class FilterFormatter {
     // inline comments, ensure exactly one space after #
     trimmed = trimmed.replace(/#\s*/, "# ");
 
-    // Handle block starts (Show/Hide/Minimal/Continue)
-    if (/^(Show|Hide|Minimal|Continue)\b/.test(line)) {
+    // Handle block starts (Show/Hide/Minimal)
+    if (/^(Show|Hide|Minimal)\b/.test(line)) {
       return trimmed;
     }
 
-    // Handle conditions and actions (everything else)
+    // Handle conditions, actions and Continue (everything else)
     return this.indentationString + trimmed;
   }
 }

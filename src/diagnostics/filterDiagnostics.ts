@@ -38,6 +38,20 @@ function extractCommandsFromGrammar(): Record<
       }
     }
 
+    // Extract control flow commands (Continue)
+    const controlFlow = grammar.repository.controlFlow.patterns.find(
+      (p: any) => p.name === "keyword.control.poe2filter"
+    );
+    if (controlFlow?.match) {
+      const flowCommandsMatch = controlFlow.match.match(/\\b(.*?)\\b/)?.[1];
+      if (flowCommandsMatch) {
+        const flowCommands = flowCommandsMatch.split("|");
+        flowCommands.forEach((cmd: string) => {
+          commands[cmd] = { params: [] };
+        });
+      }
+    }
+
     // Log the extracted commands for debugging
     console.log("Extracted commands:", commands);
 
@@ -108,17 +122,7 @@ const VALID_COMMANDS = extractCommandsFromGrammar();
 // TODO: detect nested blocks
 // TODO: detect empty blocks
 // TODO: detect definitions later that is being overriden earlier? e.g. doing something explicit later in the file, but a previous rule catches it instead
-
-// Common misspellings or incorrect casing
-const COMMON_MISTAKES = {
-  settext: "SetTextColor",
-  setborder: "SetBorderColor",
-  setbackground: "SetBackgroundColor",
-  setcolour: "SetColor",
-  settextcolour: "SetTextColor",
-  setbordercolour: "SetBorderColor",
-  setbackgroundcolour: "SetBackgroundColor",
-} as const;
+// TODO: PlayAlertSound|PlayAlertSoundPositional number volume with custom sound requires CustomAlertSound "file" volume
 
 export function registerDiagnostics(context: vscode.ExtensionContext) {
   const diagnostics =

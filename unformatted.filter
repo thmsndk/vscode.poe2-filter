@@ -34,3 +34,11 @@ Hide # Nested block error
 
 Show # Empty block error
 
+Show 
+Rarity Normal
+SetTextColor 180 180 180 
+SetBorderColor 0 0 0 
+SetBackgroundColor 20 20 0 180 
+Continue
+#  salvagable items
+Show # salvagable item
