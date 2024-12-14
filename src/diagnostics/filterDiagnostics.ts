@@ -83,14 +83,16 @@ function extractCommandsFromGrammar(): Record<
       (p: any) => p.name === "storage.type.poe2filter"
     );
     if (otherActions?.match) {
-      const actionCommands = otherActions.match
-        .replace(/[()\\b]/g, "")
-        .split("|");
-      actionCommands.forEach((cmd: string) => {
-        commands[cmd] = {
-          params: [{ type: "number", required: true }],
-        };
-      });
+      // Extract just the command names from the pattern
+      const actionCommandsMatch = otherActions.match.match(/\((.*?)\)/)?.[1];
+      if (actionCommandsMatch) {
+        const actionCommands = actionCommandsMatch.split("|");
+        actionCommands.forEach((cmd: string) => {
+          commands[cmd] = {
+            params: [{ type: "number", required: true }],
+          };
+        });
+      }
     }
 
     return commands;
