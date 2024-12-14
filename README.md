@@ -8,6 +8,7 @@ A Visual Studio Code extension for Path of Exile 2 item filter files.
 - [Color previews and editing](#color-features) for filter colors
 - [Document formatting](#document-formatting) support
 - [Document Outline](#document-outline) for easy navigation
+- [Error Detection and Validation](#error-detection-and-validation) for common mistakes
 
 ## Feature Details
 
@@ -50,6 +51,17 @@ Navigate through your filter with ease using the document outline view:
 
 ![Outline View](images/outline-view.png)
 
+### Error Detection and Validation
+
+Helps catch common mistakes and provides quick fixes:
+
+- Syntax error highlighting
+- Command validation with suggestions for misspelled commands
+- Parameter validation for color values
+- Quick fixes for common mistakes like command typos
+
+![Error Detection](images/command-spelling-mistake-fix.gif)
+
 ## Known Issues
 
 - None currently reported
@@ -61,15 +73,16 @@ See [CHANGELOG.md](CHANGELOG.md) for detailed release notes.
 
 ## Future Ideas / TODO
 
-- error/warnings :
-  - Syntax error highlighting
-  - detection of spelling mistakes
-  - Parameter validation
-  - warnings if a rule is not applied due to a previous rule
+- Error/warnings improvements:
+  - Detection of nested blocks
+  - Detection of empty blocks
+  - Warnings if a rule is not applied due to a previous rule
+  - More parameter validations
 - Command completion and snippets
 - Hover documentation for commands
-- Quick fixes for common mistakes
-- preview of filter results
+- Preview of filter results
+- More Quick Fix suggestions
+- Support for PoE2-specific filter syntax (once documented)
 
 ## Contributing
 

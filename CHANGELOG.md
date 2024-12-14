@@ -10,6 +10,10 @@ All notable changes to the "poe2-filter" extension will be documented in this fi
   - Navigation through filter sections
   - Hierarchical structure display
   - Folding/unfolding support
+- Error detection and validation
+  - Command validation with suggestions for misspelled commands
+  - Quick fixes for command typos
+  - Parameter validation for color values
 
 ### Fixed
 
