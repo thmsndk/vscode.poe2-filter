@@ -160,10 +160,56 @@ function validateAndUpdateDiagnostics(
   }
 }
 
+// Function to calculate Levenshtein distance between two strings
+function levenshteinDistance(a: string, b: string): number {
+  if (a.length === 0) return b.length;
+  if (b.length === 0) return a.length;
+
+  const matrix = Array(b.length + 1)
+    .fill(null)
+    .map(() => Array(a.length + 1).fill(null));
+
+  for (let i = 0; i <= a.length; i++) matrix[0][i] = i;
+  for (let j = 0; j <= b.length; j++) matrix[j][0] = j;
+
+  for (let j = 1; j <= b.length; j++) {
+    for (let i = 1; i <= a.length; i++) {
+      const substitutionCost = a[i - 1] === b[j - 1] ? 0 : 1;
+      matrix[j][i] = Math.min(
+        matrix[j][i - 1] + 1, // deletion
+        matrix[j - 1][i] + 1, // insertion
+        matrix[j - 1][i - 1] + substitutionCost // substitution
+      );
+    }
+  }
+
+  return matrix[b.length][a.length];
+}
+
+// Function to find similar commands
+function findSimilarCommands(
+  command: string,
+  validCommands: string[]
+): string[] {
+  const MAX_DISTANCE = 3; // Maximum edit distance to consider
+  const MAX_SUGGESTIONS = 3; // Maximum number of suggestions to return
+
+  return validCommands
+    .map((valid) => ({
+      command: valid,
+      distance: levenshteinDistance(command.toLowerCase(), valid.toLowerCase()),
+    }))
+    .filter((result) => result.distance <= MAX_DISTANCE)
+    .sort((a, b) => a.distance - b.distance)
+    .slice(0, MAX_SUGGESTIONS)
+    .map((result) => result.command);
+}
+
 export function validateDocument(
   document: vscode.TextDocument
 ): vscode.Diagnostic[] {
   const problems: vscode.Diagnostic[] = [];
+  const validCommands = Object.keys(VALID_COMMANDS);
 
   for (let i = 0; i < document.lineCount; i++) {
     const line = document.lineAt(i);
@@ -174,46 +220,38 @@ export function validateDocument(
       continue;
     }
 
-    // Check for common spelling mistakes
-    const lowercaseCommand = trimmedText.split(" ")[0].toLowerCase();
-    for (const [mistake, correction] of Object.entries(COMMON_MISTAKES)) {
-      if (lowercaseCommand === mistake) {
-        problems.push(
-          createDiagnostic(
-            new vscode.Range(
-              line.range.start,
-              line.range.start.translate(0, mistake.length)
-            ),
-            `Did you mean "${correction}"?`,
-            vscode.DiagnosticSeverity.Warning
-          )
-        );
-      }
-    }
-
-    // Validate commands and parameters
     const parts = trimmedText.split(" ");
     const command = parts[0];
 
-    if (VALID_COMMANDS[command as keyof typeof VALID_COMMANDS]) {
-      // Command exists, validate parameters
-      if (command.endsWith("Color")) {
-        validateColorParameters(line, parts, problems);
-      }
-      // Add more parameter validation as needed
-    } else {
-      // Unknown command
+    if (!VALID_COMMANDS[command as keyof typeof VALID_COMMANDS]) {
+      // Find similar commands
+      const suggestions = findSimilarCommands(command, validCommands);
+
+      const message =
+        suggestions.length > 0
+          ? `Unknown command "${command}". Did you mean: ${suggestions.join(
+              ", "
+            )}?`
+          : `Unknown command "${command}"`;
+
       problems.push(
         createDiagnostic(
           new vscode.Range(
             line.range.start,
             line.range.start.translate(0, command.length)
           ),
-          `Unknown command "${command}"`,
+          message,
           vscode.DiagnosticSeverity.Error
         )
       );
+      continue;
     }
+
+    // Validate commands and parameters
+    if (command.endsWith("Color")) {
+      validateColorParameters(line, parts, problems);
+    }
+    // Add more parameter validation as needed
   }
 
   return problems;

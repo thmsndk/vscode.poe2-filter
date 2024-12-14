@@ -7,6 +7,7 @@ import {
   registerDiagnostics,
   validateDocument,
 } from "./diagnostics/filterDiagnostics";
+import { FilterCodeActionProvider } from "./diagnostics/filterCodeActions";
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -181,6 +182,18 @@ export function activate(context: vscode.ExtensionContext) {
 
   // Register diagnostics
   registerDiagnostics(context);
+
+  // Register code actions
+  context.subscriptions.push(
+    vscode.languages.registerCodeActionsProvider(
+      "poe2-filter",
+      new FilterCodeActionProvider(),
+      {
+        providedCodeActionKinds:
+          FilterCodeActionProvider.providedCodeActionKinds,
+      }
+    )
+  );
 }
 
 // This method is called when your extension is deactivated
