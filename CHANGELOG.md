@@ -8,6 +8,12 @@ All notable changes to the "poe2-filter" extension will be documented in this fi
 
 - Fixed command validation where certain commands (like DisableDropSound) were incorrectly flagged as invalid due to regex pattern stripping
 - Fixed WaystoneTier condition not being recognized as a valid filter condition
+- Improved Document Outline view
+  - Better handling of Show/Hide blocks with proper scope detection
+  - More meaningful block descriptions based on filter conditions
+  - Added condition and action counts to block descriptions
+  - Organized conditions and actions as collapsible child nodes
+  - Fixed condition detection to properly handle operators (≤, ≥, etc.)
 
 ## [0.0.3] - 2024-12-14
 
