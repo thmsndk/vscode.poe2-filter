@@ -61,11 +61,11 @@ export class FilterFormatter {
       return "";
     }
 
-    // Handle comments
-    if (line.trim().startsWith("#")) {
-      const trimmed = line.trim();
+    let trimmed = line.trim();
 
-      // If the character after # is repeated (like #---- or ####), keep as is
+    // Handle comments
+    if (trimmed.startsWith("#")) {
+      // Comment Section - If the character after # is repeated (like #---- or ####), keep as is
       if (/^#(.)\1+$/.test(trimmed)) {
         return trimmed;
       }
@@ -74,12 +74,15 @@ export class FilterFormatter {
       return trimmed.replace(/^#\s*/, "# ");
     }
 
+    // inline comments, ensure exactly one space after #
+    trimmed = trimmed.replace(/#\s*/, "# ");
+
     // Handle block starts (Show/Hide/Minimal/Continue)
     if (/^(Show|Hide|Minimal|Continue)\b/.test(line)) {
-      return line.trim();
+      return trimmed;
     }
 
     // Handle conditions and actions (everything else)
-    return this.indentationString + line.trim();
+    return this.indentationString + trimmed;
   }
 }

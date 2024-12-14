@@ -11,6 +11,13 @@ All notable changes to the "poe2-filter" extension will be documented in this fi
   - Hierarchical structure display
   - Folding/unfolding support
 
+### Fixed
+
+- Improved formatting for inline comments
+  - Consistent spacing after # in comments
+  - Proper handling of inline comments on block statements (Show/Hide)
+  - Preserved special comment sections (like dividers)
+
 ## [0.0.2] - 2024-12-13
 
 - lowered vscode requirement as cursor is at 1.93.1

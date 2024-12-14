@@ -28,6 +28,18 @@ Proper syntax highlighting for POE2 filter files to improve readability and help
 
 Automatically format your filter files to maintain consistent styling and improve readability.
 
+Formatting rules include:
+
+- Consistent indentation for conditions and actions
+- Empty lines between block statements (Show/Hide)
+- Proper comment formatting:
+  - One space after # for comments
+  - Preserved special comment sections (like dividers)
+  - Proper inline comment alignment
+- Trimmed whitespace
+
+![Formatting](images/formatting.gif)
+
 ### Document Outline
 
 Navigate through your filter with ease using the document outline view:

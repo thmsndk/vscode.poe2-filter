@@ -61,4 +61,41 @@ suite("Extension Test Suite", () => {
 
     assert.strictEqual(formatted, expected);
   });
+
+  test("formats inlinecomments correctly", async () => {
+    const formatter = new FilterFormatter();
+    const input = `
+#Comment
+Show
+BaseType "Mirror of Kalandra"
+Hide #Something
+ItemLevel < 50 #inline comment
+Hide # Something else
+    ItemLevel < 50 # another inline comment
+#--------------------------
+# Test Section
+#--------------------------`.trim();
+
+    const expected =
+      `
+#Comment
+Show
+    BaseType "Mirror of Kalandra"
+
+Hide # Something
+    ItemLevel < 50 # inline comment
+
+Hide # Something else
+    ItemLevel < 50 # another inline comment
+
+#--------------------------
+# Test Section
+#--------------------------`.trim() + "\n";
+
+    const result = await formatter.format({
+      getText: () => input,
+    } as vscode.TextDocument);
+
+    assert.strictEqual(result, expected);
+  });
 });
