@@ -2,7 +2,7 @@
 
 All notable changes to the "poe2-filter" extension will be documented in this file.
 
-## [0.0.4] - Unreleased
+## [0.0.4] - 2024-12-14 15:23
 
 ### Fixed
 
@@ -15,7 +15,7 @@ All notable changes to the "poe2-filter" extension will be documented in this fi
   - Organized conditions and actions as collapsible child nodes
   - Fixed condition detection to properly handle operators (≤, ≥, etc.)
 
-## [0.0.3] - 2024-12-14
+## [0.0.3] - 2024-12-14 12:50
 
 ### Added
 
