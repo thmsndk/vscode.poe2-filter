@@ -53,6 +53,7 @@ Navigate through your filter with ease using the document outline view:
 ## Known Issues
 
 - None currently reported
+- language file is mostly from PoE1 filter syntax need to update to reflect PoE2 properly
 
 ## Release Notes
 
