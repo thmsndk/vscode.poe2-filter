@@ -81,3 +81,13 @@ pnpm package
 ```bash
 vsce publish --no-dependencies
 ```
+
+## Credits
+
+This extension was inspired by and builds upon ideas from:
+
+- [Neversink's FilterBlade VSCode Extension](https://marketplace.visualstudio.com/items?itemName=Neversink.filterblade-next) - Inspiration for filter syntax highlighting
+- [Color Highlight](https://marketplace.visualstudio.com/items?itemName=naumovs.color-highlight) - Color previews and editing
+- [Advanced POE Filter](https://marketplace.visualstudio.com/items?itemName=isuke.vscode-advanced-poe-filter) - Document Outline view
+
+Thanks to these projects for paving the way in POE filter development tooling.
