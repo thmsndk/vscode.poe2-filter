@@ -14,7 +14,9 @@ export class FilterSymbolProvider implements vscode.DocumentSymbolProvider {
     operator: string | undefined,
     value: string
   ): string {
-    if (!operator) return `${property}: ${value}`;
+    if (!operator) {
+      return `${property}: ${value}`;
+    }
 
     // Clean up the operator
     operator = operator.trim();
