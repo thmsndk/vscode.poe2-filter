@@ -103,8 +103,9 @@ function extractCommandsFromGrammar(): Record<
 // Use the extracted commands
 const VALID_COMMANDS = extractCommandsFromGrammar();
 
+// TODO: detect nested blocks
+// TODO: detect empty blocks
 // TODO: detect definitions later that is being overriden earlier? e.g. doing something explicit later in the file, but a previous rule catches it instead
-// TODO: empty show or hide blocks should trigger an error
 
 // Common misspellings or incorrect casing
 const COMMON_MISTAKES = {
@@ -163,7 +164,6 @@ export function validateDocument(
   document: vscode.TextDocument
 ): vscode.Diagnostic[] {
   const problems: vscode.Diagnostic[] = [];
-  let inBlock = false;
 
   for (let i = 0; i < document.lineCount; i++) {
     const line = document.lineAt(i);
@@ -171,21 +171,6 @@ export function validateDocument(
 
     // Skip empty lines and comments
     if (trimmedText === "" || trimmedText.startsWith("#")) {
-      continue;
-    }
-
-    // Check block syntax
-    if (trimmedText === "Show" || trimmedText === "Hide") {
-      if (inBlock) {
-        problems.push(
-          createDiagnostic(
-            line.range,
-            "Nested blocks are not allowed",
-            vscode.DiagnosticSeverity.Error
-          )
-        );
-      }
-      inBlock = true;
       continue;
     }
 
