@@ -277,8 +277,15 @@ function validateColorParameters(
   parts: string[],
   problems: vscode.Diagnostic[]
 ) {
-  // Check number of parameters
-  if (parts.length < 4) {
+  // Remove any comments from parts array
+  const commandParts = parts
+    .join(" ")
+    .split("#")[0] // Split on comment and take first part
+    .trim()
+    .split(/\s+/);
+
+  // Check minimum number of parameters (R G B)
+  if (commandParts.length < 4) {
     problems.push(
       createDiagnostic(
         line.range,
@@ -289,9 +296,14 @@ function validateColorParameters(
     return;
   }
 
-  // Validate each color component
-  const colorComponents = parts.slice(1, 5); // R G B [A]
+  // Validate each color component (R G B [A])
+  const colorComponents = commandParts.slice(1, 5); // Get up to 4 components
   colorComponents.forEach((value, index) => {
+    // Skip if it's beyond RGB and no alpha value provided
+    if (index === 3 && colorComponents.length < 5) {
+      return;
+    }
+
     const num = parseInt(value);
     if (isNaN(num)) {
       problems.push(

@@ -31,6 +31,8 @@ Hide # Nested block error
     SetFontSize # Missing required parameter
     Unknown Command Here # Invalid command
     SetTextColor 255 0 0 300 500 # Too many parameters
+    SetTextColor 255 0 0 # T1 white
+    SetTextColor 255 0 0 200 # T1 white
 
 Show # Empty block error
 

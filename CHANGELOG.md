@@ -2,6 +2,13 @@
 
 All notable changes to the "poe2-filter" extension will be documented in this file.
 
+## [0.0.6] - Unreleased
+
+### Fixed
+
+- Fixed color command validation to properly handle:
+  - Inline comments after color values Closes #1
+
 ## [0.0.5] - 2024-12-15 10:30
 
 ### Added
