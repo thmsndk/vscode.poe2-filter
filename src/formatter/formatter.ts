@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-// TODO: Continue is a control key that is used inside a show/hide block, and should be indeted, we also need to color it in the language file
+
 export class FilterFormatter {
   private indentationString: string;
 
@@ -18,6 +18,7 @@ export class FilterFormatter {
     let result = "";
     let lastLineWasBlock = false;
     let lastLineWasComment = false;
+    let insideBlock = false;
 
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i].trim();
@@ -27,13 +28,20 @@ export class FilterFormatter {
         continue;
       }
 
-      const formattedLine = this.formatLine(line);
+      const formattedLine = this.formatLine(line, insideBlock);
       if (formattedLine === null) {
         continue;
       }
 
-      const isBlock = /^(Show|Hide|Minimal)\b/.test(formattedLine);
-      const isComment = formattedLine.startsWith("#");
+      const isBlock = /^(Show|Hide|Minimal)\b/.test(line);
+      const isComment = line.startsWith("#");
+
+      // Update block state
+      if (isBlock) {
+        insideBlock = true;
+      } else if (line === "" || (isComment && !this.isInlineComment(line))) {
+        insideBlock = false;
+      }
 
       // Add empty line if needed (before blocks or comments)
       if (
@@ -56,7 +64,11 @@ export class FilterFormatter {
     return result + "\n";
   }
 
-  private formatLine(line: string): string | null {
+  private isInlineComment(line: string): boolean {
+    return line.trim().startsWith("#") && line.trim().length > 1;
+  }
+
+  private formatLine(line: string, insideBlock: boolean): string | null {
     if (!line.trim()) {
       return "";
     }
@@ -68,6 +80,11 @@ export class FilterFormatter {
       // Comment Section - If the character after # is repeated (like #---- or ####), keep as is
       if (/^#(.)\1+$/.test(trimmed)) {
         return trimmed;
+      }
+
+      // For comments inside blocks, apply indentation
+      if (insideBlock && !this.isBlockSeparator(trimmed)) {
+        return this.indentationString + trimmed.replace(/^#\s*/, "# ");
       }
 
       // For all other comments, ensure exactly one space after #
@@ -84,5 +101,10 @@ export class FilterFormatter {
 
     // Handle conditions, actions and Continue (everything else)
     return this.indentationString + trimmed;
+  }
+
+  private isBlockSeparator(line: string): boolean {
+    // Check if the line is a section separator (like #---- or ####)
+    return /^#(.)\1+$/.test(line);
   }
 }

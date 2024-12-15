@@ -8,6 +8,7 @@ All notable changes to the "poe2-filter" extension will be documented in this fi
 
 - Fixed color command validation to properly handle:
   - Inline comments after color values Closes #1
+- Fixed formatter to properly indent commented lines within Show/Hide blocks
 
 ## [0.0.5] - 2024-12-15 10:30
 
