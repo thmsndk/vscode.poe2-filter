@@ -10,6 +10,10 @@ All notable changes to the "poe2-filter" extension will be documented in this fi
   - Syntax highlighting as control flow statement
   - Proper indentation within Show/Hide blocks
   - Command validation support
+- Improved Document Outline support for FilterBlade/CDR table of contents format
+  - Proper hierarchical section detection using border characters
+  - Top-level sections with '=' borders
+  - Sub-sections with '-' borders
 
 ## [0.0.4] - 2024-12-14 15:30
 

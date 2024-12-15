@@ -1,5 +1,4 @@
 import * as vscode from "vscode";
-
 export class FilterSymbolProvider implements vscode.DocumentSymbolProvider {
   private isConditionProperty(property: string): boolean {
     return (
@@ -102,8 +101,10 @@ export class FilterSymbolProvider implements vscode.DocumentSymbolProvider {
     document: vscode.TextDocument
   ): vscode.DocumentSymbol[] {
     const symbols: vscode.DocumentSymbol[] = [];
-    const sectionStack: { section: vscode.DocumentSymbol; level: number }[] =
-      [];
+    const sectionStack: {
+      section: vscode.DocumentSymbol;
+      level: number;
+    }[] = [];
     let insideBlock = false;
 
     for (let i = 0; i < document.lineCount; i++) {
@@ -204,10 +205,7 @@ export class FilterSymbolProvider implements vscode.DocumentSymbolProvider {
         continue;
       }
 
-      // Type 1: Section with borders (highest level - 0)
-      // #--------------------------
-      // # Socketables and Special Character Equipment
-      // #--------------------------
+      // Type 1: Section with borders
       if (!insideBlock && trimmedText.match(/^#(.)\1+$/)) {
         if (i + 1 < document.lineCount && i + 2 < document.lineCount) {
           const titleLine = document.lineAt(i + 1).text.trim();
@@ -215,6 +213,7 @@ export class FilterSymbolProvider implements vscode.DocumentSymbolProvider {
 
           if (titleLine.startsWith("# ") && bottomBorder.match(/^#(.)\1+$/)) {
             const sectionName = titleLine.substring(2).trim();
+            const borderChar = trimmedText.charAt(1);
 
             const fullRange = new vscode.Range(
               document.lineAt(i).range.start,
@@ -230,10 +229,35 @@ export class FilterSymbolProvider implements vscode.DocumentSymbolProvider {
               selectionRange
             );
 
-            // Clear the stack and start a new top-level section
-            sectionStack.length = 0;
-            sectionStack.push({ section, level: 0 });
-            symbols.push(section);
+            // Determine level based on border character only
+            let level = 0;
+            if (borderChar === "-") {
+              level = 1; // Child section
+            } else if (borderChar === "=") {
+              level = 0; // Top-level section
+            }
+
+            // Pop items from stack if they're at the same or deeper level
+            while (
+              sectionStack.length > 0 &&
+              sectionStack[sectionStack.length - 1].level >= level
+            ) {
+              sectionStack.pop();
+            }
+
+            if (sectionStack.length > 0) {
+              // Add as child to the last item in stack
+              sectionStack[sectionStack.length - 1].section.children.push(
+                section
+              );
+            } else {
+              // No parent, add to root
+              symbols.push(section);
+            }
+
+            // Add this section to the stack
+            sectionStack.push({ section, level });
+
             i += 2;
           }
         }
