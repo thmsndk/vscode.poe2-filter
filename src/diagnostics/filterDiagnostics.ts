@@ -8,7 +8,6 @@ function extractCommandsFromGrammar(): Record<
   { params: { type: string; required: boolean }[] }
 > {
   try {
-    // Read the grammar file
     const grammarPath = path.join(
       __dirname,
       "..",
@@ -17,103 +16,128 @@ function extractCommandsFromGrammar(): Record<
     );
     const grammarContent = fs.readFileSync(grammarPath, "utf8");
     const grammar = JSON.parse(grammarContent);
-
     const commands: Record<
       string,
       { params: { type: string; required: boolean }[] }
     > = {};
 
-    // Extract block commands (Show/Hide/etc)
-    const blocks = grammar.repository.blocks.patterns.find(
-      (p: any) => p.name === "keyword.control.poe2filter"
-    );
-    if (blocks?.match) {
-      // Extract just the command names from the pattern
-      const blockCommandsMatch = blocks.match.match(/\((.*?)\)/)?.[1];
-      if (blockCommandsMatch) {
-        const blockCommands = blockCommandsMatch.split("|");
-        blockCommands.forEach((cmd: string) => {
-          commands[cmd] = { params: [] };
-        });
+    // Helper to extract command names from a pattern
+    function extractCommands(pattern: any): string[] {
+      // For patterns with storage.type name and direct word matches
+      if (pattern.name?.includes("storage.type") && pattern.match) {
+        const storageMatch = pattern.match.match(/\\b\(([^)]+)\)\\b/)?.[1];
+        if (storageMatch) {
+          return storageMatch.split("|");
+        }
       }
+      // For block commands that start with ^ (Show, Hide)
+      else if (pattern.match?.startsWith("^")) {
+        const blockMatch = pattern.match.match(/\^?\(([^)]+)\)/)?.[1];
+        if (blockMatch) {
+          return blockMatch.split("|");
+        }
+      }
+      // For patterns with direct word matches (like Continue)
+      else if (pattern.match?.includes("\\b") && !pattern.captures) {
+        const wordMatch = pattern.match.match(/\\b(\w+)\\b/)?.[1];
+        if (wordMatch) {
+          return [wordMatch];
+        }
+      }
+      // For patterns with explicit command names in first capture
+      else if (pattern.captures?.["1"]) {
+        // First try to get from the first word in the match pattern
+        const firstWordMatch = pattern.match.match(/\\b(\w+)\\b/)?.[1];
+        if (firstWordMatch) {
+          return [firstWordMatch];
+        }
+
+        // Fallback to looking for parentheses groups
+        const parenthesesMatch = pattern.match.match(/\(([^)]+)\)/)?.[1];
+        if (parenthesesMatch) {
+          return parenthesesMatch.split("|");
+        }
+      }
+      // For patterns with direct command matches
+      else if (pattern.match) {
+        const directMatch = pattern.match.match(
+          /\^?\(?([^\\()\s]+(?:\|[^\\()\s]+)*)\)?\\b/
+        )?.[1];
+        return directMatch ? directMatch.split("|") : [];
+      }
+
+      return [];
     }
 
-    // Extract control flow commands (Continue)
-    const controlFlow = grammar.repository.controlFlow.patterns.find(
-      (p: any) => p.name === "keyword.control.poe2filter"
-    );
-    if (controlFlow?.match) {
-      const flowCommandsMatch = controlFlow.match.match(/\\b(.*?)\\b/)?.[1];
-      if (flowCommandsMatch) {
-        const flowCommands = flowCommandsMatch.split("|");
-        flowCommands.forEach((cmd: string) => {
-          commands[cmd] = { params: [] };
+    // Process each section
+    ["blocks", "controlFlow", "conditions", "actions"].forEach((section) => {
+      grammar.repository[section].patterns.forEach((pattern: any) => {
+        const commandNames = extractCommands(pattern);
+
+        commandNames.forEach((cmd) => {
+          // Skip if we already have this command
+          if (commands[cmd]) {
+            return;
+          }
+
+          const params: { type: string; required: boolean }[] = [];
+
+          // Add parameters if pattern has captures
+          if (pattern.captures) {
+            const captureKeys = Object.keys(pattern.captures)
+              .map(Number)
+              .filter((n) => n > 1) // Skip command name capture
+              .sort();
+
+            captureKeys.forEach((key) => {
+              const capture = pattern.captures[key];
+              const paramType = getParamTypeFromScope(capture.name);
+              const isOptional =
+                pattern.match.includes("?") &&
+                pattern.match.indexOf("?") > pattern.match.indexOf(`${key}`);
+              params.push({ type: paramType, required: !isOptional });
+            });
+          }
+
+          commands[cmd] = { params };
         });
-      }
-    }
-
-    // Log the extracted commands for debugging
-    console.log("Extracted commands:", commands);
-
-    // Extract conditions
-    const conditions = grammar.repository.conditions.patterns.find(
-      (p: any) => p.name === "support.function.poe2filter"
-    );
-    if (conditions?.match) {
-      const conditionCommands = conditions.match
-        .replace(/[()\\b]/g, "")
-        .split("|");
-      conditionCommands.forEach((cmd: string) => {
-        commands[cmd] = {
-          params: [{ type: "value", required: true }],
-        };
       });
-    }
+    });
 
-    // Extract color commands
-    const colorActions = grammar.repository.actions.patterns.find(
-      (p: any) => p.name === "meta.color.poe2filter"
-    );
-    if (colorActions?.match) {
-      // Extract just the command names from the pattern
-      const colorCommandsMatch = colorActions.match.match(/\((.*?)\)/)?.[1];
-      if (colorCommandsMatch) {
-        const colorCommands = colorCommandsMatch.split("|");
-        colorCommands.forEach((cmd: string) => {
-          commands[cmd] = {
-            params: [
-              { type: "color", required: true },
-              { type: "color", required: true },
-              { type: "color", required: true },
-              { type: "color", required: false }, // Alpha is optional
-            ],
-          };
-        });
-      }
-    }
-
-    // Extract other action commands
-    const otherActions = grammar.repository.actions.patterns.find(
-      (p: any) => p.name === "storage.type.poe2filter"
-    );
-    if (otherActions?.match) {
-      // Extract just the command names from the pattern
-      const actionCommandsMatch = otherActions.match.match(/\((.*?)\)/)?.[1];
-      if (actionCommandsMatch) {
-        const actionCommands = actionCommandsMatch.split("|");
-        actionCommands.forEach((cmd: string) => {
-          commands[cmd] = {
-            params: [{ type: "number", required: true }],
-          };
-        });
-      }
-    }
-
+    console.log("Extracted commands:", Object.keys(commands)); // Debug output
     return commands;
   } catch (error) {
     console.error("Error loading grammar file:", error);
     return {};
   }
+}
+
+function getParamTypeFromScope(scope: string): string {
+  if (!scope) {
+    return "unknown";
+  }
+  if (scope.includes("numeric")) {
+    return "number";
+  }
+  if (scope.includes("quoted.double")) {
+    return "string";
+  }
+  if (scope.includes("operator")) {
+    return "operator";
+  }
+  if (scope.includes("color")) {
+    return "color";
+  }
+  if (scope.includes("shape")) {
+    return "shape";
+  }
+  if (scope.includes("rarity")) {
+    return "rarity";
+  }
+  if (scope.includes("language")) {
+    return "constant";
+  }
+  return "unknown";
 }
 
 // Use the extracted commands

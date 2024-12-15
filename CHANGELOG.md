@@ -10,6 +10,24 @@ All notable changes to the "poe2-filter" extension will be documented in this fi
   - Inline comments after color values Closes #1
 - Fixed formatter to properly indent commented lines within Show/Hide blocks
 
+### Improved
+
+- Enhanced TextMate grammar for better syntax highlighting and error detection:
+  - Properly scoped command names using consistent patterns:
+    - Block commands as `keyword.control`
+    - Conditions as `support.function`
+    - Actions as `storage.type`
+  - Standardized parameter scoping:
+    - Numbers as `constant.numeric`
+    - Strings as `string.quoted.double`
+    - Colors as `variable.parameter.color`
+    - Operators as `keyword.operator`
+  - Added proper pattern matching for:
+    - Optional operators in numeric conditions
+    - Multiple quoted arguments in BaseType/Class
+    - Optional True/False in boolean conditions
+  - Improved command extraction for diagnostics and error detection
+
 ## [0.0.5] - 2024-12-15 10:30
 
 ### Added
