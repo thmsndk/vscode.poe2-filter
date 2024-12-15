@@ -2,7 +2,7 @@
 
 All notable changes to the "poe2-filter" extension will be documented in this file.
 
-## [0.0.5] - Unreleased
+## [0.0.5] - 2024-12-15 10:30
 
 ### Added
 
