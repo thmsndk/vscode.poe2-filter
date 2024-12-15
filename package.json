@@ -29,8 +29,12 @@
           "filter"
         ],
         "aliases": [
+          "filter",
           "Path of Exile 2 Filter",
-          "poe2-filter"
+          "poe2-filter",
+          "poe2",
+          "Path of Exile",
+          "poe"
         ],
         "configuration": "./language-configuration.json"
       }
