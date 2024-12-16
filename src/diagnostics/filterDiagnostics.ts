@@ -436,41 +436,58 @@ export function validateDocument(
     }
 
     // Validate parameters based on command definition
-    const params = parts.slice(1);
-    commandDef.params.forEach((paramDef, index) => {
-      if (paramDef.required && !params[index]) {
-        problems.push(
-          createDiagnostic(
-            line.range,
-            `Missing required parameter ${index + 1} of type ${paramDef.type}`,
-            vscode.DiagnosticSeverity.Error
-          )
-        );
-      } else if (params[index]) {
-        // For numeric conditions, we need to handle both operator and value
-        if (paramDef.type === "number") {
-          // If first parameter is an operator, validate the next one
-          if ([">=", "<=", "==", "=", "<", ">"].includes(params[index])) {
-            if (params[index + 1]) {
-              validateNumberParameter(params[index + 1], line, problems);
-            }
-          } else {
-            validateNumberParameter(params[index], line, problems);
+    if (commandDef.params) {
+      const params = parts.slice(1);
+      let paramIndex = 0; // Index in the parameter definitions
+      let valueIndex = 0; // Index in the actual values
+
+      while (paramIndex < commandDef.params.length) {
+        const paramDef = commandDef.params[paramIndex];
+        const value = params[valueIndex];
+
+        if (!value) {
+          // No more values, check if remaining params are required
+          if (paramDef.required) {
+            problems.push(
+              createDiagnostic(
+                line.range,
+                `Missing required parameter ${paramIndex + 1} of type ${
+                  paramDef.type
+                }`,
+                vscode.DiagnosticSeverity.Error
+              )
+            );
           }
-        } else {
-          // Other parameter type validations
-          switch (paramDef.type) {
-            case "rgb-color":
-              validateColorParameter(params[index], line, problems);
-              break;
-            case "named-color":
-              validateNamedColorParameter(params[index], line, problems);
-              break;
-            // Add more parameter type validations as needed
-          }
+          paramIndex++;
+          continue;
         }
+
+        // Validate the value if it matches the expected type
+        switch (paramDef.type) {
+          case "number":
+            validateNumberParameter(value, line, problems);
+            valueIndex++;
+            break;
+          case "rgb-color":
+            validateColorParameter(value, line, problems);
+            valueIndex++;
+            break;
+          case "named-color":
+            validateNamedColorParameter(value, line, problems);
+            valueIndex++;
+            break;
+          case "operator":
+            // If it's an operator, only consume the value if it matches
+            if ([">=", "<=", "==", "=", "<", ">"].includes(value)) {
+              valueIndex++;
+            }
+            break;
+          default:
+            valueIndex++;
+        }
+        paramIndex++;
       }
-    });
+    }
   }
 
   return problems;
