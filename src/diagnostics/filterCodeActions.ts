@@ -74,7 +74,11 @@ export class FilterCodeActionProvider implements vscode.CodeActionProvider {
     diagnostic: vscode.Diagnostic,
     actions: vscode.CodeAction[]
   ) {
-    const lineNumber = parseInt(diagnostic.code.value.split(":")[1]);
+    if (typeof diagnostic.code !== "object" || !("value" in diagnostic.code)) {
+      return;
+    }
+
+    const lineNumber = parseInt(diagnostic.code.value.toString());
     const action = new vscode.CodeAction(
       `Go to conflicting rule (line ${lineNumber + 1})`,
       vscode.CodeActionKind.QuickFix
