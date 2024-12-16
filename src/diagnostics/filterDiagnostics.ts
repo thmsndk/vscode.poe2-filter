@@ -2,11 +2,20 @@ import * as vscode from "vscode";
 import * as path from "path";
 import * as fs from "fs";
 
-// Function to extract commands from the grammar file
-function extractCommandsFromGrammar(): Record<
-  string,
-  { params: { type: string; required: boolean }[] }
-> {
+interface CommandPattern {
+  name?: string;
+  match?: string;
+  captures?: Record<string, { name: string }>;
+  begin?: string;
+  beginCaptures?: Record<string, { name: string }>;
+  patterns?: CommandPattern[];
+}
+
+interface CommandDefinition {
+  params: { type: string; required: boolean }[];
+}
+
+function extractCommandsFromGrammar(): Record<string, CommandDefinition> {
   try {
     const grammarPath = path.join(
       __dirname,
@@ -16,95 +25,94 @@ function extractCommandsFromGrammar(): Record<
     );
     const grammarContent = fs.readFileSync(grammarPath, "utf8");
     const grammar = JSON.parse(grammarContent);
-    const commands: Record<
-      string,
-      { params: { type: string; required: boolean }[] }
-    > = {};
+    const commands: Record<string, CommandDefinition> = {};
 
-    // Helper to extract command names from a pattern
-    function extractCommands(pattern: any): string[] {
-      // For patterns with storage.type name and direct word matches
-      if (pattern.name?.includes("storage.type") && pattern.match) {
-        const storageMatch = pattern.match.match(/\\b\(([^)]+)\)\\b/)?.[1];
-        if (storageMatch) {
-          return storageMatch.split("|");
+    function extractCommandsAndParams(pattern: CommandPattern): {
+      commands: string[];
+      params: { type: string; required: boolean }[];
+    } {
+      let commands: string[] = [];
+      let params: { type: string; required: boolean }[] = [];
+
+      // For patterns with begin/beginCaptures
+      if (pattern.begin && pattern.beginCaptures?.["1"]) {
+        const beginMatch =
+          pattern.begin.match(/\\b\(([^)]+)\)\\b/)?.[1] ||
+          pattern.begin.match(/\\b(\w+)\\b/)?.[1];
+        if (beginMatch) {
+          commands = beginMatch.split("|");
+        }
+
+        // Extract parameters from the patterns array
+        if (pattern.patterns) {
+          pattern.patterns.forEach((subPattern) => {
+            if (subPattern.captures) {
+              Object.entries(subPattern.captures)
+                .filter(([key]) => key !== "1") // Skip the command name capture
+                .forEach(([_, capture]) => {
+                  const paramType = getParamTypeFromScope(capture.name);
+                  const isOptional = (subPattern.match || "").includes("?");
+                  params.push({ type: paramType, required: !isOptional });
+                });
+            }
+          });
         }
       }
-      // For block commands that start with ^ (Show, Hide)
-      else if (pattern.match?.startsWith("^")) {
-        const blockMatch = pattern.match.match(/\^?\(([^)]+)\)/)?.[1];
-        if (blockMatch) {
-          return blockMatch.split("|");
-        }
-      }
-      // For patterns with direct word matches (like Continue)
-      else if (pattern.match?.includes("\\b") && !pattern.captures) {
-        const wordMatch = pattern.match.match(/\\b(\w+)\\b/)?.[1];
-        if (wordMatch) {
-          return [wordMatch];
-        }
-      }
-      // For patterns with explicit command names in first capture
-      else if (pattern.captures?.["1"]) {
-        // First try to get from the first word in the match pattern
-        const firstWordMatch = pattern.match.match(/\\b(\w+)\\b/)?.[1];
+      // For patterns with direct captures
+      else if (pattern.captures) {
+        const firstWordMatch = pattern.match?.match(/\\b(\w+)\\b/)?.[1];
         if (firstWordMatch) {
-          return [firstWordMatch];
+          commands = [firstWordMatch];
         }
 
-        // Fallback to looking for parentheses groups
-        const parenthesesMatch = pattern.match.match(/\(([^)]+)\)/)?.[1];
-        if (parenthesesMatch) {
-          return parenthesesMatch.split("|");
-        }
+        // Extract parameters from captures
+        Object.entries(pattern.captures)
+          .filter(([key]) => key !== "1") // Skip the command name capture
+          .forEach(([_, capture]) => {
+            const paramType = getParamTypeFromScope(capture.name);
+            const isOptional = (pattern.match || "").includes("?");
+            params.push({ type: paramType, required: !isOptional });
+          });
       }
-      // For patterns with direct command matches
+      // For simple command patterns
       else if (pattern.match) {
-        const directMatch = pattern.match.match(
-          /\^?\(?([^\\()\s]+(?:\|[^\\()\s]+)*)\)?\\b/
-        )?.[1];
-        return directMatch ? directMatch.split("|") : [];
+        if (pattern.match.startsWith("^")) {
+          const blockMatch = pattern.match.match(/\^?\(([^)]+)\)/)?.[1];
+          if (blockMatch) {
+            commands = blockMatch.split("|");
+          }
+        } else if (pattern.name?.includes("storage.type")) {
+          const storageMatch = pattern.match.match(/\\b\(([^)]+)\)\\b/)?.[1];
+          if (storageMatch) {
+            commands = storageMatch.split("|");
+          }
+        } else {
+          const wordMatch = pattern.match.match(/\\b(\w+)\\b/)?.[1];
+          if (wordMatch) {
+            commands = [wordMatch];
+          }
+        }
       }
 
-      return [];
+      return { commands, params };
     }
 
     // Process each section
     ["blocks", "controlFlow", "conditions", "actions"].forEach((section) => {
-      grammar.repository[section].patterns.forEach((pattern: any) => {
-        const commandNames = extractCommands(pattern);
+      (grammar.repository[section].patterns as CommandPattern[]).forEach(
+        (pattern) => {
+          const { commands: commandNames, params } =
+            extractCommandsAndParams(pattern);
 
-        commandNames.forEach((cmd) => {
-          // Skip if we already have this command
-          if (commands[cmd]) {
-            return;
-          }
-
-          const params: { type: string; required: boolean }[] = [];
-
-          // Add parameters if pattern has captures
-          if (pattern.captures) {
-            const captureKeys = Object.keys(pattern.captures)
-              .map(Number)
-              .filter((n) => n > 1) // Skip command name capture
-              .sort();
-
-            captureKeys.forEach((key) => {
-              const capture = pattern.captures[key];
-              const paramType = getParamTypeFromScope(capture.name);
-              const isOptional =
-                pattern.match.includes("?") &&
-                pattern.match.indexOf("?") > pattern.match.indexOf(`${key}`);
-              params.push({ type: paramType, required: !isOptional });
-            });
-          }
-
-          commands[cmd] = { params };
-        });
-      });
+          commandNames.forEach((cmd) => {
+            if (!commands[cmd]) {
+              commands[cmd] = { params };
+            }
+          });
+        }
+      );
     });
 
-    console.log("Extracted commands:", Object.keys(commands)); // Debug output
     return commands;
   } catch (error) {
     console.error("Error loading grammar file:", error);
@@ -244,56 +252,35 @@ function findSimilarCommands(
     .map((result) => result.command);
 }
 
-export function validateDocument(
-  document: vscode.TextDocument
-): vscode.Diagnostic[] {
-  const problems: vscode.Diagnostic[] = [];
-  const validCommands = Object.keys(VALID_COMMANDS);
-
-  for (let i = 0; i < document.lineCount; i++) {
-    const line = document.lineAt(i);
-    const trimmedText = line.text.trim();
-
-    // Skip empty lines and comments
-    if (trimmedText === "" || trimmedText.startsWith("#")) {
-      continue;
-    }
-
-    const parts = trimmedText.split(" ");
-    const command = parts[0];
-
-    if (!VALID_COMMANDS[command as keyof typeof VALID_COMMANDS]) {
-      // Find similar commands
-      const suggestions = findSimilarCommands(command, validCommands);
-
-      const message =
-        suggestions.length > 0
-          ? `Unknown command "${command}". Did you mean: ${suggestions.join(
-              ", "
-            )}?`
-          : `Unknown command "${command}"`;
-
-      problems.push(
-        createDiagnostic(
-          new vscode.Range(
-            line.range.start,
-            line.range.start.translate(0, command.length)
-          ),
-          message,
-          vscode.DiagnosticSeverity.Error
-        )
-      );
-      continue;
-    }
-
-    // Validate commands and parameters
-    if (command.endsWith("Color")) {
-      validateColorParameters(line, parts, problems);
-    }
-    // Add more parameter validation as needed
+function validateColorParameter(
+  value: string,
+  line: vscode.TextLine,
+  problems: vscode.Diagnostic[]
+) {
+  const num = parseInt(value);
+  if (isNaN(num)) {
+    problems.push(
+      createDiagnostic(
+        new vscode.Range(
+          line.range.start.translate(0, line.text.indexOf(value)),
+          line.range.start.translate(0, line.text.indexOf(value) + value.length)
+        ),
+        "Color values must be numbers",
+        vscode.DiagnosticSeverity.Error
+      )
+    );
+  } else if (num < 0 || num > 255) {
+    problems.push(
+      createDiagnostic(
+        new vscode.Range(
+          line.range.start.translate(0, line.text.indexOf(value)),
+          line.range.start.translate(0, line.text.indexOf(value) + value.length)
+        ),
+        "Color values must be between 0 and 255",
+        vscode.DiagnosticSeverity.Error
+      )
+    );
   }
-
-  return problems;
 }
 
 function validateColorParameters(
@@ -328,37 +315,118 @@ function validateColorParameters(
       return;
     }
 
-    const num = parseInt(value);
-    if (isNaN(num)) {
-      problems.push(
-        createDiagnostic(
-          new vscode.Range(
-            line.range.start.translate(0, line.text.indexOf(value)),
-            line.range.start.translate(
-              0,
-              line.text.indexOf(value) + value.length
-            )
-          ),
-          "Color values must be numbers",
-          vscode.DiagnosticSeverity.Error
-        )
-      );
-    } else if (num < 0 || num > 255) {
-      problems.push(
-        createDiagnostic(
-          new vscode.Range(
-            line.range.start.translate(0, line.text.indexOf(value)),
-            line.range.start.translate(
-              0,
-              line.text.indexOf(value) + value.length
-            )
-          ),
-          "Color values must be between 0 and 255",
-          vscode.DiagnosticSeverity.Error
-        )
-      );
-    }
+    validateColorParameter(value, line, problems);
   });
+}
+
+export function validateDocument(
+  document: vscode.TextDocument
+): vscode.Diagnostic[] {
+  const problems: vscode.Diagnostic[] = [];
+  const validCommands = Object.keys(VALID_COMMANDS);
+
+  for (let i = 0; i < document.lineCount; i++) {
+    const line = document.lineAt(i);
+    const trimmedText = line.text.trim();
+
+    // Skip empty lines and comments
+    if (trimmedText === "" || trimmedText.startsWith("#")) continue;
+
+    // Split on comment and take first part, then split into parts
+    const parts = trimmedText.split("#")[0].trim().split(/\s+/);
+    const command = parts[0];
+    const commandDef = VALID_COMMANDS[command];
+
+    if (!commandDef) {
+      const suggestions = findSimilarCommands(command, validCommands);
+      const message =
+        suggestions.length > 0
+          ? `Unknown command "${command}". Did you mean: ${suggestions.join(
+              ", "
+            )}?`
+          : `Unknown command "${command}"`;
+
+      problems.push(
+        createDiagnostic(
+          new vscode.Range(
+            line.range.start,
+            line.range.start.translate(0, command.length)
+          ),
+          message,
+          vscode.DiagnosticSeverity.Error
+        )
+      );
+      continue;
+    }
+
+    // Special handling for color commands
+    if (command.endsWith("Color")) {
+      validateColorParameters(line, parts, problems);
+      continue;
+    }
+
+    // Validate parameters based on command definition
+    const params = parts.slice(1);
+    commandDef.params.forEach((paramDef, index) => {
+      if (paramDef.required && !params[index]) {
+        problems.push(
+          createDiagnostic(
+            line.range,
+            `Missing required parameter ${index + 1} of type ${paramDef.type}`,
+            vscode.DiagnosticSeverity.Error
+          )
+        );
+      } else if (params[index]) {
+        // For numeric conditions, we need to handle both operator and value
+        if (paramDef.type === "number") {
+          // If first parameter is an operator, validate the next one
+          if ([">=", "<=", "==", "=", "<", ">"].includes(params[index])) {
+            if (params[index + 1]) {
+              validateNumberParameter(params[index + 1], line, problems);
+            }
+          } else {
+            validateNumberParameter(params[index], line, problems);
+          }
+        } else {
+          // Other parameter type validations
+          switch (paramDef.type) {
+            case "color":
+              validateColorParameter(params[index], line, problems);
+              break;
+            // Add more parameter type validations as needed
+          }
+        }
+      }
+    });
+  }
+
+  return problems;
+}
+
+// Add specific parameter validation functions
+function validateNumberParameter(
+  value: string,
+  line: vscode.TextLine,
+  problems: vscode.Diagnostic[]
+) {
+  // First check if it's an operator
+  if ([">=", "<=", "==", "=", "<", ">"].includes(value)) {
+    return; // Skip validation for operators
+  }
+
+  const num = parseInt(value);
+  if (isNaN(num)) {
+    problems.push(
+      createDiagnostic(
+        new vscode.Range(
+          line.range.start.translate(0, line.text.indexOf(value)),
+          line.range.start.translate(0, line.text.indexOf(value) + value.length)
+        ),
+        "Value must be a number",
+        vscode.DiagnosticSeverity.Error
+      )
+    );
+  }
 }
 
 function createDiagnostic(

@@ -50,42 +50,75 @@
     "conditions": {
       "patterns": [
         {
-          "match": "\\b(Rarity)\\s*(>=|<=|==|=|<|>)?\\s*(Normal|Magic|Rare|Unique)\\b",
-          "captures": {
-            "1": { "name": "support.function.poe2filter" },
-            "2": { "name": "keyword.operator.comparison.poe2filter" },
-            "3": { "name": "variable.parameter.rarity.poe2filter" }
-          }
-        },
-        {
-          "match": "\\b(BaseType|Class)\\s*(==|=)?\\s*((?:\"[^\"]+\"\\s*)+)",
-          "captures": {
-            "1": { "name": "support.function.poe2filter" },
-            "2": { "name": "keyword.operator.comparison.poe2filter" },
-            "3": {
-              "patterns": [
-                {
-                  "match": "\"[^\"]+\"",
-                  "name": "string.quoted.double.basetype.poe2filter"
-                }
-              ]
+          "begin": "\\b(Rarity)\\b",
+          "beginCaptures": {
+            "1": { "name": "support.function.poe2filter" }
+          },
+          "end": "(?=$|#)",
+          "patterns": [
+            {
+              "match": "(>=|<=|==|=|<|>)",
+              "captures": {
+                "1": { "name": "keyword.operator.comparison.poe2filter" }
+              }
+            },
+            {
+              "match": "\\b(Normal|Magic|Rare|Unique)\\b",
+              "captures": {
+                "1": { "name": "variable.parameter.rarity.poe2filter" }
+              }
             }
-          }
+          ]
         },
         {
-          "match": "\\b(ItemLevel|DropLevel|Quality|AreaLevel|GemLevel|Sockets|MapTier|WaystoneTier|StackSize|Height|Width)\\s*(>=|<=|==|=|<|>)?\\s*(\\d+)\\b",
-          "captures": {
-            "1": { "name": "support.function.poe2filter" },
-            "2": { "name": "keyword.operator.comparison.poe2filter" },
-            "3": { "name": "constant.numeric.level.poe2filter" }
-          }
+          "begin": "\\b(BaseType|Class)\\b",
+          "beginCaptures": {
+            "1": { "name": "support.function.poe2filter" }
+          },
+          "end": "(?=$|#)",
+          "patterns": [
+            {
+              "match": "(==|=)",
+              "captures": {
+                "1": { "name": "keyword.operator.comparison.poe2filter" }
+              }
+            },
+            {
+              "match": "\"[^\"]+\"",
+              "name": "string.quoted.double.basetype.poe2filter"
+            }
+          ]
         },
         {
-          "match": "\\b(FracturedItem|Mirrored|Corrupted|SynthesisedItem|AnyEnchantment|Identified)(?:\\s+(True|False))?\\b",
-          "captures": {
-            "1": { "name": "support.function.poe2filter" },
-            "2": { "name": "constant.language.poe2filter" }
-          }
+          "begin": "\\b(ItemLevel|DropLevel|Quality|AreaLevel|GemLevel|Sockets|MapTier|WaystoneTier|StackSize|Height|Width)\\b",
+          "beginCaptures": {
+            "1": { "name": "support.function.poe2filter" }
+          },
+          "end": "(?=$|#)",
+          "patterns": [
+            {
+              "match": "(>=|<=|==|=|<|>)?\\s*(\\d+)\\b",
+              "captures": {
+                "1": { "name": "keyword.operator.comparison.poe2filter" },
+                "2": { "name": "constant.numeric.level.poe2filter" }
+              }
+            }
+          ]
+        },
+        {
+          "begin": "\\b(FracturedItem|Mirrored|Corrupted|SynthesisedItem|AnyEnchantment|Identified)\\b",
+          "beginCaptures": {
+            "1": { "name": "support.function.poe2filter" }
+          },
+          "end": "(?=$|#)",
+          "patterns": [
+            {
+              "match": "\\b(True|False)\\b",
+              "captures": {
+                "1": { "name": "constant.language.poe2filter" }
+              }
+            }
+          ]
         }
       ]
     },
@@ -93,58 +126,106 @@
       "patterns": [
         {
           "name": "meta.color.poe2filter",
-          "match": "(SetTextColor|SetBorderColor|SetBackgroundColor)\\s+(\\d+)\\s+(\\d+)\\s+(\\d+)(?:\\s+(\\d+))?\\b",
-          "captures": {
-            "1": { "name": "storage.type.color.poe2filter" },
-            "2": { "name": "constant.numeric.color.r.poe2filter" },
-            "3": { "name": "constant.numeric.color.g.poe2filter" },
-            "4": { "name": "constant.numeric.color.b.poe2filter" },
-            "5": { "name": "constant.numeric.color.a.poe2filter" }
-          }
+          "begin": "\\b(SetTextColor|SetBorderColor|SetBackgroundColor)\\b",
+          "beginCaptures": {
+            "1": { "name": "storage.type.color.poe2filter" }
+          },
+          "end": "(?=$|#)",
+          "patterns": [
+            {
+              "match": "\\b(\\d+)\\s+(\\d+)\\s+(\\d+)(?:\\s+(\\d+))?\\b",
+              "captures": {
+                "1": { "name": "constant.numeric.color.r.poe2filter" },
+                "2": { "name": "constant.numeric.color.g.poe2filter" },
+                "3": { "name": "constant.numeric.color.b.poe2filter" },
+                "4": { "name": "constant.numeric.color.a.poe2filter" }
+              }
+            }
+          ]
         },
         {
-          "match": "(MinimapIcon)\\s+(\\d+)\\s+(Red|Green|Blue|Brown|White|Yellow|Cyan|Grey|Orange|Pink|Purple)\\s+(Circle|Diamond|Hexagon|Square|Star|Triangle|Cross|Moon|Raindrop|Kite|Pentagon|UpsideDownHouse)",
-          "captures": {
-            "1": { "name": "storage.type.poe2filter" },
-            "2": { "name": "constant.numeric.size.poe2filter" },
-            "3": { "name": "variable.parameter.color.poe2filter" },
-            "4": { "name": "variable.parameter.shape.poe2filter" }
-          }
+          "begin": "\\b(MinimapIcon)\\b",
+          "beginCaptures": {
+            "1": { "name": "storage.type.poe2filter" }
+          },
+          "end": "(?=$|#)",
+          "patterns": [
+            {
+              "match": "(\\d+)\\s+(Red|Green|Blue|Brown|White|Yellow|Cyan|Grey|Orange|Pink|Purple)\\s+(Circle|Diamond|Hexagon|Square|Star|Triangle|Cross|Moon|Raindrop|Kite|Pentagon|UpsideDownHouse)",
+              "captures": {
+                "1": { "name": "constant.numeric.size.poe2filter" },
+                "2": { "name": "variable.parameter.color.poe2filter" },
+                "3": { "name": "variable.parameter.shape.poe2filter" }
+              }
+            }
+          ]
         },
         {
-          "match": "(PlayAlertSound|PlayAlertSoundPositional)\\s+(\\d+)\\s+(\\d+)",
-          "captures": {
-            "1": { "name": "storage.type.sound.poe2filter" },
-            "2": { "name": "constant.numeric.sound-id.poe2filter" },
-            "3": { "name": "constant.numeric.volume.poe2filter" }
-          }
+          "begin": "\\b(PlayAlertSound|PlayAlertSoundPositional)\\b",
+          "beginCaptures": {
+            "1": { "name": "storage.type.sound.poe2filter" }
+          },
+          "end": "(?=$|#)",
+          "patterns": [
+            {
+              "match": "(\\d+)\\s+(\\d+)",
+              "captures": {
+                "1": { "name": "constant.numeric.sound-id.poe2filter" },
+                "2": { "name": "constant.numeric.volume.poe2filter" }
+              }
+            }
+          ]
         },
         {
-          "match": "(CustomAlertSound)\\s+\"([^\"]+)\"\\s+(\\d+)",
-          "captures": {
-            "1": { "name": "storage.type.sound.poe2filter" },
-            "2": { "name": "string.quoted.double.sound-file.poe2filter" },
-            "3": { "name": "constant.numeric.volume.poe2filter" }
-          }
+          "begin": "\\b(CustomAlertSound)\\b",
+          "beginCaptures": {
+            "1": { "name": "storage.type.sound.poe2filter" }
+          },
+          "end": "(?=$|#)",
+          "patterns": [
+            {
+              "match": "\"([^\"]+)\"\\s+(\\d+)",
+              "captures": {
+                "1": { "name": "string.quoted.double.sound-file.poe2filter" },
+                "2": { "name": "constant.numeric.volume.poe2filter" }
+              }
+            }
+          ]
         },
         {
-          "match": "(PlayEffect)\\s+(Red|Green|Blue|Brown|White|Yellow|Cyan|Grey|Orange|Pink|Purple)(?:\\s+(Temp))?\\b",
-          "captures": {
-            "1": { "name": "storage.type.effect.poe2filter" },
-            "2": { "name": "variable.parameter.color.poe2filter" },
-            "3": { "name": "constant.language.temp.poe2filter" }
-          }
+          "begin": "\\b(PlayEffect)\\b",
+          "beginCaptures": {
+            "1": { "name": "storage.type.effect.poe2filter" }
+          },
+          "end": "(?=$|#)",
+          "patterns": [
+            {
+              "match": "(Red|Green|Blue|Brown|White|Yellow|Cyan|Grey|Orange|Pink|Purple)(?:\\s+(Temp))?\\b",
+              "captures": {
+                "1": { "name": "variable.parameter.color.poe2filter" },
+                "2": { "name": "constant.language.temp.poe2filter" }
+              }
+            }
+          ]
         },
         {
-          "match": "(SetFontSize)\\s+(\\d+)",
-          "captures": {
-            "1": { "name": "storage.type.font.poe2filter" },
-            "2": { "name": "constant.numeric.font-size.poe2filter" }
-          }
+          "begin": "\\b(SetFontSize)\\b",
+          "beginCaptures": {
+            "1": { "name": "storage.type.font.poe2filter" }
+          },
+          "end": "(?=$|#)",
+          "patterns": [
+            {
+              "match": "(\\d+)",
+              "captures": {
+                "1": { "name": "constant.numeric.font-size.poe2filter" }
+              }
+            }
+          ]
         },
         {
-          "name": "storage.type.sound.poe2filter",
-          "match": "\\b(DisableDropSound|EnableDropSound)\\b"
+          "match": "\\b(DisableDropSound|EnableDropSound)\\b",
+          "name": "storage.type.sound.poe2filter"
         }
       ]
     },
