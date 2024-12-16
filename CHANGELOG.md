@@ -10,6 +10,9 @@ All notable changes to the "poe2-filter" extension will be documented in this fi
   - Warns when a rule may never trigger due to being caught by an earlier rule
   - Shows which conditions from the earlier rule would catch the items
   - Provides quick navigation to the conflicting rule
+- Added sound file validation for CustomAlertSound
+  - Warns when specified sound files don't exist
+  - Respects CustomAlertSoundOptional for optional sound files
 
 ### Improved
 

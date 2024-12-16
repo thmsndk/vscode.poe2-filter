@@ -177,7 +177,7 @@
           ]
         },
         {
-          "begin": "\\b(CustomAlertSound)\\b",
+          "begin": "\\b(CustomAlertSound|CustomAlertSoundOptional)\\b",
           "beginCaptures": {
             "1": { "name": "storage.type.sound.poe2filter" }
           },

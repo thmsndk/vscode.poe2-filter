@@ -326,6 +326,50 @@ function validateColorParameters(
   });
 }
 
+function validateSoundFile(
+  filePath: string,
+  line: vscode.TextLine,
+  document: vscode.TextDocument,
+  problems: vscode.Diagnostic[],
+  isOptional: boolean
+) {
+  // Remove quotes from the file path
+  const cleanPath = filePath.replace(/^"(.*)"$/, "$1");
+
+  // Try different possible locations
+  const possiblePaths = [
+    cleanPath, // Direct path
+    path.join(path.dirname(document.uri.fsPath), cleanPath), // Use document instead of line
+    // You might want to add default PoE sound folder paths here
+  ];
+
+  const fileExists = possiblePaths.some((p) => fs.existsSync(p));
+
+  if (!fileExists) {
+    const severity = isOptional
+      ? vscode.DiagnosticSeverity.Warning
+      : vscode.DiagnosticSeverity.Error;
+
+    const message = isOptional
+      ? `Sound file not found: ${cleanPath}. File is optional but should exist when used.`
+      : `Sound file not found: ${cleanPath}. File must exist for CustomAlertSound (use CustomAlertSoundOptional if the file is optional)`;
+
+    problems.push(
+      createDiagnostic(
+        new vscode.Range(
+          line.range.start.translate(0, line.text.indexOf(filePath)),
+          line.range.start.translate(
+            0,
+            line.text.indexOf(filePath) + filePath.length
+          )
+        ),
+        message,
+        severity
+      )
+    );
+  }
+}
+
 export function validateDocument(
   document: vscode.TextDocument
 ): vscode.Diagnostic[] {
@@ -375,6 +419,19 @@ export function validateDocument(
     // Special handling for color commands
     if (command.endsWith("Color")) {
       validateColorParameters(line, parts, problems);
+      continue;
+    }
+
+    // Special handling for sound commands
+    if (command === "CustomAlertSound") {
+      if (parts[1]) {
+        validateSoundFile(parts[1], line, document, problems, false);
+      }
+      continue;
+    } else if (command === "CustomAlertSoundOptional") {
+      if (parts[1]) {
+        validateSoundFile(parts[1], line, document, problems, true);
+      }
       continue;
     }
 
