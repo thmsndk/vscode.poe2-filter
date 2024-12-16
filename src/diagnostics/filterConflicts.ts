@@ -90,8 +90,18 @@ function findRuleConflict(
     .map((cond) => {
       switch (cond.type) {
         case "Class":
-        case "BaseType":
-          return `${cond.type.toLowerCase()} "${cond.values.join(", ")}"`;
+        case "BaseType": {
+          // Find overlapping BaseTypes between current and previous rule
+          const currentBaseTypes =
+            currentRule.conditions.find((c) => c.type === "BaseType")?.values ||
+            [];
+          const overlapping = cond.values.filter((type) =>
+            currentBaseTypes.includes(type)
+          );
+          return overlapping.length > 0
+            ? `basetype "${overlapping.join(", ")}"`
+            : null;
+        }
         case "Sockets":
         case "Quality":
         case "ItemLevel":
