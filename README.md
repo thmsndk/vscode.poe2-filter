@@ -129,7 +129,7 @@ pnpm package
 ```
 
 ```bash
-vsce publish --no-dependencies
+pnpm vsce:publish
 ```
 
 ## Credits
