@@ -330,7 +330,9 @@ export function validateDocument(
     const trimmedText = line.text.trim();
 
     // Skip empty lines and comments
-    if (trimmedText === "" || trimmedText.startsWith("#")) continue;
+    if (trimmedText === "" || trimmedText.startsWith("#")) {
+      continue;
+    }
 
     // Split on comment and take first part, then split into parts
     const parts = trimmedText.split("#")[0].trim().split(/\s+/);
