@@ -44,3 +44,9 @@ SetBackgroundColor 20 20 0 180
 Continue
 #  salvagable items
 Show # salvagable item
+
+#Hide #comment
+#    content
+
+Show # comment
+    content

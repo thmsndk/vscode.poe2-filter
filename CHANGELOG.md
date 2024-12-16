@@ -11,6 +11,10 @@ All notable changes to the "poe2-filter" extension will be documented in this fi
   - Maintains empty lines before and after section headers
   - Preserves formatting of multi-line section headers
 
+### Fixed
+
+- Fixed formatter to properly handle commented blocks Closes #4
+
 ## [0.0.7] - 2024-12-16 16:50
 
 ### Added
@@ -48,7 +52,7 @@ All notable changes to the "poe2-filter" extension will be documented in this fi
 ### Fixed
 
 - Fixed color command validation to properly handle:
-  - Inline comments after color values Closes #1
+  - Inline comments after color values Closes #3
 - Fixed formatter to properly indent commented lines within Show/Hide blocks
 
 ### Improved
