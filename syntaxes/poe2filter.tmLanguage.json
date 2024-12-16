@@ -90,7 +90,7 @@
           ]
         },
         {
-          "begin": "\\b(ItemLevel|DropLevel|Quality|AreaLevel|GemLevel|Sockets|MapTier|WaystoneTier|StackSize|Height|Width)\\b",
+          "begin": "\\b(ItemLevel|DropLevel|Quality|AreaLevel|GemLevel|Sockets|MapTier|WaystoneTier|StackSize|Height|Width|BaseArmour|BaseEnergyShield|BaseEvasion)\\b",
           "beginCaptures": {
             "1": { "name": "support.function.poe2filter" }
           },

@@ -1,0 +1,110 @@
+# Comprehensive Filter Example
+# Demonstrates all supported conditions and actions
+
+#--------------------------------
+# Numeric Conditions
+#--------------------------------
+Show # Item Level and Drop Level
+    ItemLevel >= 75
+    DropLevel <= 65
+    SetTextColor 255 255 255 255
+
+Show # Quality and Stack Size
+    Quality >= 20
+    StackSize >= 10
+    SetBorderColor 150 150 0 255
+
+Show # Area Level and Gem Level
+    AreaLevel >= 80
+    GemLevel >= 20
+    SetBackgroundColor 0 0 0 200
+
+Show # Map and Waystone Tiers
+    MapTier >= 14
+    WaystoneTier >= 3
+    MinimapIcon 2 Red Diamond
+
+Show # Item Dimensions and Sockets
+    Width <= 2
+    Height <= 3
+    Sockets >= 6
+    SetFontSize 45
+
+#--------------------------------
+# Defensive Stats
+#--------------------------------
+Show # Armor Items
+    BaseArmour >= 500
+    Class "Body Armours"
+    SetTextColor 200 200 200 255
+
+Show # Energy Shield Items
+    BaseEnergyShield >= 300
+    Class "Shields"
+    SetBorderColor 0 100 200 255
+
+Show # Evasion Items
+    BaseEvasion >= 1000
+    Class "Boots"
+    SetBackgroundColor 50 150 50 200
+
+#--------------------------------
+# Boolean Conditions
+#--------------------------------
+Show # Special Item States
+    FracturedItem True
+    Mirrored False
+    Corrupted True
+    SynthesisedItem True
+    AnyEnchantment True
+    Identified False
+    PlayEffect Red
+
+#--------------------------------
+# Class and BaseType Conditions
+#--------------------------------
+Show # Base Types
+    BaseType "Exalted Orb" "Divine Orb"
+    Class "Currency"
+    Rarity == Normal
+    MinimapIcon 0 Yellow Circle
+
+Show # Class Examples
+    Class "Body Armours" "Boots" "Gloves"
+    Rarity Unique
+    MinimapIcon 1 Brown Star
+
+#--------------------------------
+# Sound Effects
+#--------------------------------
+Show # Alert Sounds
+    PlayAlertSound 1 300
+    PlayAlertSoundPositional 2 200
+    CustomAlertSound "MySound.mp3" 300
+    CustomAlertSoundOptional "OptionalSound.mp3" 200
+    DisableDropSound
+
+Show # Alert Sound with Effects
+    PlayAlertSound 3 300
+    PlayEffect Yellow Temp
+    EnableDropSound
+
+#--------------------------------
+# Visual Effects
+#--------------------------------
+Show # Colors and Font
+    SetFontSize 45
+    SetTextColor 255 0 0 255
+    SetBorderColor 0 255 0 255
+    SetBackgroundColor 0 0 255 200
+
+Show # Minimap Icons
+    MinimapIcon 0 Blue Circle
+    MinimapIcon 1 Red Diamond
+    MinimapIcon 2 Green Hexagon
+    PlayEffect Purple Temp
+
+Show # Continue Example
+    BaseType "Chaos Orb"
+    SetFontSize 45
+    Continue

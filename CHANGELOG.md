@@ -13,6 +13,10 @@ All notable changes to the "poe2-filter" extension will be documented in this fi
 - Added sound file validation for CustomAlertSound
   - Warns when specified sound files don't exist
   - Respects CustomAlertSoundOptional for optional sound files
+- Added support for defensive stat conditions
+  - BaseArmour condition for armor value filtering
+  - BaseEnergyShield condition for ES value filtering
+  - BaseEvasion condition for evasion value filtering
 
 ### Improved
 

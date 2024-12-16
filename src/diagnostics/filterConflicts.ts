@@ -136,6 +136,9 @@ interface FilterItem {
   stackSize: number;
   height: number;
   width: number;
+  baseArmour: number;
+  baseEnergyShield: number;
+  baseEvasion: number;
   // String properties
   baseType?: string;
   class?: string;
@@ -163,6 +166,9 @@ function generateItemFromRule(rule: FilterRule): FilterItem {
     waystoneTier: 1,
     height: 1,
     width: 1,
+    baseArmour: 0,
+    baseEnergyShield: 0,
+    baseEvasion: 0,
     // Boolean defaults
     fractured: false,
     mirrored: false,
@@ -191,6 +197,9 @@ function generateItemFromRule(rule: FilterRule): FilterItem {
       case "StackSize":
       case "Height":
       case "Width":
+      case "BaseArmour":
+      case "BaseEnergyShield":
+      case "BaseEvasion":
         type NumericProps = {
           [K in keyof FilterItem]: FilterItem[K] extends number ? K : never;
         }[keyof FilterItem];
@@ -251,6 +260,9 @@ function wouldRuleMatchItem(rule: FilterRule, item: FilterItem): boolean {
       case "StackSize":
       case "Height":
       case "Width":
+      case "BaseArmour":
+      case "BaseEnergyShield":
+      case "BaseEvasion":
         type NumericProps = {
           [K in keyof FilterItem]: FilterItem[K] extends number ? K : never;
         }[keyof FilterItem];
