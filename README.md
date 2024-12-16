@@ -6,10 +6,11 @@ A Visual Studio Code extension for Path of Exile 2 item filter files.
 
 - [Syntax highlighting](#syntax-highlighting) for POE2 filter files
 - [Color previews and editing](#color-features) for filter colors
-- - [Minimap icon previews](#minimap-icons) with shape indicators
+  - [Minimap icon previews](#minimap-icons) with shape indicators
 - [Document formatting](#document-formatting) support
 - [Document Outline](#document-outline) for easy navigation
 - [Error Detection and Validation](#error-detection-and-validation) for common mistakes
+  - [Rule Conflict Detection](#rule-conflict-detection) to identify redundant rules
 
 ## Feature Details
 
@@ -69,9 +70,21 @@ Helps catch common mistakes and provides quick fixes:
 - Syntax error highlighting
 - Command validation with suggestions for misspelled commands
 - Parameter validation for color values
+- Detection of conflicting rules that may never trigger
 - Quick fixes for common mistakes like command typos
 
 ![Error Detection](images/command-spelling-mistake-fix.gif)
+
+#### Rule Conflict Detection
+
+Identifies when filter rules may never trigger due to previous rules:
+
+- Warns about rules that would be completely caught by earlier rules
+- Shows which specific conditions from the earlier rule would catch items
+- Provides quick navigation to the conflicting rule
+- Handles complex condition combinations including numeric comparisons
+
+![Conflicting Rules](images/conflicting-rule.png)
 
 ## Known Issues
 
@@ -87,7 +100,6 @@ See [CHANGELOG.md](CHANGELOG.md) for detailed release notes.
 - Error/warnings improvements:
   - Detection of nested blocks
   - Detection of empty blocks
-  - Warnings if a rule is not applied due to a previous rule
   - More parameter validations
 - Command completion and snippets
 - Hover documentation for commands

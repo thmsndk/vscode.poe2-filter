@@ -1,7 +1,8 @@
 import * as vscode from "vscode";
 import * as path from "path";
 import * as fs from "fs";
-
+import { checkRuleConflicts } from "./filterConflicts";
+// TODO: forogetting a hide/show function above conditions or actions, especially if there is a comment above it saying "Show" or "Hide"
 interface CommandPattern {
   name?: string;
   match?: string;
@@ -325,6 +326,10 @@ export function validateDocument(
   const problems: vscode.Diagnostic[] = [];
   const validCommands = Object.keys(VALID_COMMANDS);
 
+  // Add rule conflict checks
+  problems.push(...checkRuleConflicts(document));
+
+  // Rest of the existing validation logic
   for (let i = 0; i < document.lineCount; i++) {
     const line = document.lineAt(i);
     const trimmedText = line.text.trim();

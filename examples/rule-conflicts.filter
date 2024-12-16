@@ -1,0 +1,23 @@
+# Rule Conflict Examples
+# Demonstrates cases where rules might conflict or never trigger
+
+Show
+	BaseType == "Gold"
+	StackSize >= 1000
+	SetFontSize 45
+
+Show # conflicts because of rule on line 4 having StackSize >= 1000
+	BaseType == "Gold"
+	StackSize >= 2000
+	SetFontSize 45
+
+Show 
+	Rarity Normal
+	Class == "Body Armours"
+	SetBorderColor 100 100 100 150
+
+Show # conflicts because of line 14 catching all Rarity Normal items no matter their ItemLevel
+	ItemLevel >= 65
+	Rarity Normal
+	Class == "Body Armours"
+	SetBorderColor 100 100 100 150

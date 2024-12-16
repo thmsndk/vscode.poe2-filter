@@ -2,6 +2,22 @@
 
 All notable changes to the "poe2-filter" extension will be documented in this file.
 
+## [0.0.7] - Unreleased
+
+### Added
+
+- Added detection of conflicting filter rules
+  - Warns when a rule may never trigger due to being caught by an earlier rule
+  - Shows which conditions from the earlier rule would catch the items
+  - Provides quick navigation to the conflicting rule
+
+### Improved
+
+- Enhanced error detection and validation system
+  - More accurate condition matching
+  - Better handling of numeric comparisons
+  - Clearer warning messages for rule conflicts
+
 ## [0.0.6] - 2024-12-16 09:35
 
 ### Added
