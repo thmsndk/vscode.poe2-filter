@@ -4,6 +4,13 @@ All notable changes to the "poe2-filter" extension will be documented in this fi
 
 ## [0.0.6] - Unreleased
 
+### Added
+
+- Added minimap icon decorations
+  - Visual indicators for all shape and color combinations
+  - Live preview of minimap icons in the editor
+  - Support for all 12 shapes and 11 colors
+
 ### Fixed
 
 - Fixed color command validation to properly handle:

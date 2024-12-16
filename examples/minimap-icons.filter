@@ -1,0 +1,35 @@
+# Minimap Icon Examples
+# This file demonstrates all possible minimap icon combinations
+
+Show # Red Icons
+    MinimapIcon 0 Red Circle
+    MinimapIcon 1 Red Diamond
+    MinimapIcon 2 Red Hexagon
+    MinimapIcon 0 Red Square
+    MinimapIcon 1 Red Star
+    MinimapIcon 2 Red Triangle
+    MinimapIcon 0 Red Cross
+    MinimapIcon 1 Red Moon
+    MinimapIcon 2 Red Raindrop
+    MinimapIcon 0 Red Kite
+    MinimapIcon 1 Red Pentagon
+    MinimapIcon 2 Red UpsideDownHouse
+
+Show # Green Icons
+    MinimapIcon 0 Green Circle
+    MinimapIcon 1 Green Diamond
+    # ... similar pattern for other shapes
+
+Show # Blue Icons with varying sizes
+    MinimapIcon 0 Blue Circle    # Small
+    MinimapIcon 1 Blue Diamond   # Medium
+    MinimapIcon 2 Blue Hexagon   # Large
+    # ... other shapes
+
+# Continue with other colors...
+Show # Special Examples
+    MinimapIcon 2 Purple Pentagon    # Currency
+    MinimapIcon 1 Yellow Star        # Valuable Items
+    MinimapIcon 0 Cyan Circle        # Gems
+    MinimapIcon 1 Orange Triangle    # Unique Items
+    MinimapIcon 2 Pink Cross         # Divination Cards 

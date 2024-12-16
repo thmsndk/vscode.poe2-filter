@@ -6,6 +6,7 @@ A Visual Studio Code extension for Path of Exile 2 item filter files.
 
 - [Syntax highlighting](#syntax-highlighting) for POE2 filter files
 - [Color previews and editing](#color-features) for filter colors
+- - [Minimap icon previews](#minimap-icons) with shape indicators
 - [Document formatting](#document-formatting) support
 - [Document Outline](#document-outline) for easy navigation
 - [Error Detection and Validation](#error-detection-and-validation) for common mistakes
@@ -24,6 +25,16 @@ Proper syntax highlighting for POE2 filter files to improve readability and help
 - Integrated color picker for easy RGB/RGBA value editing
 
 ![Color Preview](images/color-preview.png)
+
+### Minimap Icons
+
+Visual preview of minimap icons directly in the editor:
+
+- Shows colored shape indicators for all MinimapIcon combinations
+- Supports all 12 shapes (Circle, Diamond, Hexagon, etc.)
+- Displays in 11 different colors (Red, Green, Blue, etc.)
+
+![Minimap Icons](images/minimap-icons.png)
 
 ### Document Formatting
 

@@ -8,6 +8,7 @@ import {
   validateDocument,
 } from "./diagnostics/filterDiagnostics";
 import { FilterCodeActionProvider } from "./diagnostics/filterCodeActions";
+import { MinimapIconDecorator } from "./decorations/minimapIconDecorator";
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -41,6 +42,9 @@ export function activate(context: vscode.ExtensionContext) {
     });
 
   context.subscriptions.push(formattingProvider);
+
+  // Create the minimap icon decorator (it will register itself with the context)
+  new MinimapIconDecorator(context);
 
   // Register color provider
   context.subscriptions.push(
