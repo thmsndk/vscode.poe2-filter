@@ -19,17 +19,43 @@ export class FilterFormatter {
     let lastLineWasBlock = false;
     let lastLineWasComment = false;
     let insideBlock = false;
+    let i = 0;
 
-    for (let i = 0; i < lines.length; i++) {
+    while (i < lines.length) {
       const line = lines[i].trim();
 
       // Skip empty lines
       if (!line) {
+        i++;
         continue;
       }
 
+      // Check for Type 1 section (bordered section)
+      if (
+        i + 2 < lines.length &&
+        /^#(.)\1+$/.test(line) &&
+        lines[i + 1].trim().startsWith("# ") &&
+        /^#(.)\1+$/.test(lines[i + 2].trim())
+      ) {
+        // Add empty line before if we have content and last line wasn't empty
+        if (result && !lastLineWasComment) {
+          result += "\n";
+        }
+        // Add bordered section
+        result += result ? "\n" + line : line;
+        result += "\n" + lines[i + 1].trim();
+        result += "\n" + lines[i + 2].trim();
+        result += "\n"; // Add empty line after bordered section
+        i += 3;
+        lastLineWasBlock = false;
+        lastLineWasComment = true;
+        continue;
+      }
+
+      // Normal line formatting
       const formattedLine = this.formatLine(line, insideBlock);
       if (formattedLine === null) {
+        i++;
         continue;
       }
 
@@ -58,6 +84,7 @@ export class FilterFormatter {
 
       lastLineWasBlock = isBlock;
       lastLineWasComment = isComment;
+      i++;
     }
 
     // Ensure file ends with a newline
@@ -79,6 +106,11 @@ export class FilterFormatter {
     if (trimmed.startsWith("#")) {
       // Comment Section - If the character after # is repeated (like #---- or ####), keep as is
       if (/^#(.)\1+$/.test(trimmed)) {
+        return trimmed;
+      }
+
+      // Handle subsection headers (like "# Normal items")
+      if (trimmed.match(/^#\s+[A-Z][a-zA-Z\s]+$/)) {
         return trimmed;
       }
 

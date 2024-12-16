@@ -2,6 +2,15 @@
 
 All notable changes to the "poe2-filter" extension will be documented in this file.
 
+## [0.0.8] - Unreleased
+
+### Improved
+
+- Enhanced formatter to handle section headers consistently
+  - Added proper spacing around bordered sections
+  - Maintains empty lines before and after section headers
+  - Preserves formatting of multi-line section headers
+
 ## [0.0.7] - 2024-12-16 16:50
 
 ### Added
