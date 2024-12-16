@@ -17,6 +17,8 @@ All notable changes to the "poe2-filter" extension will be documented in this fi
   - More accurate condition matching
   - Better handling of numeric comparisons
   - Clearer warning messages for rule conflicts
+  - Smarter color validation distinguishing between RGB and named colors
+  - Fixed CustomAlertSound incorrectly flagging sound file paths as invalid numbers
 
 ## [0.0.6] - 2024-12-16 09:35
 

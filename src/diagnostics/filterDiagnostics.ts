@@ -48,13 +48,11 @@ function extractCommandsFromGrammar(): Record<string, CommandDefinition> {
         if (pattern.patterns) {
           pattern.patterns.forEach((subPattern) => {
             if (subPattern.captures) {
-              Object.entries(subPattern.captures)
-                .filter(([key]) => key !== "1") // Skip the command name capture
-                .forEach(([_, capture]) => {
-                  const paramType = getParamTypeFromScope(capture.name);
-                  const isOptional = (subPattern.match || "").includes("?");
-                  params.push({ type: paramType, required: !isOptional });
-                });
+              Object.entries(subPattern.captures).forEach(([_, capture]) => {
+                const paramType = getParamTypeFromScope(capture.name);
+                const isOptional = (subPattern.match || "").includes("?");
+                params.push({ type: paramType, required: !isOptional });
+              });
             }
           });
         }
@@ -68,7 +66,9 @@ function extractCommandsFromGrammar(): Record<string, CommandDefinition> {
 
         // Extract parameters from captures
         Object.entries(pattern.captures)
-          .filter(([key]) => key !== "1") // Skip the command name capture
+          .filter(([key]) =>
+            pattern.name?.includes("storage.type") ? key !== "1" : true
+          )
           .forEach(([_, capture]) => {
             const paramType = getParamTypeFromScope(capture.name);
             const isOptional = (pattern.match || "").includes("?");
@@ -124,6 +124,12 @@ function extractCommandsFromGrammar(): Record<string, CommandDefinition> {
 function getParamTypeFromScope(scope: string): string {
   if (!scope) {
     return "unknown";
+  }
+  if (scope.includes("numeric.color")) {
+    return "rgb-color";
+  }
+  if (scope.includes("variable.parameter.color")) {
+    return "named-color";
   }
   if (scope.includes("numeric")) {
     return "number";
@@ -397,8 +403,11 @@ export function validateDocument(
         } else {
           // Other parameter type validations
           switch (paramDef.type) {
-            case "color":
+            case "rgb-color":
               validateColorParameter(params[index], line, problems);
+              break;
+            case "named-color":
+              validateNamedColorParameter(params[index], line, problems);
               break;
             // Add more parameter type validations as needed
           }
@@ -430,6 +439,39 @@ function validateNumberParameter(
           line.range.start.translate(0, line.text.indexOf(value) + value.length)
         ),
         "Value must be a number",
+        vscode.DiagnosticSeverity.Error
+      )
+    );
+  }
+}
+
+const VALID_COLORS = [
+  "Red",
+  "Green",
+  "Blue",
+  "Brown",
+  "White",
+  "Yellow",
+  "Cyan",
+  "Grey",
+  "Orange",
+  "Pink",
+  "Purple",
+] as const;
+
+function validateNamedColorParameter(
+  value: string,
+  line: vscode.TextLine,
+  problems: vscode.Diagnostic[]
+) {
+  if (!VALID_COLORS.includes(value as (typeof VALID_COLORS)[number])) {
+    problems.push(
+      createDiagnostic(
+        new vscode.Range(
+          line.range.start.translate(0, line.text.indexOf(value)),
+          line.range.start.translate(0, line.text.indexOf(value) + value.length)
+        ),
+        `Invalid color name. Expected one of: ${VALID_COLORS.join(", ")}`,
         vscode.DiagnosticSeverity.Error
       )
     );

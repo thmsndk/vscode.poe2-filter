@@ -184,7 +184,7 @@
           "end": "(?=$|#)",
           "patterns": [
             {
-              "match": "\"([^\"]+)\"\\s+(\\d+)",
+              "match": "\"([^\"]+)\"(?:\\s+(\\d+))?",
               "captures": {
                 "1": { "name": "string.quoted.double.sound-file.poe2filter" },
                 "2": { "name": "constant.numeric.volume.poe2filter" }
