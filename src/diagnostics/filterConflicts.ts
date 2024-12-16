@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-
+// TODO: make findRuleConflicts return an object with the conflicting conditions as well as the message for use in checkRuleConflict
 interface FilterCondition {
   type: string; // Class, BaseType, MapTier, etc.
   operator?: string; // >=, <=, ==, etc.
@@ -118,7 +118,7 @@ function findRuleConflict(
     .filter(Boolean)
     .join(", ");
 
-  return `would be caught by earlier rule with ${overlappingConditions} at line ${
+  return `it would be caught by an earlier rule with ${overlappingConditions} at line ${
     previous.lineNumber + 1
   }`;
 }

@@ -97,6 +97,7 @@ See [CHANGELOG.md](CHANGELOG.md) for detailed release notes.
 
 ## Future Ideas / TODO
 
+- Add BaseArmour/BaseEnergyShield/BaseEvasion condition types
 - Error/warnings improvements:
   - Detection of nested blocks
   - Detection of empty blocks
