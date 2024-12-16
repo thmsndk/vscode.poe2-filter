@@ -342,10 +342,14 @@ function parseRules(document: vscode.TextDocument): FilterRule[] {
     const line = document.lineAt(i);
     const text = line.text.trim();
 
-    if (text.startsWith("#") || text === "") continue;
+    if (text.startsWith("#") || text === "") {
+      continue;
+    }
 
     if (text.startsWith("Show") || text.startsWith("Hide")) {
-      if (currentRule) rules.push(currentRule);
+      if (currentRule) {
+        rules.push(currentRule);
+      }
       currentRule = {
         lineNumber: i,
         conditions: [],
@@ -355,7 +359,9 @@ function parseRules(document: vscode.TextDocument): FilterRule[] {
       continue;
     }
 
-    if (!currentRule) continue;
+    if (!currentRule) {
+      continue;
+    }
 
     if (text === "Continue") {
       currentRule.hasContinue = true;
@@ -368,7 +374,9 @@ function parseRules(document: vscode.TextDocument): FilterRule[] {
     }
   }
 
-  if (currentRule) rules.push(currentRule);
+  if (currentRule) {
+    rules.push(currentRule);
+  }
   return rules;
 }
 
