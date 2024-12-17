@@ -574,7 +574,9 @@ function validateCommandParams(
   problems: vscode.Diagnostic[]
 ) {
   const commandDef = VALID_COMMANDS[command];
-  if (!commandDef) return;
+  if (!commandDef) {
+    return;
+  }
 
   function getTypeMatchScore(
     paramType: string,
@@ -755,7 +757,9 @@ function validateNamedColorParameter(
   problems: vscode.Diagnostic[],
   validValues?: string[] | RegExp
 ): boolean {
-  if (!validValues) return true; // If no valid values defined, assume valid
+  if (!validValues) {
+    return true;
+  } // If no valid values defined, assume valid
 
   const isValid = Array.isArray(validValues)
     ? validValues.includes(value)
