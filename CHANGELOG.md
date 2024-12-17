@@ -8,6 +8,13 @@ All notable changes to the "poe2-filter" extension will be documented in this fi
 
 - 🐛 Fixed validation to allow named sound IDs (like ShAlchemy, ShBlessed) in PlayAlertSound command (closes #5)
 
+### Improved
+
+- 💡 Added suggestions for invalid parameter values
+  - Shows "Did you mean: X?" when typing similar valid values
+  - Lists all valid options when no close matches are found
+  - Provides pattern information for complex validations
+
 ## [0.0.8] - 2024-12-16 20:10
 
 ### Improved

@@ -643,21 +643,48 @@ function validateCommandParams(
       break;
     }
 
-    if (paramDef.regex && !paramDef.regex.test(value)) {
-      isValid = false;
-      currentProblems.push(
-        createDiagnostic(
-          new vscode.Range(
-            line.range.start.translate(0, line.text.indexOf(value)),
-            line.range.start.translate(
-              0,
-              line.text.indexOf(value) + value.length
-            )
-          ),
-          `Invalid value for ${paramDef.type}. Must match pattern: ${paramDef.regex.source}`,
-          vscode.DiagnosticSeverity.Error
-        )
+    if (paramDef.regex) {
+      // Ensure the entire pattern is grouped for the anchors
+      const fullMatchRegex = new RegExp(
+        `^(?:${paramDef.regex.source.replace(/^\^/, "").replace(/\$$/, "")})$`
       );
+
+      if (!fullMatchRegex.test(value)) {
+        isValid = false;
+        const validValues = extractValidValuesFromRegex(paramDef.regex);
+        let message: string;
+
+        if (
+          validValues.length > 0 &&
+          value.length <= Math.max(...validValues.map((v) => v.length)) + 2
+        ) {
+          const suggestions = findSimilarValues(value, validValues);
+          message =
+            suggestions.length > 0
+              ? `Invalid value for ${
+                  paramDef.type
+                }. Did you mean: ${suggestions.join(", ")}?`
+              : `Invalid value for ${
+                  paramDef.type
+                }. Must be one of: ${validValues.join(", ")}`;
+        } else {
+          message = `Invalid value for ${paramDef.type}. Must match pattern: ${paramDef.regex.source}`;
+        }
+
+        currentProblems.push(
+          createDiagnostic(
+            new vscode.Range(
+              line.range.start.translate(0, line.text.indexOf(value)),
+              line.range.start.translate(
+                0,
+                line.text.indexOf(value) + value.length
+              )
+            ),
+            message,
+            vscode.DiagnosticSeverity.Error
+          )
+        );
+      }
     }
   }
 
@@ -763,4 +790,35 @@ function validateVolumeParameter(
     return false;
   }
   return true;
+}
+
+function findSimilarValues(
+  input: string,
+  validValues: string[],
+  maxDistance = 3,
+  maxSuggestions = 3
+): string[] {
+  return validValues
+    .map((valid) => ({
+      value: valid,
+      distance: levenshteinDistance(input.toLowerCase(), valid.toLowerCase()),
+    }))
+    .filter((result) => result.distance <= maxDistance)
+    .sort((a, b) => a.distance - b.distance)
+    .slice(0, maxSuggestions)
+    .map((result) => result.value);
+}
+
+function extractValidValuesFromRegex(regex: RegExp): string[] {
+  const regexStr = regex.source
+    .replace(/^\^/, "") // Remove start anchor
+    .replace(/\$$/, "") // Remove end anchor
+    .replace(/[()]/g, ""); // Remove parentheses
+
+  // Only extract values if it's a pure OR pattern (no other regex operators)
+  if (regexStr.includes("|") && !/[.*+?{}[\]\\]/.test(regexStr)) {
+    return regexStr.split("|");
+  }
+
+  return [];
 }
