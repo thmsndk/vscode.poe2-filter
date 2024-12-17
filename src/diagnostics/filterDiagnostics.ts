@@ -524,8 +524,11 @@ export function validateDocument(
       problems.push(
         createDiagnostic(
           new vscode.Range(
-            line.range.start,
-            line.range.start.translate(0, command.length)
+            line.range.start.translate(0, line.text.indexOf(command)),
+            line.range.start.translate(
+              0,
+              line.text.indexOf(command) + command.length
+            )
           ),
           message,
           vscode.DiagnosticSeverity.Error

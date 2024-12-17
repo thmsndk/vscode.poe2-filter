@@ -19,14 +19,12 @@ export class FilterCodeActionProvider implements vscode.CodeActionProvider {
         return;
       }
 
-      // Handle unknown command suggestions
-      if (diagnostic.message.startsWith("Unknown command")) {
-        this.handleUnknownCommand(diagnostic, document, actions);
-      }
-
-      // Handle invalid value suggestions
-      if (diagnostic.message.startsWith("Invalid value")) {
-        this.handleInvalidValue(diagnostic, document, actions);
+      // Handle suggestions for both unknown commands and invalid values
+      if (
+        diagnostic.message.startsWith("Unknown command") ||
+        diagnostic.message.startsWith("Invalid value")
+      ) {
+        this.handleSuggestions(diagnostic, document, actions);
       }
 
       // Handle rule conflicts
@@ -42,40 +40,7 @@ export class FilterCodeActionProvider implements vscode.CodeActionProvider {
     return actions;
   }
 
-  private handleUnknownCommand(
-    diagnostic: vscode.Diagnostic,
-    document: vscode.TextDocument,
-    actions: vscode.CodeAction[]
-  ) {
-    const suggestions = this.extractSuggestions(diagnostic.message);
-    const line = document.lineAt(diagnostic.range.start.line);
-    const lineText = line.text;
-
-    // Find the actual command start and end positions
-    const commandStart = lineText.indexOf(lineText.trim());
-    const commandEnd = lineText.indexOf(" ", commandStart);
-
-    suggestions.forEach((suggestion) => {
-      const fix = new vscode.CodeAction(
-        `Change to '${suggestion}'`,
-        vscode.CodeActionKind.QuickFix
-      );
-
-      const replaceRange = new vscode.Range(
-        new vscode.Position(diagnostic.range.start.line, commandStart),
-        commandEnd > -1
-          ? new vscode.Position(diagnostic.range.start.line, commandEnd)
-          : diagnostic.range.end
-      );
-
-      fix.edit = new vscode.WorkspaceEdit();
-      fix.edit.replace(document.uri, replaceRange, suggestion);
-      fix.diagnostics = [diagnostic];
-      actions.push(fix);
-    });
-  }
-
-  private handleInvalidValue(
+  private handleSuggestions(
     diagnostic: vscode.Diagnostic,
     document: vscode.TextDocument,
     actions: vscode.CodeAction[]
