@@ -573,7 +573,11 @@ function validateCommandParams(
   const commandDef = VALID_COMMANDS[command];
   if (!commandDef) return;
 
-  function getTypeMatchScore(paramType: string, value: string): number {
+  function getTypeMatchScore(
+    paramType: string,
+    value: string,
+    regex?: RegExp
+  ): number {
     switch (paramType) {
       case "numeric-sound-id":
       case "volume":
@@ -584,7 +588,9 @@ function validateCommandParams(
       case "named-sound-id":
       case "named-color":
       case "shape":
-        return /^[A-Za-z]/.test(value) ? 1 : -1;
+        // For named types, prefer exact matches over just starting with a letter
+        const isExactMatch = regex?.test(value) ?? false;
+        return isExactMatch ? 2 : /^[A-Za-z]/.test(value) ? 0 : -1;
 
       case "rgb-color":
         return /^\d{1,3}$/.test(value) && parseInt(value) <= 255 ? 1 : -1;
@@ -596,7 +602,9 @@ function validateCommandParams(
         return /^[=<>]=?$/.test(value) ? 1 : -1;
 
       case "enum":
-        return /^[A-Za-z][A-Za-z0-9]*$/.test(value) ? 1 : 0;
+        // For enums, prefer exact matches over just valid identifiers
+        const isValidEnum = regex?.test(value) ?? false;
+        return isValidEnum ? 2 : /^[A-Za-z][A-Za-z0-9]*$/.test(value) ? 0 : -1;
 
       default:
         return 0;
@@ -609,10 +617,32 @@ function validateCommandParams(
 
   for (const paramSet of commandDef.paramSets) {
     let matchScore = 0;
+    const providedValueCount = values.length;
+    const requiredParamCount = paramSet.params.filter((p) => p.required).length;
+
+    // Heavily penalize if we don't have enough required parameters
+    if (providedValueCount < requiredParamCount) {
+      matchScore -= 1000;
+    }
+
+    // Penalize if the first parameter is an operator but none was provided
+    if (
+      paramSet.params[0]?.type === "operator" &&
+      !values[0]?.match(/^[=<>]/)
+    ) {
+      matchScore -= 500;
+    }
+
+    // Add scores for matching parameters
     for (let i = 0; i < Math.min(paramSet.params.length, values.length); i++) {
       const param = paramSet.params[i];
       const value = values[i];
-      matchScore += getTypeMatchScore(param.type, value);
+      matchScore += getTypeMatchScore(param.type, value, param.regex);
+    }
+
+    // Slightly prefer parameter sets that match the exact number of provided values
+    if (providedValueCount === paramSet.params.length) {
+      matchScore += 0.5;
     }
 
     if (matchScore > bestMatchScore) {
