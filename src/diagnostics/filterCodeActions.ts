@@ -24,6 +24,11 @@ export class FilterCodeActionProvider implements vscode.CodeActionProvider {
         this.handleUnknownCommand(diagnostic, document, actions);
       }
 
+      // Handle invalid value suggestions
+      if (diagnostic.message.startsWith("Invalid value")) {
+        this.handleInvalidValue(diagnostic, document, actions);
+      }
+
       // Handle rule conflicts
       if (
         typeof diagnostic.code === "object" &&
@@ -70,6 +75,26 @@ export class FilterCodeActionProvider implements vscode.CodeActionProvider {
     });
   }
 
+  private handleInvalidValue(
+    diagnostic: vscode.Diagnostic,
+    document: vscode.TextDocument,
+    actions: vscode.CodeAction[]
+  ) {
+    const suggestions = this.extractSuggestions(diagnostic.message);
+
+    suggestions.forEach((suggestion) => {
+      const fix = new vscode.CodeAction(
+        `Change to '${suggestion}'`,
+        vscode.CodeActionKind.QuickFix
+      );
+
+      fix.edit = new vscode.WorkspaceEdit();
+      fix.edit.replace(document.uri, diagnostic.range, suggestion);
+      fix.diagnostics = [diagnostic];
+      actions.push(fix);
+    });
+  }
+
   private handleRuleConflict(
     diagnostic: vscode.Diagnostic,
     actions: vscode.CodeAction[]
@@ -95,9 +120,17 @@ export class FilterCodeActionProvider implements vscode.CodeActionProvider {
   }
 
   private extractSuggestions(message: string): string[] {
-    const match = message.match(/Did you mean: (.*?)\?/);
+    // Update regex to handle both patterns
+    const match = message.match(
+      /Did you mean: (.*?)\?|Must be one of: (.*?)(?:\?|$)/
+    );
     if (match) {
-      return match[1].split(", ");
+      // Return the first non-undefined capture group, split by commas and trim
+      const suggestions = (match[1] || match[2])
+        .split(",")
+        .map((s) => s.trim());
+      // Remove any regex patterns that might have leaked into the error message
+      return suggestions.filter((s) => !s.includes("^") && !s.includes("$"));
     }
     return [];
   }
