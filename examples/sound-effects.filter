@@ -1,0 +1,74 @@
+# Sound Effect Examples
+# Demonstrates all possible sound configurations and combinations
+
+#--------------------------------
+# Numeric Sound IDs
+#--------------------------------
+Show # Basic Alert Sounds
+    PlayAlertSound 1 300
+    PlayAlertSound 2 200
+    PlayAlertSound 3 100
+
+Show # Positional Alert Sounds
+    PlayAlertSoundPositional 1 300
+    PlayAlertSoundPositional 2 200
+    PlayAlertSoundPositional 3 100
+
+#--------------------------------
+# Named Sound IDs
+#--------------------------------
+Show # Currency Sound Effects - High Value
+    PlayAlertSound ShMirror 300    # Mirror of Kalandra
+    PlayAlertSound ShDivine 300    # Divine Orb
+    PlayAlertSound ShExalted 300   # Exalted Orb
+
+Show # Currency Sound Effects - Mid Value
+    PlayAlertSound ShRegal 200     # Regal Orb
+    PlayAlertSound ShChaos 200     # Chaos Orb
+    PlayAlertSound ShVaal 200      # Vaal Orb
+
+Show # Currency Sound Effects - Regular
+    PlayAlertSound ShAlchemy 150   # Alchemy Orb
+    PlayAlertSound ShBlessed 150   # Blessed Orb
+    PlayAlertSound ShFusing 150    # Fusing Orb
+    PlayAlertSound ShGeneral 150   # General Currency
+
+#--------------------------------
+# Custom Sound Files
+#--------------------------------
+Show # Required Custom Sounds
+    CustomAlertSound "drop-sound.mp3" 300
+    CustomAlertSound "valuable.wav" 200
+
+Show # Optional Custom Sounds
+    CustomAlertSoundOptional "rare-drop.mp3" 300
+    CustomAlertSoundOptional "unique.wav" 200
+
+#--------------------------------
+# Sound Control
+#--------------------------------
+Show # Disable/Enable Drop Sounds
+    DisableDropSound
+    SetFontSize 45
+
+Show # Re-enable Drop Sounds
+    EnableDropSound
+    SetFontSize 45
+
+#--------------------------------
+# Combined Examples
+#--------------------------------
+Show # High Value Items
+    PlayAlertSound ShExalted 300
+    PlayEffect Purple
+    MinimapIcon 0 Red Star
+
+Show # Mid Value Items
+    PlayAlertSound ShChaos 200
+    PlayEffect Yellow
+    MinimapIcon 1 Blue Diamond
+
+Show # Custom Important Items
+    CustomAlertSound "important.mp3" 300
+    PlayEffect Red Temp
+    MinimapIcon 2 Yellow Circle 

@@ -57,9 +57,10 @@
           "end": "(?=$|#)",
           "patterns": [
             {
-              "match": "(>=|<=|==|=|<|>)?",
+              "match": "(>=|<=|==|=|<|>)\\s+(Normal|Magic|Rare|Unique)\\b",
               "captures": {
-                "1": { "name": "keyword.operator.comparison.poe2filter" }
+                "1": { "name": "keyword.operator.comparison.poe2filter" },
+                "2": { "name": "variable.parameter.rarity.poe2filter" }
               }
             },
             {
@@ -78,14 +79,17 @@
           "end": "(?=$|#)",
           "patterns": [
             {
-              "match": "(==|=)",
+              "match": "(==|=)\\s+(\"[^\"]+\")",
               "captures": {
-                "1": { "name": "keyword.operator.comparison.poe2filter" }
+                "1": { "name": "keyword.operator.comparison.poe2filter" },
+                "2": { "name": "string.quoted.double.basetype.poe2filter" }
               }
             },
             {
-              "match": "\"[^\"]+\"",
-              "name": "string.quoted.double.basetype.poe2filter"
+              "match": "(\"[^\"]+\")",
+              "captures": {
+                "1": { "name": "string.quoted.double.basetype.poe2filter" }
+              }
             }
           ]
         },
@@ -97,10 +101,16 @@
           "end": "(?=$|#)",
           "patterns": [
             {
-              "match": "(>=|<=|==|=|<|>)?\\s*(\\d+)\\b",
+              "match": "(>=|<=|==|=|<|>)\\s+(\\d+)\\b",
               "captures": {
                 "1": { "name": "keyword.operator.comparison.poe2filter" },
                 "2": { "name": "constant.numeric.level.poe2filter" }
+              }
+            },
+            {
+              "match": "(\\d+)\\b",
+              "captures": {
+                "1": { "name": "constant.numeric.level.poe2filter" }
               }
             }
           ]
@@ -115,7 +125,7 @@
             {
               "match": "\\b(True|False)\\b",
               "captures": {
-                "1": { "name": "constant.language.poe2filter" }
+                "1": { "name": "constant.language.boolean.poe2filter" }
               }
             }
           ]
@@ -125,7 +135,6 @@
     "actions": {
       "patterns": [
         {
-          "name": "meta.color.poe2filter",
           "begin": "\\b(SetTextColor|SetBorderColor|SetBackgroundColor)\\b",
           "beginCaptures": {
             "1": { "name": "storage.type.color.poe2filter" }
@@ -133,12 +142,20 @@
           "end": "(?=$|#)",
           "patterns": [
             {
-              "match": "\\b(\\d+)\\s+(\\d+)\\s+(\\d+)(?:\\s+(\\d+))?\\b",
+              "match": "(\\d+)\\s+(\\d+)\\s+(\\d+)\\s+(\\d+)\\b",
               "captures": {
                 "1": { "name": "constant.numeric.color.r.poe2filter" },
                 "2": { "name": "constant.numeric.color.g.poe2filter" },
                 "3": { "name": "constant.numeric.color.b.poe2filter" },
                 "4": { "name": "constant.numeric.color.a.poe2filter" }
+              }
+            },
+            {
+              "match": "(\\d+)\\s+(\\d+)\\s+(\\d+)\\b",
+              "captures": {
+                "1": { "name": "constant.numeric.color.r.poe2filter" },
+                "2": { "name": "constant.numeric.color.g.poe2filter" },
+                "3": { "name": "constant.numeric.color.b.poe2filter" }
               }
             }
           ]
@@ -151,7 +168,7 @@
           "end": "(?=$|#)",
           "patterns": [
             {
-              "match": "(\\d+)\\s+(Red|Green|Blue|Brown|White|Yellow|Cyan|Grey|Orange|Pink|Purple)\\s+(Circle|Diamond|Hexagon|Square|Star|Triangle|Cross|Moon|Raindrop|Kite|Pentagon|UpsideDownHouse)",
+              "match": "(\\d+)\\s+(Red|Green|Blue|Brown|White|Yellow|Cyan|Grey|Orange|Pink|Purple)\\s+(Circle|Diamond|Hexagon|Square|Star|Triangle|Cross|Moon|Raindrop|Kite|Pentagon|UpsideDownHouse)\\b",
               "captures": {
                 "1": { "name": "constant.numeric.size.poe2filter" },
                 "2": { "name": "variable.parameter.color.poe2filter" },
@@ -168,9 +185,16 @@
           "end": "(?=$|#)",
           "patterns": [
             {
-              "match": "(\\d+)\\s+(\\d+)",
+              "match": "(\\d+)\\s+(\\d+)\\b",
               "captures": {
                 "1": { "name": "constant.numeric.sound-id.poe2filter" },
+                "2": { "name": "constant.numeric.volume.poe2filter" }
+              }
+            },
+            {
+              "match": "(ShAlchemy|ShBlessed|ShChaos|ShDivine|ShExalted|ShFusing|ShGeneral|ShMirror|ShRegal|ShVaal)\\s+(\\d+)\\b",
+              "captures": {
+                "1": { "name": "constant.language.named-sound-id.poe2filter" },
                 "2": { "name": "constant.numeric.volume.poe2filter" }
               }
             }
@@ -184,10 +208,16 @@
           "end": "(?=$|#)",
           "patterns": [
             {
-              "match": "\"([^\"]+)\"(?:\\s+(\\d+))?",
+              "match": "\"([^\"]+)\"\\s+(\\d+)\\b",
               "captures": {
                 "1": { "name": "string.quoted.double.sound-file.poe2filter" },
                 "2": { "name": "constant.numeric.volume.poe2filter" }
+              }
+            },
+            {
+              "match": "\"([^\"]+)\"",
+              "captures": {
+                "1": { "name": "string.quoted.double.sound-file.poe2filter" }
               }
             }
           ]
@@ -200,10 +230,16 @@
           "end": "(?=$|#)",
           "patterns": [
             {
-              "match": "(Red|Green|Blue|Brown|White|Yellow|Cyan|Grey|Orange|Pink|Purple)(?:\\s+(Temp))?\\b",
+              "match": "(Red|Green|Blue|Brown|White|Yellow|Cyan|Grey|Orange|Pink|Purple)\\s+(Temp)\\b",
               "captures": {
                 "1": { "name": "variable.parameter.color.poe2filter" },
                 "2": { "name": "constant.language.temp.poe2filter" }
+              }
+            },
+            {
+              "match": "(Red|Green|Blue|Brown|White|Yellow|Cyan|Grey|Orange|Pink|Purple)\\b",
+              "captures": {
+                "1": { "name": "variable.parameter.color.poe2filter" }
               }
             }
           ]
@@ -216,7 +252,7 @@
           "end": "(?=$|#)",
           "patterns": [
             {
-              "match": "(\\d+)",
+              "match": "(\\d+)\\b",
               "captures": {
                 "1": { "name": "constant.numeric.font-size.poe2filter" }
               }

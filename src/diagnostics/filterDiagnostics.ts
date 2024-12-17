@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import * as path from "path";
 import * as fs from "fs";
 import { checkRuleConflicts } from "./filterConflicts";
-// TODO: forogetting a hide/show function above conditions or actions, especially if there is a comment above it saying "Show" or "Hide"
+// TODO: Forgetting a hide/show function above conditions or actions, especially if there is a comment above it saying "Show" or "Hide"
 interface CommandPattern {
   name?: string;
   match?: string;
@@ -13,7 +13,14 @@ interface CommandPattern {
 }
 
 interface CommandDefinition {
-  params: { type: string; required: boolean }[];
+  paramSets: {
+    params: {
+      type: string;
+      required: boolean;
+      validValues?: string[] | RegExp;
+      regex?: RegExp;
+    }[];
+  }[];
 }
 
 function extractCommandsFromGrammar(): Record<string, CommandDefinition> {
@@ -30,10 +37,43 @@ function extractCommandsFromGrammar(): Record<string, CommandDefinition> {
 
     function extractCommandsAndParams(pattern: CommandPattern): {
       commands: string[];
-      params: { type: string; required: boolean }[];
+      paramSets: {
+        params: {
+          type: string;
+          required: boolean;
+          validValues?: string[] | RegExp;
+          regex?: RegExp;
+        }[];
+      }[];
     } {
       let commands: string[] = [];
-      let params: { type: string; required: boolean }[] = [];
+      let paramSets: {
+        params: {
+          type: string;
+          required: boolean;
+          validValues?: string[] | RegExp;
+          regex?: RegExp;
+        }[];
+      }[] = [];
+
+      // Handle simple commands (blocks and control flow)
+      if (pattern.match && !pattern.begin) {
+        console.log("Pattern match:", pattern.match);
+        const unescapedPattern = pattern.match
+          .replace(/\\b/g, "")
+          .replace(/\\/g, "");
+        const simpleMatch =
+          unescapedPattern.match(/^\((.*?)\)/)?.[1] || // For block commands
+          unescapedPattern.match(/\((.*?)\)/)?.[1] || // For parenthesized commands
+          unescapedPattern.match(/^([A-Za-z]+)$/)?.[1]; // For simple word commands
+        console.log("Extracted match:", simpleMatch);
+        if (simpleMatch) {
+          commands = simpleMatch.split("|");
+          console.log("Commands:", commands);
+          paramSets = [{ params: [] }];
+        }
+        return { commands, paramSets };
+      }
 
       // For patterns with begin/beginCaptures
       if (pattern.begin && pattern.beginCaptures?.["1"]) {
@@ -42,73 +82,141 @@ function extractCommandsFromGrammar(): Record<string, CommandDefinition> {
           pattern.begin.match(/\\b(\w+)\\b/)?.[1];
         if (beginMatch) {
           commands = beginMatch.split("|");
+          console.log("Processing command(s):", commands);
         }
 
         // Extract parameters from the patterns array
         if (pattern.patterns) {
           pattern.patterns.forEach((subPattern) => {
-            if (subPattern.captures) {
-              Object.entries(subPattern.captures).forEach(([_, capture]) => {
-                const paramType = getParamTypeFromScope(capture.name);
-                const isOptional = (subPattern.match || "").includes("?");
-                params.push({ type: paramType, required: !isOptional });
-              });
+            if (subPattern.match && subPattern.captures) {
+              const currentParams: {
+                type: string;
+                required: boolean;
+                validValues?: string[] | RegExp;
+                regex?: RegExp;
+              }[] = [];
+
+              // Extract capture groups and their corresponding regexes
+              const matchStr = subPattern.match;
+              console.log(
+                "Processing pattern for command(s):",
+                commands,
+                "Pattern:",
+                matchStr
+              );
+
+              Object.entries(subPattern.captures).forEach(
+                ([index, capture]) => {
+                  const paramType = getParamTypeFromScope(capture.name);
+                  const groupNum = parseInt(index);
+                  const captureRegex = extractCaptureGroupRegex(
+                    matchStr,
+                    groupNum
+                  );
+                  const isOptional = matchStr.includes(
+                    `(${captureRegex.source})?`
+                  );
+
+                  console.log(`Parameter ${index}:`, {
+                    type: paramType,
+                    regex: captureRegex.source,
+                    isOptional,
+                  });
+
+                  currentParams.push({
+                    type: paramType,
+                    required: !isOptional,
+                    regex: captureRegex,
+                  });
+                }
+              );
+
+              if (currentParams.length > 0) {
+                paramSets.push({ params: currentParams });
+              }
             }
           });
         }
       }
-      // For patterns with direct captures
-      else if (pattern.captures) {
-        const firstWordMatch = pattern.match?.match(/\\b(\w+)\\b/)?.[1];
-        if (firstWordMatch) {
-          commands = [firstWordMatch];
-        }
 
-        // Extract parameters from captures
-        Object.entries(pattern.captures)
-          .filter(([key]) =>
-            pattern.name?.includes("storage.type") ? key !== "1" : true
-          )
-          .forEach(([_, capture]) => {
-            const paramType = getParamTypeFromScope(capture.name);
-            const isOptional = (pattern.match || "").includes("?");
-            params.push({ type: paramType, required: !isOptional });
-          });
-      }
-      // For simple command patterns
-      else if (pattern.match) {
-        if (pattern.match.startsWith("^")) {
-          const blockMatch = pattern.match.match(/\^?\(([^)]+)\)/)?.[1];
-          if (blockMatch) {
-            commands = blockMatch.split("|");
+      return { commands, paramSets };
+    }
+
+    function extractCaptureGroupRegex(
+      pattern: string,
+      groupNum: number
+    ): RegExp {
+      console.log(
+        `Extracting regex for pattern: ${pattern}, group: ${groupNum}`
+      );
+
+      // Count opening parentheses to find the nth capture group
+      let count = 0;
+      let start = -1;
+      let depth = 0;
+
+      for (let i = 0; i < pattern.length; i++) {
+        if (pattern[i] === "(" && pattern[i - 1] !== "\\") {
+          depth++;
+          if (depth === 1) {
+            count++;
+            if (count === groupNum) {
+              start = i + 1;
+            }
           }
-        } else if (pattern.name?.includes("storage.type")) {
-          const storageMatch = pattern.match.match(/\\b\(([^)]+)\)\\b/)?.[1];
-          if (storageMatch) {
-            commands = storageMatch.split("|");
+        } else if (pattern[i] === ")" && pattern[i - 1] !== "\\") {
+          if (depth === 1 && start !== -1) {
+            const groupPattern = pattern.slice(start, i);
+            console.log(`Extracted group pattern: ${groupPattern}`);
+
+            // Handle quoted strings - allow multiple quoted strings with spaces
+            if (groupPattern.includes('"')) {
+              return /^(?:"[^"]*"(?:\s+"[^"]*")*|\S+)$/;
+            }
+
+            // Handle comparison operators
+            if (groupPattern === "==|=") {
+              return /^(?:==|=)$/;
+            }
+
+            // Handle other simple patterns (like numbers, enums)
+            const cleanPattern = groupPattern
+              .replace(/\\\\/g, "\\")
+              .replace(/\(\?:/g, "")
+              .replace(/\[\^/g, "[^")
+              .replace(/\\b/g, "")
+              .replace(/\s+/g, "\\s+");
+
+            try {
+              return new RegExp(`^${cleanPattern}$`);
+            } catch (e) {
+              console.error("Failed to create regex:", e);
+              console.error("Pattern was:", cleanPattern);
+              return /(?!)/;
+            }
           }
-        } else {
-          const wordMatch = pattern.match.match(/\\b(\w+)\\b/)?.[1];
-          if (wordMatch) {
-            commands = [wordMatch];
-          }
+          depth--;
         }
       }
 
-      return { commands, params };
+      return /(?!)/;
     }
 
     // Process each section
     ["blocks", "controlFlow", "conditions", "actions"].forEach((section) => {
       (grammar.repository[section].patterns as CommandPattern[]).forEach(
         (pattern) => {
-          const { commands: commandNames, params } =
+          const { commands: commandNames, paramSets } =
             extractCommandsAndParams(pattern);
 
           commandNames.forEach((cmd) => {
             if (!commands[cmd]) {
-              commands[cmd] = { params };
+              commands[cmd] = { paramSets: [] };
             }
+            commands[cmd].paramSets.push(...paramSets);
+
+            // Add debug output here
+            console.log(`Command ${cmd}:`, commands[cmd]);
           });
         }
       );
@@ -128,29 +236,35 @@ function getParamTypeFromScope(scope: string): string {
   if (scope.includes("numeric.color")) {
     return "rgb-color";
   }
-  if (scope.includes("variable.parameter.color")) {
+  if (scope.includes("numeric.sound-id")) {
+    return "numeric-sound-id";
+  }
+  if (scope.includes("language.named-sound-id")) {
+    return "named-sound-id";
+  }
+  if (scope.includes("numeric.volume")) {
+    return "volume";
+  }
+  if (scope.includes("parameter.color")) {
     return "named-color";
+  }
+  if (scope.includes("parameter.shape")) {
+    return "shape";
+  }
+  if (scope.includes("numeric.size")) {
+    return "size";
+  }
+  if (scope.includes("operator.comparison")) {
+    return "operator";
   }
   if (scope.includes("numeric")) {
     return "number";
   }
-  if (scope.includes("quoted.double")) {
+  if (scope.includes("string.quoted.double")) {
     return "string";
   }
-  if (scope.includes("operator")) {
-    return "operator";
-  }
-  if (scope.includes("color")) {
-    return "color";
-  }
-  if (scope.includes("shape")) {
-    return "shape";
-  }
-  if (scope.includes("rarity")) {
-    return "rarity";
-  }
-  if (scope.includes("language")) {
-    return "constant";
+  if (scope.includes("constant.language")) {
+    return "enum";
   }
   return "unknown";
 }
@@ -263,7 +377,7 @@ function validateColorParameter(
   value: string,
   line: vscode.TextLine,
   problems: vscode.Diagnostic[]
-) {
+): boolean {
   const num = parseInt(value);
   if (isNaN(num)) {
     problems.push(
@@ -276,7 +390,9 @@ function validateColorParameter(
         vscode.DiagnosticSeverity.Error
       )
     );
-  } else if (num < 0 || num > 255) {
+    return false;
+  }
+  if (num < 0 || num > 255) {
     problems.push(
       createDiagnostic(
         new vscode.Range(
@@ -287,7 +403,9 @@ function validateColorParameter(
         vscode.DiagnosticSeverity.Error
       )
     );
+    return false;
   }
+  return true;
 }
 
 function validateColorParameters(
@@ -423,87 +541,137 @@ export function validateDocument(
     }
 
     // Special handling for sound commands
-    if (command === "CustomAlertSound") {
+    if (
+      command === "CustomAlertSound" ||
+      command === "CustomAlertSoundOptional"
+    ) {
       if (parts[1]) {
-        validateSoundFile(parts[1], line, document, problems, false);
-      }
-      continue;
-    } else if (command === "CustomAlertSoundOptional") {
-      if (parts[1]) {
-        validateSoundFile(parts[1], line, document, problems, true);
+        validateSoundFile(
+          parts[1],
+          line,
+          document,
+          problems,
+          command === "CustomAlertSoundOptional"
+        );
       }
       continue;
     }
 
     // Validate parameters based on command definition
-    if (commandDef.params) {
-      const params = parts.slice(1);
-      let paramIndex = 0; // Index in the parameter definitions
-      let valueIndex = 0; // Index in the actual values
-
-      while (paramIndex < commandDef.params.length) {
-        const paramDef = commandDef.params[paramIndex];
-        const value = params[valueIndex];
-
-        if (!value) {
-          // No more values, check if remaining params are required
-          if (paramDef.required) {
-            problems.push(
-              createDiagnostic(
-                line.range,
-                `Missing required parameter ${paramIndex + 1} of type ${
-                  paramDef.type
-                }`,
-                vscode.DiagnosticSeverity.Error
-              )
-            );
-          }
-          paramIndex++;
-          continue;
-        }
-
-        // Validate the value if it matches the expected type
-        switch (paramDef.type) {
-          case "number":
-            validateNumberParameter(value, line, problems);
-            valueIndex++;
-            break;
-          case "rgb-color":
-            validateColorParameter(value, line, problems);
-            valueIndex++;
-            break;
-          case "named-color":
-            validateNamedColorParameter(value, line, problems);
-            valueIndex++;
-            break;
-          case "operator":
-            // If it's an operator, only consume the value if it matches
-            if ([">=", "<=", "==", "=", "<", ">"].includes(value)) {
-              valueIndex++;
-            }
-            break;
-          default:
-            valueIndex++;
-        }
-        paramIndex++;
-      }
-    }
+    validateCommandParams(command, parts.slice(1), line, problems);
   }
 
   return problems;
 }
 
-// Add specific parameter validation functions
+function validateCommandParams(
+  command: string,
+  values: string[],
+  line: vscode.TextLine,
+  problems: vscode.Diagnostic[]
+) {
+  const commandDef = VALID_COMMANDS[command];
+  if (!commandDef) return;
+
+  function getTypeMatchScore(paramType: string, value: string): number {
+    switch (paramType) {
+      case "numeric-sound-id":
+      case "volume":
+      case "size":
+      case "number":
+        return /^\d+$/.test(value) ? 1 : -1;
+
+      case "named-sound-id":
+      case "named-color":
+      case "shape":
+        return /^[A-Za-z]/.test(value) ? 1 : -1;
+
+      case "rgb-color":
+        return /^\d{1,3}$/.test(value) && parseInt(value) <= 255 ? 1 : -1;
+
+      case "string":
+        return value.startsWith('"') && value.endsWith('"') ? 1 : -1;
+
+      case "operator":
+        return /^[=<>]=?$/.test(value) ? 1 : -1;
+
+      case "enum":
+        return /^[A-Za-z][A-Za-z0-9]*$/.test(value) ? 1 : 0;
+
+      default:
+        return 0;
+    }
+  }
+
+  // Preliminary matching to find the most appropriate parameter set
+  let bestParamSet = commandDef.paramSets[0];
+  let bestMatchScore = -Infinity;
+
+  for (const paramSet of commandDef.paramSets) {
+    let matchScore = 0;
+    for (let i = 0; i < Math.min(paramSet.params.length, values.length); i++) {
+      const param = paramSet.params[i];
+      const value = values[i];
+      matchScore += getTypeMatchScore(param.type, value);
+    }
+
+    if (matchScore > bestMatchScore) {
+      bestMatchScore = matchScore;
+      bestParamSet = paramSet;
+    }
+  }
+
+  // Validate using the best matching parameter set
+  let isValid = true;
+  const currentProblems: vscode.Diagnostic[] = [];
+
+  for (let i = 0; i < bestParamSet.params.length; i++) {
+    const paramDef = bestParamSet.params[i];
+    const value = values[i];
+
+    if (!value) {
+      if (paramDef.required) {
+        isValid = false;
+        currentProblems.push(
+          createDiagnostic(
+            line.range,
+            `Missing required parameter of type ${paramDef.type}`,
+            vscode.DiagnosticSeverity.Error
+          )
+        );
+      }
+      break;
+    }
+
+    if (paramDef.regex && !paramDef.regex.test(value)) {
+      isValid = false;
+      currentProblems.push(
+        createDiagnostic(
+          new vscode.Range(
+            line.range.start.translate(0, line.text.indexOf(value)),
+            line.range.start.translate(
+              0,
+              line.text.indexOf(value) + value.length
+            )
+          ),
+          `Invalid value for ${paramDef.type}. Must match pattern: ${paramDef.regex.source}`,
+          vscode.DiagnosticSeverity.Error
+        )
+      );
+    }
+  }
+
+  if (!isValid) {
+    problems.push(...currentProblems);
+  }
+}
+
+// Helper validation functions now return boolean for success/failure
 function validateNumberParameter(
   value: string,
   line: vscode.TextLine,
   problems: vscode.Diagnostic[]
-) {
-  // First check if it's an operator
-  if ([">=", "<=", "==", "=", "<", ">"].includes(value)) {
-    return; // Skip validation for operators
-  }
-
+): boolean {
   const num = parseInt(value);
   if (isNaN(num)) {
     problems.push(
@@ -516,40 +684,40 @@ function validateNumberParameter(
         vscode.DiagnosticSeverity.Error
       )
     );
+    return false;
   }
+  return true;
 }
-
-const VALID_COLORS = [
-  "Red",
-  "Green",
-  "Blue",
-  "Brown",
-  "White",
-  "Yellow",
-  "Cyan",
-  "Grey",
-  "Orange",
-  "Pink",
-  "Purple",
-] as const;
 
 function validateNamedColorParameter(
   value: string,
   line: vscode.TextLine,
-  problems: vscode.Diagnostic[]
-) {
-  if (!VALID_COLORS.includes(value as (typeof VALID_COLORS)[number])) {
+  problems: vscode.Diagnostic[],
+  validValues?: string[] | RegExp
+): boolean {
+  if (!validValues) return true; // If no valid values defined, assume valid
+
+  const isValid = Array.isArray(validValues)
+    ? validValues.includes(value)
+    : validValues.test(value);
+
+  if (!isValid) {
+    const validValuesStr = Array.isArray(validValues)
+      ? validValues.join(", ")
+      : validValues.toString();
     problems.push(
       createDiagnostic(
         new vscode.Range(
           line.range.start.translate(0, line.text.indexOf(value)),
           line.range.start.translate(0, line.text.indexOf(value) + value.length)
         ),
-        `Invalid color name. Expected one of: ${VALID_COLORS.join(", ")}`,
+        `Invalid color name. Expected one of: ${validValuesStr}`,
         vscode.DiagnosticSeverity.Error
       )
     );
+    return false;
   }
+  return true;
 }
 
 function createDiagnostic(
@@ -560,4 +728,39 @@ function createDiagnostic(
   const diagnostic = new vscode.Diagnostic(range, message, severity);
   diagnostic.source = "poe2-filter";
   return diagnostic;
+}
+
+function validateVolumeParameter(
+  value: string,
+  line: vscode.TextLine,
+  problems: vscode.Diagnostic[]
+): boolean {
+  const num = parseInt(value);
+  if (isNaN(num)) {
+    problems.push(
+      createDiagnostic(
+        new vscode.Range(
+          line.range.start.translate(0, line.text.indexOf(value)),
+          line.range.start.translate(0, line.text.indexOf(value) + value.length)
+        ),
+        "Volume must be a number",
+        vscode.DiagnosticSeverity.Error
+      )
+    );
+    return false;
+  }
+  if (num < 0 || num > 300) {
+    problems.push(
+      createDiagnostic(
+        new vscode.Range(
+          line.range.start.translate(0, line.text.indexOf(value)),
+          line.range.start.translate(0, line.text.indexOf(value) + value.length)
+        ),
+        "Volume must be between 0 and 300",
+        vscode.DiagnosticSeverity.Error
+      )
+    );
+    return false;
+  }
+  return true;
 }
