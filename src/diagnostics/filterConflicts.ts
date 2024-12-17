@@ -74,14 +74,21 @@ function findRuleConflict(
     return null;
   }
 
-  // If the current rule has fewer conditions than the previous rule,
-  // it's more generic and should be allowed
-  if (currentRule.conditions.length < previous.conditions.length) {
+  // Check if previous rule would match this item
+  if (!wouldRuleMatchItem(previous, currentItem)) {
     return null;
   }
 
-  // Check if previous rule would match this item
-  if (!wouldRuleMatchItem(previous, currentItem)) {
+  // Check if all conditions in the previous rule are satisfied by the current rule
+  const allPreviousConditionsSatisfied = previous.conditions.every((prevCond) =>
+    currentRule.conditions.some(
+      (currentCond) =>
+        prevCond.type === currentCond.type &&
+        doConditionsOverlap(prevCond, currentCond)
+    )
+  );
+
+  if (!allPreviousConditionsSatisfied) {
     return null;
   }
 
@@ -121,6 +128,66 @@ function findRuleConflict(
   return `it would be caught by an earlier rule with ${overlappingConditions} at line ${
     previous.lineNumber + 1
   }`;
+}
+
+function doConditionsOverlap(
+  prev: FilterCondition,
+  current: FilterCondition
+): boolean {
+  if (prev.type !== current.type) return false;
+
+  // For numeric comparisons
+  if (prev.operator && current.operator) {
+    const prevValue = Number(prev.values[0]);
+    const currentValue = Number(current.values[0]);
+
+    // Check if the ranges overlap
+    switch (prev.operator) {
+      case ">=":
+        return current.operator === ">="
+          ? currentValue >= prevValue
+          : current.operator === "<="
+          ? currentValue >= prevValue
+          : current.operator === ">"
+          ? currentValue > prevValue
+          : current.operator === "<"
+          ? currentValue >= prevValue
+          : false;
+      case "<=":
+        return current.operator === "<="
+          ? currentValue <= prevValue
+          : current.operator === ">="
+          ? prevValue >= currentValue
+          : current.operator === ">"
+          ? prevValue >= currentValue
+          : current.operator === "<"
+          ? currentValue <= prevValue
+          : false;
+      case ">":
+        return current.operator === ">"
+          ? currentValue >= prevValue
+          : current.operator === "<"
+          ? false
+          : current.operator === "<="
+          ? false
+          : current.operator === ">="
+          ? currentValue > prevValue
+          : false;
+      case "<":
+        return current.operator === "<"
+          ? currentValue <= prevValue
+          : current.operator === ">"
+          ? false
+          : current.operator === ">="
+          ? false
+          : current.operator === "<="
+          ? currentValue < prevValue
+          : false;
+    }
+  }
+
+  // For exact matches (BaseType, Class, etc)
+  return JSON.stringify(prev.values) === JSON.stringify(current.values);
 }
 
 interface FilterItem {

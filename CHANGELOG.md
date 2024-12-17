@@ -2,6 +2,15 @@
 
 All notable changes to the "poe2-filter" extension will be documented in this file.
 
+## [0.0.10] - 2024-12-17 22:00
+
+### Fixed
+
+- 🐛 Fixed rule conflict detection
+  - Corrected numeric condition comparison logic to properly handle ranges
+  - Fixed false positives when rules had mutually exclusive conditions
+  - Improved detection of overlapping conditions with different operators
+
 ## [0.0.9] - 2024-12-17 21:25
 
 ### Fixed
