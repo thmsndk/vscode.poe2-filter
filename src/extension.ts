@@ -10,6 +10,9 @@ import {
 import { FilterCodeActionProvider } from "./diagnostics/filterCodeActions";
 import { MinimapIconDecorator } from "./decorations/minimapIconDecorator";
 
+import { CodelensProvider } from './CodelensProvider';
+var player = require('play-sound')({});
+
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
@@ -198,6 +201,25 @@ export function activate(context: vscode.ExtensionContext) {
       }
     )
   );
+
+  // Register code lens
+  context.subscriptions.push(
+    vscode.languages.registerCodeLensProvider("poe2-filter", new CodelensProvider())
+  );
+
+  // Register command
+  context.subscriptions.push(
+    vscode.commands.registerCommand("poe2-filter.codelensAction", (sound, volume) => {
+      // vscode.window.showInformationMessage(`Playing sound ${sound} at volume ${volume}`);
+      player.play(`sounds/${sound}.mp3`, function(err: any){
+        if (err) {
+          console.log(err);
+        }
+      }
+      );
+    })
+  );
+    
 }
 
 // This method is called when your extension is deactivated
