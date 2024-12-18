@@ -10,8 +10,8 @@ import {
 import { FilterCodeActionProvider } from "./diagnostics/filterCodeActions";
 import { MinimapIconDecorator } from "./decorations/minimapIconDecorator";
 
-import { CodelensProvider } from './CodelensProvider';
-var player = require('play-sound')({});
+import { CodelensProvider } from "./CodelensProvider";
+import Player from "play-sound";
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -202,24 +202,37 @@ export function activate(context: vscode.ExtensionContext) {
     )
   );
 
+  const player = Player({});
   // Register code lens
   context.subscriptions.push(
-    vscode.languages.registerCodeLensProvider("poe2-filter", new CodelensProvider())
+    vscode.languages.registerCodeLensProvider(
+      "poe2-filter",
+      new CodelensProvider()
+    )
   );
 
   // Register command
   context.subscriptions.push(
-    vscode.commands.registerCommand("poe2-filter.codelensAction", (sound, volume) => {
-      // vscode.window.showInformationMessage(`Playing sound ${sound} at volume ${volume}`);
-      player.play(`sounds/${sound}.mp3`, function(err: any){
-        if (err) {
-          console.log(err);
-        }
+    vscode.commands.registerCommand(
+      "poe2-filter.codelensAction",
+      (sound, volume) => {
+        const soundPath = vscode.Uri.joinPath(
+          context.extensionUri,
+          "sounds",
+          `${sound}.mp3`
+        ).fsPath;
+
+        player.play(soundPath, (err: any) => {
+          if (err) {
+            console.error("Sound playback error:", err);
+            vscode.window.showErrorMessage(
+              `Failed to play sound: ${err.message || err}`
+            );
+          }
+        });
       }
-      );
-    })
+    )
   );
-    
 }
 
 // This method is called when your extension is deactivated
