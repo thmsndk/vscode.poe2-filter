@@ -12,6 +12,7 @@ import { MinimapIconDecorator } from "./decorations/minimapIconDecorator";
 
 import { CodelensProvider } from "./CodelensProvider";
 import Player from "play-sound";
+import { execFile } from "child_process";
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -28,7 +29,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   // Register the formatter
   const formatter = new FilterFormatter();
-  const formattingProvider =
+  const formattingProvider = 
     vscode.languages.registerDocumentFormattingEditProvider("poe2-filter", {
       async provideDocumentFormattingEdits(
         document: vscode.TextDocument
@@ -210,7 +211,7 @@ export function activate(context: vscode.ExtensionContext) {
       new CodelensProvider()
     )
   );
-
+  
   // Register command
   context.subscriptions.push(
     vscode.commands.registerCommand(
@@ -222,14 +223,18 @@ export function activate(context: vscode.ExtensionContext) {
           `${sound}.mp3`
         ).fsPath;
 
-        player.play(soundPath, (err: any) => {
-          if (err) {
-            console.error("Sound playback error:", err);
-            vscode.window.showErrorMessage(
-              `Failed to play sound: ${err.message || err}`
-            );
-          }
-        });
+        if (process.platform === "win32") {
+          execFile(vscode.Uri.joinPath(context.extensionUri, "sounds", "sounder.exe").fsPath, ['/vol', volume, soundPath]);
+        } else {
+          player.play(soundPath, (err: any) => {
+            if (err) {
+              console.error("Sound playback error:", err);
+              vscode.window.showErrorMessage(
+                `Failed to play sound: ${err.message || err}`
+              );
+            }
+          });
+        }
       }
     )
   );
