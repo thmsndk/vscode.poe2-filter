@@ -117,18 +117,23 @@ export class FilterPreviewEditor
             const ctx = canvas.getContext('2d');
             
             let items = ${JSON.stringify(initialItems)};
-            let camera = { x: 0, y: 0 };
+            let camera = { 
+              x: 0, 
+              y: 0,
+              zoom: 1
+            };
             
             function resizeCanvas() {
               canvas.width = window.innerWidth;
               canvas.height = window.innerHeight;
+              fitItemsInView(); // Refit items when canvas is resized
             }
             
             function drawItem(item) {
               if (!item || item.hidden) return;
               
-              const x = item.x - camera.x;
-              const y = item.y - camera.y;
+              const x = (item.x - camera.x) * camera.zoom;
+              const y = (item.y - camera.y) * camera.zoom;
               
               ctx.save();
               
@@ -155,43 +160,40 @@ export class FilterPreviewEditor
               
               // Draw beam effect if item has PlayEffect
               if (item.beam) {
-                const beamHeight = 300;
+                const beamHeight = 300 * camera.zoom;  // Scale beam height with zoom
                 const beamColor = beamColors[item.beam.color] || beamColors.White;
                 const intensity = item.beam.temporary ? 0.8 : 1;
                 
-                // Draw the glowing line effect
                 ctx.shadowColor = toRGBA(beamColor, 0.8 * intensity);
-                ctx.shadowBlur = 15;
+                ctx.shadowBlur = 15 * camera.zoom;  // Scale blur with zoom
                 
-                // Main beam line
                 ctx.beginPath();
                 ctx.strokeStyle = toRGBA(beamColor, intensity);
-                ctx.lineWidth = 2;
+                ctx.lineWidth = 2 * camera.zoom;  // Scale line width with zoom
                 ctx.moveTo(x, y);
                 ctx.lineTo(x, y - beamHeight);
                 ctx.stroke();
                 
-                // Outer glow (drawn twice for stronger effect)
                 ctx.beginPath();
                 ctx.strokeStyle = toRGBA(beamColor, 0.3 * intensity);
-                ctx.lineWidth = 6;
+                ctx.lineWidth = 6 * camera.zoom;  // Scale line width with zoom
                 ctx.moveTo(x, y);
                 ctx.lineTo(x, y - beamHeight);
                 ctx.stroke();
                 
-                // Reset shadow for other elements
                 ctx.shadowColor = 'transparent';
                 ctx.shadowBlur = 0;
               }
               
               // Calculate text metrics (used for background and border)
-              ctx.font = \`\${item.fontSize || 32}px Arial\`;
+              const fontSize = (item.fontSize || 32) * camera.zoom;
+              ctx.font = \`\${fontSize}px Arial\`;
               ctx.textAlign = 'center';
               ctx.textBaseline = 'middle';
               const metrics = ctx.measureText(item.name);
-              const padding = 5;
+              const padding = 5 * camera.zoom;
               const textWidth = metrics.width;
-              const textHeight = item.fontSize || 32;
+              const textHeight = fontSize;
               const boxX = x - textWidth/2 - padding;
               const boxY = y - textHeight/2 - padding;
               const boxWidth = textWidth + padding * 2;
@@ -206,7 +208,7 @@ export class FilterPreviewEditor
               // Draw border if specified
               if (item.borderColor) {
                 ctx.strokeStyle = toRGBA(item.borderColor);
-                ctx.lineWidth = 2;
+                ctx.lineWidth = 2 * camera.zoom;
                 ctx.strokeRect(boxX, boxY, boxWidth, boxHeight);
               }
               
@@ -276,12 +278,71 @@ export class FilterPreviewEditor
             // Handle window resize
             window.addEventListener('resize', resizeCanvas);
             
-            // Initial setup
-            resizeCanvas();
-            canvas.style.cursor = 'grab';
-            render();
+            // Add zoom handler
+            canvas.addEventListener('wheel', (e) => {
+              e.preventDefault();
+              const zoomSpeed = 0.1;
+              const mouseX = e.clientX;
+              const mouseY = e.clientY;
+              
+              // Calculate world position of mouse before zoom
+              const worldX = (mouseX + camera.x) / camera.zoom;
+              const worldY = (mouseY + camera.y) / camera.zoom;
+              
+              // Update zoom
+              if (e.deltaY < 0) {
+                camera.zoom *= (1 + zoomSpeed);
+              } else {
+                camera.zoom *= (1 - zoomSpeed);
+              }
+              
+              // Clamp zoom
+              camera.zoom = Math.min(Math.max(camera.zoom, 0.1), 5);
+              
+              // Adjust camera to keep mouse position fixed
+              camera.x = worldX * camera.zoom - mouseX;
+              camera.y = worldY * camera.zoom - mouseY;
+            });
             
-            // Handle messages from extension
+            // Function to fit all items in view
+            function fitItemsInView() {
+              if (items.length === 0) return;
+              
+              // Find bounds of all items
+              let minX = Infinity;
+              let minY = Infinity;
+              let maxX = -Infinity;
+              let maxY = -Infinity;
+              
+              items.forEach(item => {
+                if (!item.hidden) {
+                  minX = Math.min(minX, item.x);
+                  minY = Math.min(minY, item.y);
+                  maxX = Math.max(maxX, item.x);
+                  maxY = Math.max(maxY, item.y);
+                }
+              });
+              
+              // Add padding
+              const padding = 100;
+              minX -= padding;
+              minY -= padding;
+              maxX += padding;
+              maxY += padding;
+              
+              // Calculate required zoom
+              const contentWidth = maxX - minX;
+              const contentHeight = maxY - minY;
+              const zoomX = canvas.width / contentWidth;
+              const zoomY = canvas.height / contentHeight;
+              camera.zoom = Math.min(zoomX, zoomY);
+              
+              // Center camera
+              camera.x = (minX + maxX) / 2 - (canvas.width / 2 / camera.zoom);
+              camera.y = (minY + maxY) / 2 - (canvas.height / 2 / camera.zoom);
+            }
+            
+            // Update message handler to fit items after update
             window.addEventListener('message', event => {
               const message = event.data;
               switch (message.type) {
@@ -291,6 +352,7 @@ export class FilterPreviewEditor
                     x: Math.random() * (canvas.width * 0.6) + (canvas.width * 0.2),
                     y: Math.random() * (canvas.height * 0.6) + (canvas.height * 0.2)
                   }));
+                  fitItemsInView(); // Fit items after updating
                   break;
               }
             });
@@ -303,6 +365,11 @@ export class FilterPreviewEditor
             document.getElementById('showSampleItems').addEventListener('click', () => {
               vscode.postMessage({ command: 'showSampleItems' });
             });
+            
+            // Initial setup
+            resizeCanvas();
+            canvas.style.cursor = 'grab';
+            render();
           </script>
         </body>
       </html>`;
