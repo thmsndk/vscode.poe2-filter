@@ -213,12 +213,25 @@ export function activate(context: vscode.ExtensionContext) {
   // Register command
   context.subscriptions.push(
     vscode.commands.registerCommand(
-      "poe2-filter.codelensAction",
+      "poe2-filter.playDefaultSound",
       async (sound, volume) => {
         const soundPath = vscode.Uri.joinPath(
           context.extensionUri,
           "sounds",
-          `${sound}.mp3`
+          `AlertSound${sound}.mp3`
+        ).fsPath;
+
+        SoundPlayer.play(soundPath);
+      }
+    )
+  );
+  context.subscriptions.push(
+    vscode.commands.registerCommand(
+      "poe2-filter.playCustomSound",
+      async (sound, volume) => {
+        const soundPath = vscode.Uri.joinPath(
+          vscode.workspace.workspaceFolders![0].uri,
+          `${sound}`
         ).fsPath;
 
         SoundPlayer.play(soundPath);
