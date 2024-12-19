@@ -94,7 +94,7 @@ export class FilterPreviewEditor
     const styledItems = this._applyFilterRules(sampleItems, rules);
     const initialItems = styledItems.map((item) => ({
       ...item,
-      x: Math.random() * 800 + 100, // Initial positions
+      x: Math.random() * 800 + 100,
       y: Math.random() * 400 + 100,
     }));
 
@@ -102,6 +102,17 @@ export class FilterPreviewEditor
       <html>
         <head>
           <link href="${styleUri}" rel="stylesheet">
+          <style>
+            canvas {
+              width: 100%;
+              height: 100vh;
+              background: #000;
+            }
+            .preview-container {
+              height: 100vh;
+              overflow: hidden;
+            }
+          </style>
         </head>
         <body>
           <div class="preview-container">
@@ -113,8 +124,8 @@ export class FilterPreviewEditor
             const canvas = document.getElementById('filterPreview');
             const ctx = canvas.getContext('2d');
             
-            // Initialize items
             let items = ${JSON.stringify(initialItems)};
+            let camera = { x: 0, y: 0 };
             
             function resizeCanvas() {
               canvas.width = window.innerWidth;
@@ -124,88 +135,83 @@ export class FilterPreviewEditor
             function drawItem(item) {
               if (!item || item.hidden) return;
               
+              const x = item.x - camera.x;
+              const y = item.y - camera.y;
+              
               ctx.save();
               
-              // Draw beam if item matches filter
-              if (item.matched) {
-                const gradient = ctx.createLinearGradient(
-                  item.x, 
-                  item.y + 100, 
-                  item.x, 
-                  item.y
-                );
-                gradient.addColorStop(0, \`rgba(\${item.textColor.join(',')}, 0.1)\`);
-                gradient.addColorStop(1, \`rgba(\${item.textColor.join(',')}, 0.4)\`);
-                
-                ctx.fillStyle = gradient;
-                ctx.fillRect(item.x - 2, item.y, 4, 100);
-              }
-              
               // Draw item name
-              ctx.font = \`\${item.fontSize || 32}px Fontin, Arial\`;
+              ctx.font = \`\${item.fontSize || 32}px Arial\`;
               ctx.textAlign = 'center';
               ctx.textBaseline = 'middle';
-              
-              // Draw text shadow/glow
-              if (item.matched) {
-                ctx.shadowColor = \`rgba(\${item.textColor.join(',')}, 0.5)\`;
-                ctx.shadowBlur = 10;
-              }
-              
               ctx.fillStyle = \`rgb(\${item.textColor.join(',')})\`;
-              ctx.fillText(item.name, item.x, item.y);
-              
-              // Draw border if specified
-              if (item.borderColor) {
-                ctx.strokeStyle = \`rgb(\${item.borderColor.join(',')})\`;
-                ctx.lineWidth = 2;
-                const metrics = ctx.measureText(item.name);
-                const padding = 5;
-                ctx.strokeRect(
-                  item.x - metrics.width/2 - padding,
-                  item.y - item.fontSize/2 - padding,
-                  metrics.width + padding * 2,
-                  item.fontSize + padding * 2
-                );
-              }
+              ctx.fillText(item.name, x, y);
               
               ctx.restore();
             }
             
             function render() {
+              // Clear canvas
               ctx.clearRect(0, 0, canvas.width, canvas.height);
               
-              // Draw floor grid
-              ctx.save();
+              // Draw grid
               ctx.strokeStyle = '#333';
               ctx.lineWidth = 0.5;
               
-              // Simple grid for now
-              for(let i = 0; i < canvas.width; i += 50) {
+              for(let x = 0; x < canvas.width; x += 50) {
                 ctx.beginPath();
-                ctx.moveTo(i, 0);
-                ctx.lineTo(i, canvas.height);
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, canvas.height);
                 ctx.stroke();
               }
-              for(let i = 0; i < canvas.height; i += 50) {
-                ctx.beginPath();
-                ctx.moveTo(0, i);
-                ctx.lineTo(canvas.width, i);
-                ctx.stroke();
-              }
-              ctx.restore();
               
-              // Draw all items
+              for(let y = 0; y < canvas.height; y += 50) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(canvas.width, y);
+                ctx.stroke();
+              }
+              
+              // Draw items
               items.forEach(drawItem);
               
               requestAnimationFrame(render);
             }
             
+            // Handle panning
+            let isDragging = false;
+            let lastX = 0;
+            let lastY = 0;
+            
+            canvas.addEventListener('mousedown', (e) => {
+              isDragging = true;
+              lastX = e.clientX;
+              lastY = e.clientY;
+              canvas.style.cursor = 'grabbing';
+            });
+            
+            window.addEventListener('mousemove', (e) => {
+              if (isDragging) {
+                const dx = e.clientX - lastX;
+                const dy = e.clientY - lastY;
+                camera.x -= dx;
+                camera.y -= dy;
+                lastX = e.clientX;
+                lastY = e.clientY;
+              }
+            });
+            
+            window.addEventListener('mouseup', () => {
+              isDragging = false;
+              canvas.style.cursor = 'grab';
+            });
+            
             // Handle window resize
             window.addEventListener('resize', resizeCanvas);
-            resizeCanvas();
             
-            // Start render loop
+            // Initial setup
+            resizeCanvas();
+            canvas.style.cursor = 'grab';
             render();
             
             // Handle messages from extension
@@ -226,9 +232,6 @@ export class FilterPreviewEditor
             document.getElementById('refreshPreview').addEventListener('click', () => {
               vscode.postMessage({ command: 'refresh' });
             });
-
-            // Debug log to check if items are present
-            console.log('Initial items:', items);
           </script>
         </body>
       </html>`;
