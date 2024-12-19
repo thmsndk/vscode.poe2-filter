@@ -547,26 +547,36 @@ export class FilterPreviewEditor
   }
 
   private _spreadItemsNaturally(items: any[]): any[] {
-    const width = 1200;
-    const height = 800;
-    const padding = 50;
+    const width = 4000;
+    const height = 3000;
+    const padding = 200;
+    const baseSpacing = 400;
 
-    // Initialize items with random positions
-    let positions = items.map((item) => ({
-      ...item,
-      x: Math.random() * (width - 2 * padding) + padding,
-      y: Math.random() * (height - 2 * padding) + padding,
-      vx: 0, // velocity x
-      vy: 0, // velocity y
-    }));
+    // Calculate "mass" and size for each item based on name length
+    let positions = items.map((item, index) => {
+      const angle = (index / items.length) * Math.PI * 2;
+      const radius = Math.sqrt(items.length) * 150;
+      const mass = Math.max(1, item.name.length / 10); // Mass based on name length
+      const size = Math.max(100, item.name.length * 15); // Size based on name length
 
-    // Run simulation to spread items apart
-    for (let iteration = 0; iteration < 50; iteration++) {
+      return {
+        ...item,
+        x: width / 2 + Math.cos(angle) * radius + (Math.random() - 0.5) * 300,
+        y: height / 2 + Math.sin(angle) * radius + (Math.random() - 0.5) * 300,
+        mass,
+        size,
+        vx: 0,
+        vy: 0,
+      };
+    });
+
+    // Run force-directed layout simulation
+    for (let iteration = 0; iteration < 200; iteration++) {
       positions = positions.map((item) => {
         let fx = 0,
-          fy = 0; // forces
+          fy = 0;
 
-        // Apply repulsion forces from other items
+        // Repulsion from other items, considering both items' sizes
         positions.forEach((other) => {
           if (other === item) return;
 
@@ -574,19 +584,37 @@ export class FilterPreviewEditor
           const dy = item.y - other.y;
           const distance = Math.sqrt(dx * dx + dy * dy);
 
-          if (distance < 200) {
-            // Minimum desired distance
-            const force = (200 - distance) / distance;
-            fx += dx * force * 0.5;
-            fy += dy * force * 0.5;
+          // Combined spacing based on both items' sizes
+          const desiredSpacing = (item.size + other.size) / 2;
+
+          if (distance < desiredSpacing) {
+            // Force increases with combined mass and decreases with distance
+            const force = Math.pow(desiredSpacing - distance, 1.2) / distance;
+            const combinedMass = (item.mass + other.mass) / 2;
+
+            fx += dx * force * combinedMass * 0.5;
+            fy += dy * force * combinedMass * 0.5;
           }
         });
 
-        // Apply forces to velocity with damping
-        item.vx = (item.vx + fx) * 0.5;
-        item.vy = (item.vy + fy) * 0.5;
+        // Center gravity force inversely proportional to mass
+        const centerX = width / 2;
+        const centerY = height / 2;
+        const dx = centerX - item.x;
+        const dy = centerY - item.y;
+        const distanceToCenter = Math.sqrt(dx * dx + dy * dy);
 
-        // Update position
+        // Heavier items resist center gravity more
+        const gravityFactor = 0.0002 / item.mass;
+        fx += dx * gravityFactor * distanceToCenter;
+        fy += dy * gravityFactor * distanceToCenter;
+
+        // Apply forces with mass-based damping
+        const damping = 0.98 / item.mass;
+        item.vx = (item.vx + fx) * damping;
+        item.vy = (item.vy + fy) * damping;
+
+        // Update position with bounds checking
         return {
           ...item,
           x: Math.max(padding, Math.min(width - padding, item.x + item.vx)),
@@ -595,8 +623,8 @@ export class FilterPreviewEditor
       });
     }
 
-    // Remove velocity properties before returning
-    return positions.map(({ vx, vy, ...item }) => item);
+    // Remove temporary properties before returning
+    return positions.map(({ vx, vy, mass, size, ...item }) => item);
   }
 
   private _generateItemsFromRules(rules: FilterRule[]): FilterItem[] {
