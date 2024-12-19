@@ -15,7 +15,7 @@ export class CodelensProvider implements vscode.CodeLensProvider {
 				/\bPlayAlertSound\w*\s+(\w+)\s+(\d+)/
 			);
 			const customSoundMatch = line.text.match(
-				/\bCustomAlertSound\s+"([^"]+)"\s+(\d+)/
+				/\bCustomAlertSound\w*\s+"([^"]+)"\s+(\d+)/
 			);
 
 			if (soundMatch) {
