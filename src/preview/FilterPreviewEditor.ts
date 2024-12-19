@@ -141,13 +141,58 @@ export class FilterPreviewEditor
               ctx.save();
               
               // Helper function to convert color array to rgba string
-              const toRGBA = (colorArr) => {
-                if (!colorArr) return 'rgba(200, 200, 200, 1)'; // Default color
-                const alpha = colorArr[3] !== undefined ? colorArr[3] / 255 : 1;
+              const toRGBA = (colorArr, alpha = 1) => {
+                if (!colorArr) return 'rgba(200, 200, 200, 1)';
                 return \`rgba(\${colorArr[0]}, \${colorArr[1]}, \${colorArr[2]}, \${alpha})\`;
               };
               
-              // Calculate text metrics first (used for background and border)
+              // Beam effect color mapping
+              const beamColors = {
+                Red: [255, 0, 0],
+                Green: [0, 255, 0],
+                Blue: [0, 0, 255],
+                Brown: [139, 69, 19],
+                White: [255, 255, 255],
+                Yellow: [255, 255, 0],
+                Cyan: [0, 255, 255],
+                Grey: [128, 128, 128],
+                Orange: [255, 165, 0],
+                Pink: [255, 192, 203],
+                Purple: [128, 0, 128]
+              };
+              
+              // Draw beam effect if item has PlayEffect
+              if (item.beam) {
+                const beamHeight = 300;
+                const beamColor = beamColors[item.beam.color] || beamColors.White;
+                const intensity = item.beam.temporary ? 0.8 : 1;
+                
+                // Draw the glowing line effect
+                ctx.shadowColor = toRGBA(beamColor, 0.8 * intensity);
+                ctx.shadowBlur = 15;
+                
+                // Main beam line
+                ctx.beginPath();
+                ctx.strokeStyle = toRGBA(beamColor, intensity);
+                ctx.lineWidth = 2;
+                ctx.moveTo(x, y);
+                ctx.lineTo(x, y - beamHeight);
+                ctx.stroke();
+                
+                // Outer glow (drawn twice for stronger effect)
+                ctx.beginPath();
+                ctx.strokeStyle = toRGBA(beamColor, 0.3 * intensity);
+                ctx.lineWidth = 6;
+                ctx.moveTo(x, y);
+                ctx.lineTo(x, y - beamHeight);
+                ctx.stroke();
+                
+                // Reset shadow for other elements
+                ctx.shadowColor = 'transparent';
+                ctx.shadowBlur = 0;
+              }
+              
+              // Calculate text metrics (used for background and border)
               ctx.font = \`\${item.fontSize || 32}px Arial\`;
               ctx.textAlign = 'center';
               ctx.textBaseline = 'middle';
