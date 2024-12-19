@@ -68,7 +68,13 @@ export class FilterPreviewEditor
             const content = await vscode.workspace.fs.readFile(document.uri);
             const text = Buffer.from(content).toString("utf8");
             const refreshedRules = parseRules(text);
-            this._updatePreview(webviewPanel.webview, refreshedRules);
+            const items = this._generateItemsFromRules(refreshedRules);
+            this._updatePreview(webviewPanel.webview, refreshedRules, items);
+            break;
+
+          case "showSampleItems":
+            const sampleItems = this._generateSampleItems();
+            this._updatePreview(webviewPanel.webview, rules, sampleItems);
             break;
         }
       },
@@ -89,11 +95,9 @@ export class FilterPreviewEditor
       vscode.Uri.joinPath(this.context.extensionUri, "media", "preview.css")
     );
 
-    // Generate initial items with better spacing
-    const sampleItems = this._generateSampleItems();
-    const styledItems = this._applyFilterRules(sampleItems, rules);
-
-    // Spread items in a more natural pattern
+    // Generate items from rules by default
+    const items = this._generateItemsFromRules(rules);
+    const styledItems = this._applyFilterRules(items, rules);
     const initialItems = this._spreadItemsNaturally(styledItems);
 
     return `<!DOCTYPE html>
@@ -101,22 +105,35 @@ export class FilterPreviewEditor
         <head>
           <link href="${styleUri}" rel="stylesheet">
           <style>
-            canvas {
-              width: 100%;
-              height: 100vh;
-              background: #000;
+            .button-container {
+              position: fixed;
+              top: 10px;
+              left: 10px;
+              z-index: 1000;
+              display: flex;
+              gap: 8px;
             }
-            .preview-container {
-              height: 100vh;
-              overflow: hidden;
+            button {
+              background: var(--vscode-button-background);
+              color: var(--vscode-button-foreground);
+              border: none;
+              padding: 4px 12px;
+              cursor: pointer;
+              font-family: var(--vscode-font-family);
+              font-size: var(--vscode-font-size);
+              border-radius: 2px;
+            }
+            button:hover {
+              background: var(--vscode-button-hoverBackground);
             }
           </style>
         </head>
         <body>
-          <div class="preview-container">
+          <div class="button-container">
             <button id="refreshPreview">Refresh Preview</button>
-            <canvas id="filterPreview"></canvas>
+            <button id="showSampleItems">Show Sample Items</button>
           </div>
+          <canvas id="filterPreview"></canvas>
           <script>
             const vscode = acquireVsCodeApi();
             const canvas = document.getElementById('filterPreview');
@@ -301,22 +318,30 @@ export class FilterPreviewEditor
               }
             });
             
-            // Handle refresh button
+            // Handle button clicks
             document.getElementById('refreshPreview').addEventListener('click', () => {
               vscode.postMessage({ command: 'refresh' });
+            });
+            
+            document.getElementById('showSampleItems').addEventListener('click', () => {
+              vscode.postMessage({ command: 'showSampleItems' });
             });
           </script>
         </body>
       </html>`;
   }
 
-  private _updatePreview(webview: vscode.Webview, rules: FilterRule[]): void {
-    const sampleItems = this._generateSampleItems();
-    const styledItems = this._applyFilterRules(sampleItems, rules);
+  private _updatePreview(
+    webview: vscode.Webview,
+    rules: FilterRule[],
+    items: FilterItem[]
+  ): void {
+    const styledItems = this._applyFilterRules(items, rules);
+    const spreadItems = this._spreadItemsNaturally(styledItems);
 
     webview.postMessage({
       type: "update",
-      items: styledItems,
+      items: spreadItems,
     });
   }
 
@@ -366,7 +391,7 @@ export class FilterPreviewEditor
       {
         name: "Amethyst Ring",
         baseType: "Amethyst Ring",
-        class: "Ring",
+        class: "Rings",
         rarity: "Normal",
         itemLevel: 1,
         width: 1,
@@ -385,7 +410,7 @@ export class FilterPreviewEditor
       // Rune
       {
         name: "Inspiration Rune",
-        baseType: "Inspiration Rune",
+        baseType: " Rune",
         class: "Rune",
         rarity: "Normal",
         itemLevel: 1,
@@ -528,5 +553,21 @@ export class FilterPreviewEditor
 
     // Remove velocity properties before returning
     return positions.map(({ vx, vy, ...item }) => item);
+  }
+
+  private _generateItemsFromRules(rules: FilterRule[]): FilterItem[] {
+    const items: FilterItem[] = [];
+
+    rules.forEach((rule) => {
+      if (rule.isShow) {
+        // Generate an item based on the rule conditions
+        const item = generateItemFromRule(rule);
+        if (item) {
+          items.push(item);
+        }
+      }
+    });
+
+    return items;
   }
 }

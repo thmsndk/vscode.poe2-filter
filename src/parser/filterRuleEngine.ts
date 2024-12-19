@@ -220,13 +220,17 @@ export function generateItemFromRule(rule: FilterRule): FilterItem {
     identified: false,
   };
 
+  let baseTypes: string[] = [];
+  let classes: string[] = [];
   for (const condition of rule.conditions) {
     switch (condition.type) {
       case "BaseType":
         item.baseType = condition.values[0];
+        baseTypes.push(condition.values[0]);
         break;
       case "Class":
         item.class = condition.values[0];
+        classes.push(condition.values[0]);
         break;
       case "Sockets":
       case "Quality":
@@ -273,6 +277,15 @@ export function generateItemFromRule(rule: FilterRule): FilterItem {
       case "Identified":
         item.identified = condition.values[0] === "True";
         break;
+    }
+
+    // Generate a unique name for the item, preffering baseType over class, pickinga random name, as that is not important for rule validation
+    if (baseTypes.length > 0) {
+      item.name = baseTypes[Math.floor(Math.random() * baseTypes.length)];
+    } else if (classes.length > 0) {
+      item.name = classes[Math.floor(Math.random() * classes.length)];
+    } else {
+      item.name = "Item";
     }
   }
 
