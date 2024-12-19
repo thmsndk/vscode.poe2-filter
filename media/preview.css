@@ -1,0 +1,180 @@
+.item {
+  margin: 8px;
+  padding: 12px;
+  border: 2px solid;
+  border-radius: 4px;
+  position: relative;
+  font-family: "Fontin", Consolas, monospace;
+}
+
+.item-name {
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.item-property {
+  font-size: 0.9em;
+  color: #aaa;
+}
+
+.item-class {
+  font-size: 0.8em;
+  color: #666;
+  margin-top: 8px;
+}
+
+.matched-rule {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  font-size: 0.7em;
+  color: #4caf50;
+}
+
+.unmatched {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  font-size: 0.7em;
+  color: #666;
+}
+
+.minimap-icon {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.preview-toolbar {
+  position: sticky;
+  top: 0;
+  background: var(--vscode-editor-background);
+  padding: 8px;
+  border-bottom: 1px solid var(--vscode-panel-border);
+  z-index: 100;
+}
+
+.preview-container {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  background: #000;
+  overflow: hidden;
+}
+
+#filterPreview {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+#refreshPreview {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 1;
+  background: #333;
+  color: #fff;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+#refreshPreview:hover {
+  background: #444;
+}
+
+.preview-floor {
+  background: linear-gradient(
+    45deg,
+    #111 25%,
+    #0a0a0a 25%,
+    #0a0a0a 50%,
+    #111 50%,
+    #111 75%,
+    #0a0a0a 75%
+  );
+  background-size: 40px 40px;
+  position: absolute;
+  width: 200%;
+  height: 200%;
+  transform: rotateX(60deg);
+  top: -50%;
+  left: -50%;
+}
+
+.item-label {
+  position: absolute;
+  transform-style: preserve-3d;
+  pointer-events: none;
+}
+
+.item-name {
+  position: relative;
+  padding: 2px 8px;
+  white-space: nowrap;
+  text-align: center;
+  font-family: "Fontin", serif;
+  text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.8);
+}
+
+.beam {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 200px;
+  background: linear-gradient(to bottom, transparent, currentColor);
+  opacity: 0.5;
+}
+
+/* Rarity-specific styles */
+.currency-tier-high {
+  color: #ffd700;
+}
+
+.currency-tier-high .beam {
+  box-shadow: 0 0 20px currentColor;
+}
+
+.unique {
+  color: #af6025;
+}
+
+.rare {
+  color: #ffff77;
+}
+
+.magic {
+  color: #8888ff;
+}
+
+.normal {
+  color: #c8c8c8;
+}
+
+/* Animation for the beam */
+@keyframes pulse {
+  0% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.6;
+  }
+  100% {
+    opacity: 0.3;
+  }
+}
+
+.beam {
+  animation: pulse 2s ease-in-out infinite;
+}

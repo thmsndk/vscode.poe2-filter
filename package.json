@@ -45,7 +45,44 @@
         "scopeName": "source.poe2-filter",
         "path": "./syntaxes/poe2filter.tmLanguage.json"
       }
-    ]
+    ],
+    "customEditors": [
+      {
+        "viewType": "poe2Filter.preview",
+        "displayName": "POE2 Filter Preview",
+        "selector": [
+          {
+            "filenamePattern": "*.filter"
+          }
+        ],
+        "priority": "option"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "poe2-filter.openPreview",
+        "key": "ctrl+shift+v",
+        "mac": "cmd+shift+v",
+        "when": "editorLangId == poe2-filter"
+      }
+    ],
+    "commands": [
+      {
+        "command": "poe2-filter.openPreview",
+        "title": "Open Preview",
+        "icon": "$(preview)",
+        "category": "POE2 Filter"
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "when": "editorLangId == poe2-filter",
+          "command": "poe2-filter.openPreview",
+          "group": "navigation"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "pnpm run build",

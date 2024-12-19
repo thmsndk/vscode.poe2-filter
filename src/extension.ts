@@ -9,6 +9,7 @@ import {
 } from "./diagnostics/filterDiagnostics";
 import { FilterCodeActionProvider } from "./diagnostics/filterCodeActions";
 import { MinimapIconDecorator } from "./decorations/minimapIconDecorator";
+import { FilterPreviewEditor } from "./preview/FilterPreviewEditor";
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -197,6 +198,27 @@ export function activate(context: vscode.ExtensionContext) {
           FilterCodeActionProvider.providedCodeActionKinds,
       }
     )
+  );
+
+  // Register the preview editor
+  context.subscriptions.push(FilterPreviewEditor.register(context));
+
+  // Add command to open preview (similar to Markdown preview)
+  context.subscriptions.push(
+    vscode.commands.registerCommand("poe2-filter.openPreview", async () => {
+      const activeEditor = vscode.window.activeTextEditor;
+      if (activeEditor && activeEditor.document.languageId === "poe2-filter") {
+        const uri = activeEditor.document.uri;
+
+        // Open preview to the side
+        await vscode.commands.executeCommand(
+          "vscode.openWith",
+          uri,
+          "poe2Filter.preview",
+          vscode.ViewColumn.Beside
+        );
+      }
+    })
   );
 }
 
