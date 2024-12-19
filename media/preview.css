@@ -76,20 +76,29 @@
   height: 100%;
 }
 
-#refreshPreview {
-  position: absolute;
+.button-container {
+  position: fixed;
   top: 10px;
-  left: 10px;
-  z-index: 1;
-  background: #333;
-  color: #fff;
-  border: none;
-  padding: 5px 10px;
-  cursor: pointer;
+  right: 20px;
+  z-index: 1000;
+  display: flex;
+  gap: 8px;
+  margin-right: env(safe-area-inset-right);
 }
 
-#refreshPreview:hover {
-  background: #444;
+.button-container button {
+  background: var(--vscode-button-background);
+  color: var(--vscode-button-foreground);
+  border: none;
+  padding: 4px 12px;
+  cursor: pointer;
+  font-family: var(--vscode-font-family);
+  font-size: var(--vscode-font-size);
+  border-radius: 2px;
+}
+
+.button-container button:hover {
+  background: var(--vscode-button-hoverBackground);
 }
 
 .preview-floor {

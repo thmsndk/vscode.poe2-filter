@@ -104,29 +104,6 @@ export class FilterPreviewEditor
       <html>
         <head>
           <link href="${styleUri}" rel="stylesheet">
-          <style>
-            .button-container {
-              position: fixed;
-              top: 10px;
-              left: 10px;
-              z-index: 1000;
-              display: flex;
-              gap: 8px;
-            }
-            button {
-              background: var(--vscode-button-background);
-              color: var(--vscode-button-foreground);
-              border: none;
-              padding: 4px 12px;
-              cursor: pointer;
-              font-family: var(--vscode-font-family);
-              font-size: var(--vscode-font-size);
-              border-radius: 2px;
-            }
-            button:hover {
-              background: var(--vscode-button-hoverBackground);
-            }
-          </style>
         </head>
         <body>
           <div class="button-container">
