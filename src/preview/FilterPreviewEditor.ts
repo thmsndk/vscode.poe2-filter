@@ -1,5 +1,11 @@
 import * as vscode from "vscode";
-import { parseFilter } from "../parser/filterParser";
+import {
+  FilterItem,
+  FilterRule,
+  wouldRuleMatchItem,
+  generateItemFromRule,
+  parseRules,
+} from "../parser/filterRuleEngine";
 
 export class FilterPreviewEditor
   implements vscode.CustomReadonlyEditorProvider
@@ -36,7 +42,8 @@ export class FilterPreviewEditor
     // Get the filter content and parse it
     const filterContent = await vscode.workspace.fs.readFile(document.uri);
     const filterText = Buffer.from(filterContent).toString("utf8");
-    const rules = parseFilter(filterText);
+    const rules = parseRules(filterText);
+    console.log("Parsed rules:", JSON.stringify(rules, null, 2)); // Debug log
 
     // Set up initial HTML content with the preview
     webviewPanel.webview.html = this._getPreviewHtml(
@@ -47,7 +54,8 @@ export class FilterPreviewEditor
     // Watch for changes in the original filter file
     const changeSubscription = vscode.workspace.onDidChangeTextDocument((e) => {
       if (e.document.uri.toString() === document.uri.toString()) {
-        const updatedRules = parseFilter(e.document.getText());
+        const updatedRules = parseRules(e.document.getText());
+        console.log("Updated rules:", JSON.stringify(updatedRules, null, 2)); // Debug log
         this._updatePreview(webviewPanel.webview, updatedRules);
       }
     });
@@ -59,7 +67,7 @@ export class FilterPreviewEditor
           case "refresh":
             const content = await vscode.workspace.fs.readFile(document.uri);
             const text = Buffer.from(content).toString("utf8");
-            const refreshedRules = parseFilter(text);
+            const refreshedRules = parseRules(text);
             this._updatePreview(webviewPanel.webview, refreshedRules);
             break;
         }
@@ -73,7 +81,10 @@ export class FilterPreviewEditor
     });
   }
 
-  private _getPreviewHtml(webview: vscode.Webview, rules: any[]): string {
+  private _getPreviewHtml(
+    webview: vscode.Webview,
+    rules: FilterRule[]
+  ): string {
     const styleUri = webview.asWebviewUri(
       vscode.Uri.joinPath(this.context.extensionUri, "media", "preview.css")
     );
@@ -223,7 +234,7 @@ export class FilterPreviewEditor
       </html>`;
   }
 
-  private _updatePreview(webview: vscode.Webview, rules: any[]): void {
+  private _updatePreview(webview: vscode.Webview, rules: FilterRule[]): void {
     const sampleItems = this._generateSampleItems();
     const styledItems = this._applyFilterRules(sampleItems, rules);
 
@@ -234,114 +245,99 @@ export class FilterPreviewEditor
   }
 
   // Helper methods for generating and styling items
-  private _generateSampleItems() {
+  private _generateSampleItems(): FilterItem[] {
     return [
       // Currency Items
       {
-        name: "Divine Orb",
-        baseType: "Divine Orb",
+        name: "Exalted Orb",
+        baseType: "Exalted Orb",
         class: "Currency",
         rarity: "Currency",
-        itemLevel: 84,
+        itemLevel: 1,
+        width: 1,
+        height: 1,
       },
       {
-        name: "Chaos Orb",
-        baseType: "Chaos Orb",
+        name: "Regal Orb",
+        baseType: "Regal Orb",
         class: "Currency",
         rarity: "Currency",
-        itemLevel: 75,
+        itemLevel: 1,
+        width: 1,
+        height: 1,
       },
-      // Equipment
+      // Waystone
       {
-        name: "Astral Plate",
-        baseType: "Astral Plate",
-        class: "Body Armour",
-        rarity: "Rare",
-        itemLevel: 86,
-        sockets: "6",
-        linkedSockets: "6",
-      },
-      {
-        name: "Vaal Regalia",
-        baseType: "Vaal Regalia",
-        class: "Body Armour",
+        name: "Waystone (Tier 1) of Penetration",
+        baseType: "Waystone of Penetration",
+        class: "Waystone",
         rarity: "Normal",
-        itemLevel: 86,
+        waystoneTier: 1,
+        width: 1,
+        height: 1,
       },
-      // Gems
+      // Unique Item
       {
-        name: "Awakened Multistrike Support",
-        baseType: "Awakened Multistrike Support",
-        class: "Gem",
-        rarity: "Gem",
-        quality: 20,
-        gemLevel: 5,
+        name: "Djinn Barya",
+        baseType: "Djinn Barya",
+        class: "Unique",
+        rarity: "Unique",
+        itemLevel: 1,
+        width: 2,
+        height: 2,
       },
+      // Ring
       {
-        name: "Fireball",
-        baseType: "Fireball",
-        class: "Gem",
-        rarity: "Gem",
-        quality: 0,
-        gemLevel: 1,
+        name: "Amethyst Ring",
+        baseType: "Amethyst Ring",
+        class: "Ring",
+        rarity: "Normal",
+        itemLevel: 1,
+        width: 1,
+        height: 1,
       },
-      // Maps
+      // Currency
       {
-        name: "Crimson Temple Map",
-        baseType: "Crimson Temple Map",
-        class: "Maps",
-        rarity: "Magic",
-        mapTier: 16,
+        name: "Scroll of Wisdom",
+        baseType: "Scroll of Wisdom",
+        class: "Currency",
+        rarity: "Currency",
+        itemLevel: 1,
+        width: 1,
+        height: 1,
+      },
+      // Rune
+      {
+        name: "Inspiration Rune",
+        baseType: "Inspiration Rune",
+        class: "Rune",
+        rarity: "Normal",
+        itemLevel: 1,
+        width: 1,
+        height: 1,
       },
     ];
   }
 
-  private _renderItem(item: any): string {
-    const style = this._getItemStyle(item);
-    const beam = item.matched ? `<div class="beam"></div>` : "";
+  private _applyFilterRules(items: FilterItem[], rules: FilterRule[]): any[] {
+    console.log("Applying rules to items:", {
+      items: JSON.stringify(items, null, 2),
+      rules: JSON.stringify(rules, null, 2),
+    });
 
-    return `
-      <div class="item-label" style="left: ${this._getRandomPosition()}%; top: ${this._getRandomPosition()}%">
-        ${beam}
-        <div class="item-name" style="${style}">
-          ${item.name}
-        </div>
-      </div>
-    `;
-  }
-
-  private _getItemStyle(item: any): string {
-    const baseStyle = `
-      color: rgb(${item.textColor?.join(", ") || "200, 200, 200"});
-      text-shadow: 0 0 10px rgba(${
-        item.textColor?.join(", ") || "200, 200, 200"
-      }, 0.5);
-      font-size: ${item.fontSize || 32}px;
-      ${item.hidden ? "display: none;" : ""}
-    `;
-
-    if (item.matched && item.borderColor) {
-      return `${baseStyle}
-        border: 2px solid rgb(${item.borderColor.join(", ")});
-        box-shadow: 0 0 10px rgba(${item.borderColor.join(", ")}, 0.5);
-      `;
-    }
-
-    return baseStyle;
-  }
-
-  private _getRandomPosition(): number {
-    return 20 + Math.random() * 60; // Returns a number between 20 and 80
-  }
-
-  private _applyFilterRules(items: any[], rules: any[]): any[] {
     return items.map((item) => {
       // Find the first matching rule
-      const matchingRule = rules.find((rule) =>
-        this._itemMatchesRule(item, rule)
-      );
+      const matchingRule = rules.find((rule) => {
+        const matches = wouldRuleMatchItem(rule, item);
+        // console.log(`Rule match check for ${item.name}:`, {
+        //   rule,
+        //   matches,
+        // });
+        return matches;
+      });
 
       if (!matchingRule) {
+        console.log(`No matching rule for ${item.name}`, item);
         return {
           ...item,
           matched: false,
@@ -351,142 +347,57 @@ export class FilterPreviewEditor
         };
       }
 
-      // Apply the matching rule's styles
+      console.log(`Found matching rule for ${item.name}:`, matchingRule);
+
+      // Start with default styles
       const styles = {
         matched: true,
-        hidden: matchingRule.type === "Hide",
-        fontSize: 32, // Default size
-        textColor: [200, 200, 200], // Default color
+        hidden: !matchingRule.isShow,
+        fontSize: 32,
+        textColor: [200, 200, 200],
         borderColor: undefined,
         backgroundColor: undefined,
         beam: undefined,
+        minimapIcon: undefined,
       };
 
       // Apply each action from the rule
-      matchingRule.actions.forEach((action) => {
+      for (const action of matchingRule.actions) {
+        console.log(`Applying action for ${item.name}:`, action);
         switch (action.type) {
           case "SetFontSize":
-            styles.fontSize = parseInt(action.values[0]);
+            styles.fontSize = parseInt(action.values[0] as string);
             break;
           case "SetTextColor":
-            styles.textColor = action.values.map((v) => parseInt(v));
+            styles.textColor = action.values
+              .slice(0, 4)
+              .map((v) => parseInt(v as string));
             break;
           case "SetBorderColor":
-            styles.borderColor = action.values.map((v) => parseInt(v));
+            styles.borderColor = action.values
+              .slice(0, 4)
+              .map((v) => parseInt(v as string));
             break;
           case "SetBackgroundColor":
-            styles.backgroundColor = action.values.map((v) => parseInt(v));
+            styles.backgroundColor = action.values
+              .slice(0, 4)
+              .map((v) => parseInt(v as string));
             break;
           case "PlayEffect":
             styles.beam = {
-              color: action.values[0].toLowerCase(),
-              intensity: 1,
+              color: action.values[0] as string,
+              temporary: action.values[1] === "Temp",
             };
             break;
         }
-      });
+      }
+
+      console.log(`Final styles for ${item.name}:`, styles);
 
       return {
         ...item,
         ...styles,
       };
     });
-  }
-
-  private _itemMatchesRule(item: any, rule: any): boolean {
-    return rule.conditions.every((condition) => {
-      switch (condition.type) {
-        case "BaseType":
-          // Check if any of the BaseType values match
-          return condition.values.some(
-            (value) => item.baseType.toLowerCase() === value.toLowerCase()
-          );
-        case "Class":
-          // Check if the Class matches
-          return condition.values.some(
-            (value) => item.class.toLowerCase() === value.toLowerCase()
-          );
-        case "Rarity":
-          return condition.values.includes(item.rarity);
-        case "ItemLevel":
-          return this._compareNumeric(
-            item.itemLevel,
-            condition.operator,
-            condition.values[0]
-          );
-        case "GemLevel":
-          return this._compareNumeric(
-            item.gemLevel,
-            condition.operator,
-            condition.values[0]
-          );
-        case "Quality":
-          return this._compareNumeric(
-            item.quality,
-            condition.operator,
-            condition.values[0]
-          );
-        case "Sockets":
-          return this._compareNumeric(
-            item.sockets?.length,
-            condition.operator,
-            condition.values[0]
-          );
-        case "LinkedSockets":
-          return this._compareNumeric(
-            item.linkedSockets?.length,
-            condition.operator,
-            condition.values[0]
-          );
-        case "MapTier":
-          return this._compareNumeric(
-            item.mapTier,
-            condition.operator,
-            condition.values[0]
-          );
-        default:
-          return false;
-      }
-    });
-  }
-
-  private _compareNumeric(
-    value: number,
-    operator: string = "=",
-    target: number
-  ): boolean {
-    if (value === undefined) return false;
-    switch (operator) {
-      case ">":
-        return value > target;
-      case "<":
-        return value < target;
-      case ">=":
-        return value >= target;
-      case "<=":
-        return value <= target;
-      default:
-        return value === target;
-    }
-  }
-
-  private _parseMinimapIcon(
-    iconAction: any
-  ): { color: string; shape: string } | undefined {
-    if (!iconAction) return undefined;
-
-    const shapes: { [key: string]: string } = {
-      Circle: "●",
-      Diamond: "◆",
-      Hexagon: "⬡",
-      Square: "■",
-      Star: "★",
-      Triangle: "▲",
-    };
-
-    return {
-      color: iconAction.values[1],
-      shape: shapes[iconAction.values[2]] || "●",
-    };
   }
 }

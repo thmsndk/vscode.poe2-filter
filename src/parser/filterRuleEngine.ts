@@ -300,13 +300,18 @@ export function compareNumeric(
   }
 }
 
-export function parseRules(document: vscode.TextDocument): FilterRule[] {
+export function parseRules(input: vscode.TextDocument | string): FilterRule[] {
   const rules: FilterRule[] = [];
   let currentRule: FilterRule | null = null;
 
-  for (let i = 0; i < document.lineCount; i++) {
-    const line = document.lineAt(i);
-    const text = line.text.trim();
+  // Convert input to lines whether it's a TextDocument or string
+  const lines =
+    typeof input === "string"
+      ? input.split("\n")
+      : Array.from({ length: input.lineCount }, (_, i) => input.lineAt(i).text);
+
+  for (let i = 0; i < lines.length; i++) {
+    const text = lines[i].trim();
 
     if (text.startsWith("#") || text === "") {
       continue;
@@ -350,6 +355,7 @@ export function parseRules(document: vscode.TextDocument): FilterRule[] {
   if (currentRule) {
     rules.push(currentRule);
   }
+
   return rules;
 }
 
