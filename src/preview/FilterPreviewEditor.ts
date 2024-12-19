@@ -89,14 +89,12 @@ export class FilterPreviewEditor
       vscode.Uri.joinPath(this.context.extensionUri, "media", "preview.css")
     );
 
-    // Generate initial items
+    // Generate initial items with better spacing
     const sampleItems = this._generateSampleItems();
     const styledItems = this._applyFilterRules(sampleItems, rules);
-    const initialItems = styledItems.map((item) => ({
-      ...item,
-      x: Math.random() * 800 + 100,
-      y: Math.random() * 400 + 100,
-    }));
+
+    // Spread items in a more natural pattern
+    const initialItems = this._spreadItemsNaturally(styledItems);
 
     return `<!DOCTYPE html>
       <html>
@@ -477,5 +475,58 @@ export class FilterPreviewEditor
         ...styles,
       };
     });
+  }
+
+  private _spreadItemsNaturally(items: any[]): any[] {
+    const width = 1200;
+    const height = 800;
+    const padding = 50;
+
+    // Initialize items with random positions
+    let positions = items.map((item) => ({
+      ...item,
+      x: Math.random() * (width - 2 * padding) + padding,
+      y: Math.random() * (height - 2 * padding) + padding,
+      vx: 0, // velocity x
+      vy: 0, // velocity y
+    }));
+
+    // Run simulation to spread items apart
+    for (let iteration = 0; iteration < 50; iteration++) {
+      positions = positions.map((item) => {
+        let fx = 0,
+          fy = 0; // forces
+
+        // Apply repulsion forces from other items
+        positions.forEach((other) => {
+          if (other === item) return;
+
+          const dx = item.x - other.x;
+          const dy = item.y - other.y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+
+          if (distance < 200) {
+            // Minimum desired distance
+            const force = (200 - distance) / distance;
+            fx += dx * force * 0.5;
+            fy += dy * force * 0.5;
+          }
+        });
+
+        // Apply forces to velocity with damping
+        item.vx = (item.vx + fx) * 0.5;
+        item.vy = (item.vy + fy) * 0.5;
+
+        // Update position
+        return {
+          ...item,
+          x: Math.max(padding, Math.min(width - padding, item.x + item.vx)),
+          y: Math.max(padding, Math.min(height - padding, item.y + item.vy)),
+        };
+      });
+    }
+
+    // Remove velocity properties before returning
+    return positions.map(({ vx, vy, ...item }) => item);
   }
 }
