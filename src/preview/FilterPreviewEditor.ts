@@ -140,11 +140,41 @@ export class FilterPreviewEditor
               
               ctx.save();
               
-              // Draw item name
+              // Helper function to convert color array to rgba string
+              const toRGBA = (colorArr) => {
+                if (!colorArr) return 'rgba(200, 200, 200, 1)'; // Default color
+                const alpha = colorArr[3] !== undefined ? colorArr[3] / 255 : 1;
+                return \`rgba(\${colorArr[0]}, \${colorArr[1]}, \${colorArr[2]}, \${alpha})\`;
+              };
+              
+              // Calculate text metrics first (used for background and border)
               ctx.font = \`\${item.fontSize || 32}px Arial\`;
               ctx.textAlign = 'center';
               ctx.textBaseline = 'middle';
-              ctx.fillStyle = \`rgb(\${item.textColor.join(',')})\`;
+              const metrics = ctx.measureText(item.name);
+              const padding = 5;
+              const textWidth = metrics.width;
+              const textHeight = item.fontSize || 32;
+              const boxX = x - textWidth/2 - padding;
+              const boxY = y - textHeight/2 - padding;
+              const boxWidth = textWidth + padding * 2;
+              const boxHeight = textHeight + padding * 2;
+              
+              // Draw background if specified
+              if (item.backgroundColor) {
+                ctx.fillStyle = toRGBA(item.backgroundColor);
+                ctx.fillRect(boxX, boxY, boxWidth, boxHeight);
+              }
+              
+              // Draw border if specified
+              if (item.borderColor) {
+                ctx.strokeStyle = toRGBA(item.borderColor);
+                ctx.lineWidth = 2;
+                ctx.strokeRect(boxX, boxY, boxWidth, boxHeight);
+              }
+              
+              // Draw text
+              ctx.fillStyle = toRGBA(item.textColor);
               ctx.fillText(item.name, x, y);
               
               ctx.restore();
