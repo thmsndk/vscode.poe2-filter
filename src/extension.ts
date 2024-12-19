@@ -11,8 +11,7 @@ import { FilterCodeActionProvider } from "./diagnostics/filterCodeActions";
 import { MinimapIconDecorator } from "./decorations/minimapIconDecorator";
 
 import { CodelensProvider } from "./CodelensProvider";
-import Player from "play-sound";
-import { execFile } from "child_process";
+import { SoundPlayer } from "./utils/soundPlayer";
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -29,7 +28,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   // Register the formatter
   const formatter = new FilterFormatter();
-  const formattingProvider = 
+  const formattingProvider =
     vscode.languages.registerDocumentFormattingEditProvider("poe2-filter", {
       async provideDocumentFormattingEdits(
         document: vscode.TextDocument
@@ -203,7 +202,6 @@ export function activate(context: vscode.ExtensionContext) {
     )
   );
 
-  const player = Player({});
   // Register code lens
   context.subscriptions.push(
     vscode.languages.registerCodeLensProvider(
@@ -211,30 +209,19 @@ export function activate(context: vscode.ExtensionContext) {
       new CodelensProvider()
     )
   );
-  
+
   // Register command
   context.subscriptions.push(
     vscode.commands.registerCommand(
       "poe2-filter.codelensAction",
-      (sound, volume) => {
+      async (sound, volume) => {
         const soundPath = vscode.Uri.joinPath(
           context.extensionUri,
           "sounds",
           `${sound}.mp3`
         ).fsPath;
 
-        if (process.platform === "win32") {
-          execFile(vscode.Uri.joinPath(context.extensionUri, "sounds", "sounder.exe").fsPath, ['/vol', volume, soundPath]);
-        } else {
-          player.play(soundPath, (err: any) => {
-            if (err) {
-              console.error("Sound playback error:", err);
-              vscode.window.showErrorMessage(
-                `Failed to play sound: ${err.message || err}`
-              );
-            }
-          });
-        }
+        SoundPlayer.play(soundPath);
       }
     )
   );
