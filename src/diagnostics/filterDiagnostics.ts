@@ -3,6 +3,7 @@ import * as path from "path";
 import * as fs from "fs";
 import { checkRuleConflicts } from "./filterConflicts";
 // TODO: Forgetting a hide/show function above conditions or actions, especially if there is a comment above it saying "Show" or "Hide"
+// TODO: Suggest using == for comparison instead of = or not at all, as the game will validate the name
 interface CommandPattern {
   name?: string;
   match?: string;
