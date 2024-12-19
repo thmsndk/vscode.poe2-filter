@@ -12,6 +12,7 @@ import { MinimapIconDecorator } from "./decorations/minimapIconDecorator";
 
 import { CodelensProvider } from "./CodelensProvider";
 import { SoundPlayer } from "./utils/soundPlayer";
+import path from "path";
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -221,7 +222,7 @@ export function activate(context: vscode.ExtensionContext) {
           `AlertSound${sound}.mp3`
         ).fsPath;
 
-        SoundPlayer.play(soundPath);
+        SoundPlayer.play(soundPath, volume);
       }
     )
   );
@@ -230,11 +231,11 @@ export function activate(context: vscode.ExtensionContext) {
       "poe2-filter.playCustomSound",
       async (sound, volume) => {
         const soundPath = vscode.Uri.joinPath(
-          vscode.workspace.workspaceFolders![0].uri,
+          vscode.Uri.file(path.dirname(vscode.window.activeTextEditor?.document.uri.fsPath || vscode.workspace.workspaceFolders![0].uri.fsPath)),
           `${sound}`
         ).fsPath;
 
-        SoundPlayer.play(soundPath);
+        SoundPlayer.play(soundPath, volume);
       }
     )
   );

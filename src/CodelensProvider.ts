@@ -38,8 +38,8 @@ export class CodelensProvider implements vscode.CodeLensProvider {
 				new vscode.Position(i, line.text.indexOf(x) + x.length)
 				);
 				const cmd = {
-					title: "Play custom sound",
-					tooltip: "Play custom sound",
+					title: `Play ${sound}`,
+					tooltip: `Play ${sound}`,
 					command: "poe2-filter.playCustomSound",
 					arguments: [sound, volume]
 				};

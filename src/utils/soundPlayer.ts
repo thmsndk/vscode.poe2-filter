@@ -43,7 +43,8 @@ export class SoundPlayer {
 
   private static getPlayerCommand(
     player: string,
-    soundPath: string
+    soundPath: string,
+    volume = 300
   ): {
     cmd: string;
     args: string[];
@@ -128,6 +129,8 @@ export class SoundPlayer {
       case "afplay":
         return { cmd: "afplay", args: [soundPath], options: baseOptions };
       case "paplay":
+        // max 65536
+        return { cmd: "paplay", args: ['--volume', `${(volume/300)*65536}`, soundPath], options: baseOptions };
       case "aplay":
         return { cmd: player, args: [soundPath], options: baseOptions };
       case "mplayer":
@@ -152,7 +155,7 @@ export class SoundPlayer {
     }
   }
 
-  static play(soundPath: string): void {
+  static play(soundPath: string, volume : number): void {
     if (this.selectedPlayer === null) {
       this.initialize();
     }
@@ -166,7 +169,8 @@ export class SoundPlayer {
       console.log("Playing sound with:", this.selectedPlayer);
       const { cmd, args, options } = this.getPlayerCommand(
         this.selectedPlayer,
-        soundPath
+        soundPath,
+        volume
       );
 
       const childProcess = spawn(cmd, args, options);
