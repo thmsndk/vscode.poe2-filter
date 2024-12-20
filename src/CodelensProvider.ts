@@ -1,4 +1,6 @@
 import * as vscode from 'vscode';
+import * as fs from 'fs';
+import * as path from 'path';
 
 /**
  * CodelensProvider
@@ -43,7 +45,12 @@ export class CodelensProvider implements vscode.CodeLensProvider {
 					command: "poe2-filter.playCustomSound",
 					arguments: [sound, volume]
 				};
-				this.codeLenses.push(new vscode.CodeLens(range, cmd));
+				const currentDir = vscode.Uri.file(path.dirname(vscode.window.activeTextEditor?.document.uri.fsPath || vscode.workspace.workspaceFolders![0].uri.fsPath));
+				if (fs.existsSync(path.join(currentDir.fsPath, sound)))
+				{
+					console.log(`Custom sound file exists: ${sound}`);
+					this.codeLenses.push(new vscode.CodeLens(range, cmd));
+				}
 			}
 		}
 		return this.codeLenses;

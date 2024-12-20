@@ -239,7 +239,8 @@ export function activate(context: vscode.ExtensionContext) {
         SoundPlayer.play(soundPath, volume);
       }
     )
-
+  );
+  
   // Register the preview editor
   context.subscriptions.push(FilterPreviewEditor.register(context));
 
