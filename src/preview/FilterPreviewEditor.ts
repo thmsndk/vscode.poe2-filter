@@ -44,7 +44,7 @@ export class FilterPreviewEditor
     const filterContent = await vscode.workspace.fs.readFile(document.uri);
     const filterText = Buffer.from(filterContent).toString("utf8");
     const rules = parseRules(filterText);
-    // console.log("Parsed rules:", JSON.stringify(rules, null, 2)); // Debug log
+    console.log("Parsed rules:", JSON.stringify(rules, null, 2)); // Debug log
 
     // Set up initial HTML content with the preview
     webviewPanel.webview.html = this._getPreviewHtml(
@@ -136,7 +136,7 @@ export class FilterPreviewEditor
             }
             
             function drawItem(item) {
-              if (!item || item.hidden) return;
+              if (!item) return;
               
               const x = (item.x - camera.x) * camera.zoom;
               const y = (item.y - camera.y) * camera.zoom;
@@ -221,6 +221,14 @@ export class FilterPreviewEditor
               // Draw text
               ctx.fillStyle = toRGBA(item.textColor);
               ctx.fillText(item.name, x, y);
+              
+              // Draw HIDDEN indicator
+              if (item.hidden) {
+                const hiddenFontSize = Math.max(16 * camera.zoom, 16);
+                ctx.font = \`bold \${hiddenFontSize}px Arial\`;
+                ctx.fillStyle = 'rgba(255, 0, 0, 0.8)';
+                ctx.fillText('HIDDEN', x, y + textHeight/2 + padding + hiddenFontSize/2);
+              }
               
               ctx.restore();
             }
@@ -378,7 +386,7 @@ export class FilterPreviewEditor
             
             // Add function to check if mouse is over an item
             function isMouseOverItem(mouseX, mouseY, item) {
-              if (!item || item.hidden) return false;
+              if (!item) return false;
               
               const x = (item.x - camera.x) * camera.zoom;
               const y = (item.y - camera.y) * camera.zoom;
@@ -668,12 +676,10 @@ export class FilterPreviewEditor
     const items: FilterItem[] = [];
 
     rules.forEach((rule) => {
-      if (rule.isShow) {
-        // Generate an item based on the rule conditions
-        const item = generateItemFromRule(rule);
-        if (item) {
-          items.push(item);
-        }
+      // Generate an item based on the rule conditions
+      const item = generateItemFromRule(rule);
+      if (item) {
+        items.push(item);
       }
     });
 
