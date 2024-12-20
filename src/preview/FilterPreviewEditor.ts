@@ -197,7 +197,7 @@ export class FilterPreviewEditor
               ctx.textAlign = 'center';
               ctx.textBaseline = 'middle';
               const metrics = ctx.measureText(item.name);
-              const padding = 5 * camera.zoom;
+              const padding = 10 * camera.zoom;
               const textWidth = metrics.width;
               const textHeight = fontSize;
               const boxX = x - textWidth/2 - padding;
