@@ -12,6 +12,7 @@ A Visual Studio Code extension for Path of Exile 2 item filter files.
 - [Document Outline](#document-outline) for easy navigation
 - [Error Detection and Validation](#error-detection-and-validation) for common mistakes
   - [Rule Conflict Detection](#rule-conflict-detection) to identify redundant rules
+- [Sound Playback](#sound-playback) for testing alert sounds directly in the editor
 
 ## Feature Details
 
@@ -115,6 +116,22 @@ Identifies when filter rules may never trigger due to previous rules:
 
 ![Conflicting Rules](images/conflicting-rule.png)
 
+### Sound Playback
+
+Test your filter's sound alerts directly in the editor (implemented by [@RobertFrydenlund](https://github.com/RobertFrydenlund)):
+
+- CodeLens integration provides a "Play sound" button next to PlayAlertSound commands
+- Supports both default and custom sound files:
+  - Built-in Path of Exile alert sounds (AlertSound1-16)
+  - Named sounds (ShAlchemy, ShBlessed, etc.)
+  - Custom sound files via CustomAlertSound
+- Cross-platform compatibility:
+  - Windows: Uses PowerShell MediaPlayer
+  - macOS: Uses afplay
+  - Linux: Supports multiple players (paplay, aplay, mpg123, etc.)
+- Volume control support (where available)
+- Intelligent player selection based on system capabilities
+
 ## Known Issues
 
 - None currently reported
@@ -168,5 +185,9 @@ This extension was inspired by and builds upon ideas from:
 - [Neversink's FilterBlade VSCode Extension](https://marketplace.visualstudio.com/items?itemName=Neversink.filterblade-next) - Inspiration for filter syntax highlighting
 - [Color Highlight](https://marketplace.visualstudio.com/items?itemName=naumovs.color-highlight) - Color previews and editing
 - [Advanced POE Filter](https://marketplace.visualstudio.com/items?itemName=isuke.vscode-advanced-poe-filter) - Document Outline view
+
+Special thanks to:
+
+- [RobertFrydenlund](https://github.com/RobertFrydenlund) for implementing the sound playback feature
 
 Thanks to these projects for paving the way in POE filter development tooling.

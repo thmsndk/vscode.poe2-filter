@@ -21,6 +21,12 @@ All notable changes to the "poe2-filter" extension will be documented in this fi
   - Sample items for testing
   - Clear indication of hidden items
   - Support for Continue rules
+- ✨ Added Sound Playback (thanks to [@RobertFrydenlund](https://github.com/RobertFrydenlund))
+  - Play alert sounds directly in the editor
+  - CodeLens integration for PlayAlertSound commands
+  - Support for both default and custom sound files
+  - Cross-platform compatibility (Windows, macOS, Linux)
+  - Volume control support (where available)
 
 ### Fixed
 
