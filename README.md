@@ -79,6 +79,7 @@ Features:
 - Supports Continue rules showing combined effects
 
 ![Live Preview](images/live-preview.png)
+_Preview showing NeverSink's Indepth Loot Filter v0.2.1 with Fontin SmallCaps font_
 
 ### Document Formatting
 
