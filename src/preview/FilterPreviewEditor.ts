@@ -316,14 +316,18 @@ export class FilterPreviewEditor
             canvas.addEventListener('wheel', (e) => {
               e.preventDefault();
               const zoomSpeed = 0.1;
-              const mouseX = e.clientX;
-              const mouseY = e.clientY;
               
-              // Calculate world position of mouse before zoom
-              const worldX = (mouseX + camera.x) / camera.zoom;
-              const worldY = (mouseY + camera.y) / camera.zoom;
+              // Get mouse position relative to canvas
+              const rect = canvas.getBoundingClientRect();
+              const mouseX = e.clientX - rect.left;
+              const mouseY = e.clientY - rect.top;
+              
+              // Convert mouse position to world space before zoom
+              const worldX = mouseX / camera.zoom + camera.x;
+              const worldY = mouseY / camera.zoom + camera.y;
               
               // Update zoom
+              const oldZoom = camera.zoom;
               if (e.deltaY < 0) {
                 camera.zoom *= (1 + zoomSpeed);
               } else {
@@ -333,9 +337,9 @@ export class FilterPreviewEditor
               // Clamp zoom
               camera.zoom = Math.min(Math.max(camera.zoom, 0.1), 5);
               
-              // Adjust camera to keep mouse position fixed
-              camera.x = worldX * camera.zoom - mouseX;
-              camera.y = worldY * camera.zoom - mouseY;
+              // Adjust camera position to zoom towards mouse position
+              camera.x = worldX - (mouseX / camera.zoom);
+              camera.y = worldY - (mouseY / camera.zoom);
             });
             
             // Function to fit all items in view
