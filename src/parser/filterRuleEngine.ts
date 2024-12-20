@@ -131,6 +131,7 @@ export function wouldRuleMatchItem(
         break;
     }
   }
+
   return true;
 }
 
@@ -251,8 +252,26 @@ export function generateItemFromRule(rule: FilterRule): FilterItem {
         }[keyof FilterItem];
         const prop = (condition.type.charAt(0).toLowerCase() +
           condition.type.slice(1)) as NumericProps;
-        if (prop && compareNumeric(item[prop], condition)) {
-          item[prop] = Number(condition.values[0]);
+
+        if (prop) {
+          const value = Number(condition.values[0]);
+          switch (condition.operator) {
+            case ">=":
+              item[prop] = value;
+              break;
+            case ">":
+              item[prop] = value + 1;
+              break;
+            case "<=":
+              item[prop] = value;
+              break;
+            case "<":
+              item[prop] = value - 1;
+              break;
+            case "==":
+              item[prop] = value;
+              break;
+          }
         }
         break;
       }
@@ -286,6 +305,15 @@ export function generateItemFromRule(rule: FilterRule): FilterItem {
       item.name = classes[Math.floor(Math.random() * classes.length)];
     } else {
       item.name = "Item";
+    }
+
+    // Add stack size in front of the name if there is one
+    if (item.stackSize && item.stackSize > 1) {
+      item.name = `${item.stackSize}x ${item.name}`;
+    }
+
+    if (item.baseType === "Gold") {
+      console.log("Gold", rule, item);
     }
   }
 
