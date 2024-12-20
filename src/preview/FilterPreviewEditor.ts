@@ -8,6 +8,10 @@ import {
 } from "../parser/filterRuleEngine";
 import { calculateNameSimilarity } from "../utils/stringUtils";
 
+type ExtendedFilterItem = FilterItem & {
+  ruleLineNumber?: number;
+};
+
 export class FilterPreviewEditor
   implements vscode.CustomReadonlyEditorProvider
 {
@@ -76,6 +80,22 @@ export class FilterPreviewEditor
           case "showSampleItems":
             const sampleItems = this._generateSampleItems();
             this._updatePreview(webviewPanel.webview, rules, sampleItems);
+            break;
+
+          case "jumpToRule":
+            const textDocument = await vscode.workspace.openTextDocument(
+              document.uri
+            );
+            const editor = await vscode.window.showTextDocument(
+              textDocument,
+              vscode.ViewColumn.One
+            );
+            const position = new vscode.Position(message.lineNumber - 1, 0);
+            editor.selection = new vscode.Selection(position, position);
+            editor.revealRange(
+              new vscode.Range(position, position),
+              vscode.TextEditorRevealType.InCenter
+            );
             break;
         }
       },
@@ -229,7 +249,7 @@ export class FilterPreviewEditor
                 ctx.fillStyle = 'rgba(255, 0, 0, 0.8)';
                 ctx.fillText('HIDDEN', x, y + textHeight/2 + padding + hiddenFontSize/2);
               }
-              
+                           
               ctx.restore();
             }
             
@@ -395,15 +415,24 @@ export class FilterPreviewEditor
               const fontSize = (item.fontSize || 32) * camera.zoom;
               ctx.font = \`\${fontSize}px Arial\`;
               const metrics = ctx.measureText(item.name);
-              const padding = 5 * camera.zoom;
+              const padding = 10 * camera.zoom;
               
               const boxX = x - metrics.width/2 - padding;
               const boxY = y - fontSize/2 - padding;
               const boxWidth = metrics.width + padding * 2;
               const boxHeight = fontSize + padding * 2;
               
-              return mouseX >= boxX && mouseX <= boxX + boxWidth &&
+              const isOver = mouseX >= boxX && mouseX <= boxX + boxWidth &&
                      mouseY >= boxY && mouseY <= boxY + boxHeight;
+
+              // Change cursor based on if item has a rule to jump to
+              if (isOver && item.ruleLineNumber) {
+                canvas.style.cursor = 'pointer';
+              } else if (!isDragging) {
+                canvas.style.cursor = 'grab';
+              }
+              
+              return isOver;
             }
             
             // Add mousemove handler for tooltip
@@ -471,6 +500,23 @@ export class FilterPreviewEditor
                 tooltip.style.display = 'none';
               }
             });
+
+            canvas.addEventListener('click', (e) => {
+              if (isDragging) return; // Don't handle clicks while dragging
+              
+              const rect = canvas.getBoundingClientRect();
+              const mouseX = e.clientX - rect.left;
+              const mouseY = e.clientY - rect.top;
+              
+              const clickedItem = items.find(item => isMouseOverItem(mouseX, mouseY, item));
+              
+              if (clickedItem?.ruleLineNumber) {
+                vscode.postMessage({ 
+                  command: 'jumpToRule',
+                  lineNumber: clickedItem.ruleLineNumber
+                });
+              }
+            });
           </script>
         </body>
       </html>`;
@@ -479,7 +525,7 @@ export class FilterPreviewEditor
   private _updatePreview(
     webview: vscode.Webview,
     rules: FilterRule[],
-    items: FilterItem[]
+    items: ExtendedFilterItem[]
   ): void {
     const styledItems = this._applyFilterRules(items, rules);
     const spreadItems = this._spreadItemsNaturally(styledItems);
@@ -491,7 +537,7 @@ export class FilterPreviewEditor
   }
 
   // Helper methods for generating and styling items
-  private _generateSampleItems(): FilterItem[] {
+  private _generateSampleItems(): ExtendedFilterItem[] {
     return [
       // Currency Items
       {
@@ -565,7 +611,10 @@ export class FilterPreviewEditor
     ];
   }
 
-  private _applyFilterRules(items: FilterItem[], rules: FilterRule[]): any[] {
+  private _applyFilterRules(
+    items: ExtendedFilterItem[],
+    rules: FilterRule[]
+  ): ExtendedFilterItem[] {
     console.log("Applying rules to items:", {
       items: JSON.stringify(items, null, 2),
       rules: JSON.stringify(rules, null, 2),
@@ -652,7 +701,9 @@ export class FilterPreviewEditor
     });
   }
 
-  private _spreadItemsNaturally(items: any[]): any[] {
+  private _spreadItemsNaturally(
+    items: ExtendedFilterItem[]
+  ): ExtendedFilterItem[] {
     const width = 4000;
     const height = 3000;
     const cellSize = 300; // Minimum space between items
@@ -672,14 +723,16 @@ export class FilterPreviewEditor
     });
   }
 
-  private _generateItemsFromRules(rules: FilterRule[]): FilterItem[] {
-    const items: FilterItem[] = [];
+  private _generateItemsFromRules(rules: FilterRule[]): ExtendedFilterItem[] {
+    const items: ExtendedFilterItem[] = [];
 
     rules.forEach((rule) => {
-      // Generate an item based on the rule conditions
       const item = generateItemFromRule(rule);
       if (item) {
-        items.push(item);
+        items.push({
+          ...item,
+          ruleLineNumber: rule.lineNumber,
+        });
       }
     });
 
