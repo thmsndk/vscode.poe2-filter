@@ -1,7 +1,41 @@
 import * as vscode from "vscode";
 
+type ConditionType =
+  | "BaseType"
+  | "Class"
+  | "Sockets"
+  | "Quality"
+  | "ItemLevel"
+  | "DropLevel"
+  | "AreaLevel"
+  | "GemLevel"
+  | "MapTier"
+  | "WaystoneTier"
+  | "StackSize"
+  | "Height"
+  | "Width"
+  | "BaseArmour"
+  | "BaseEnergyShield"
+  | "BaseEvasion"
+  | "Rarity"
+  | "FracturedItem"
+  | "Mirrored"
+  | "Corrupted"
+  | "SynthesisedItem"
+  | "AnyEnchantment"
+  | "Identified";
+
+type ActionType =
+  | "SetFontSize"
+  | "PlayAlertSound"
+  | "MinimapIcon"
+  | "PlayEffect"
+  | "SetTextColor"
+  | "SetBorderColor"
+  | "SetBackgroundColor";
+
 export interface FilterCondition {
-  type: string; // Class, BaseType, MapTier, etc.
+  type: ConditionType;
   operator?: string; // >=, <=, ==, etc.
   values: string[]; // For BaseType/Class can have multiple values
   lineNumber: number;
@@ -16,7 +50,7 @@ export interface FilterRule {
 }
 
 export interface FilterAction {
-  type: string;
+  type: ActionType;
   values: (string | number)[];
 }
 
@@ -134,6 +168,10 @@ export function wouldRuleMatchItem(
           return false;
         }
         break;
+      default: {
+        const _exhaustiveCheck: never = condition.type;
+        return false;
+      }
     }
   }
 
@@ -328,6 +366,10 @@ export function generateItemFromRule(rule: FilterRule): FilterItem {
       case "Identified":
         item.identified = condition.values[0] === "True";
         break;
+      default: {
+        const _exhaustiveCheck: never = condition.type;
+        break;
+      }
     }
 
     // Generate a unique name for the item, preffering baseType over class, pickinga random name, as that is not important for rule validation
@@ -437,7 +479,7 @@ export function parseCondition(
   lineNumber: number
 ): FilterCondition | null {
   const parts = text.split(/\s+/);
-  const type = parts[0];
+  const type = parts[0] as ConditionType;
 
   switch (type) {
     case "Class":
@@ -490,6 +532,7 @@ export function parseCondition(
         lineNumber,
       };
     default:
+      const _exhaustiveCheck: never = type;
       return null;
   }
 }
