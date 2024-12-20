@@ -49,6 +49,14 @@ export interface FilterItem {
   enchanted?: boolean;
   identified?: boolean;
 }
+type NumericProps = Exclude<
+  {
+    [K in keyof FilterItem]: FilterItem[K] extends number | undefined
+      ? K
+      : never;
+  }[keyof FilterItem],
+  undefined
+>;
 
 export function wouldRuleMatchItem(
   rule: FilterRule,
@@ -80,9 +88,6 @@ export function wouldRuleMatchItem(
       case "BaseArmour":
       case "BaseEnergyShield":
       case "BaseEvasion": {
-        type NumericProps = {
-          [K in keyof FilterItem]: FilterItem[K] extends number ? K : never;
-        }[keyof FilterItem];
         const prop = (condition.type.charAt(0).toLowerCase() +
           condition.type.slice(1)) as NumericProps;
         if (
@@ -277,9 +282,6 @@ export function generateItemFromRule(rule: FilterRule): FilterItem {
       case "BaseArmour":
       case "BaseEnergyShield":
       case "BaseEvasion": {
-        type NumericProps = {
-          [K in keyof FilterItem]: FilterItem[K] extends number ? K : never;
-        }[keyof FilterItem];
         const prop = (condition.type.charAt(0).toLowerCase() +
           condition.type.slice(1)) as NumericProps;
 
