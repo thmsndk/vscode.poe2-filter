@@ -352,11 +352,7 @@ export class FilterPreviewEditor
               const message = event.data;
               switch (message.type) {
                 case 'update':
-                  items = message.items.map(item => ({
-                    ...item,
-                    x: Math.random() * (canvas.width * 0.6) + (canvas.width * 0.2),
-                    y: Math.random() * (canvas.height * 0.6) + (canvas.height * 0.2)
-                  }));
+                  items = message.items;
                   fitItemsInView(); // Fit items after updating
                   break;
               }
