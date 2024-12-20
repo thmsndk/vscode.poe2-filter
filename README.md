@@ -50,20 +50,7 @@ To open the Live Filter Preview:
 - Use the command palette (Ctrl/Cmd+Shift+P) and search for "Show Filter Preview"
 - Right-click the file in the explorer and select "Show Filter Preview"
 
-#### Font Setup (Optional)
-
-For the most authentic Path of Exile look, you can install the Fontin font family:
-
-1. Visit [exljbris Font Foundry](https://www.exljbris.com/fontin.html)
-2. Scroll to the "Fontin" section
-3. Download and install the font for your operating system:
-   - Mac users: Download the Type1 version
-   - Windows users: Download the TTF version
-   - For OpenType support: Download the OpenType version
-
-If Fontin is not installed, the preview will fall back to Arial, Helvetica Neue, or your system's default sans-serif font.
-
-Features:
+#### Features:
 
 - Real-time updates as you edit your filter
 - Visual representation of all styling rules:
@@ -77,6 +64,30 @@ Features:
 - Sample items to test your filter
 - Clearly indicates hidden items
 - Supports Continue rules showing combined effects
+
+#### Layout
+
+The preview displays items in a spiral pattern, starting from the center:
+The first rule's items appear in the center
+Subsequent rules spiral outward clockwise
+This layout helps visualize rule priority:
+
+- Central items are caught by earlier rules
+- Outer items are caught by later rules
+  Items affected by 'Continue' rules show combined styling from multiple rules
+
+#### Font Setup (Optional)
+
+For the most authentic Path of Exile look, you can install the Fontin font family:
+
+1. Visit [exljbris Font Foundry](https://www.exljbris.com/fontin.html)
+2. Scroll to the "Fontin" section
+3. Download and install the font for your operating system:
+   - Mac users: Download the Type1 version
+   - Windows users: Download the TTF version
+   - For OpenType support: Download the OpenType version
+
+If Fontin is not installed, the preview will fall back to Arial, Helvetica Neue, or your system's default sans-serif font.
 
 ![Live Preview](images/live-preview.png)
 _Preview showing NeverSink's Indepth Loot Filter v0.2.1 with Fontin SmallCaps font_
