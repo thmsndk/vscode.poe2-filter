@@ -244,12 +244,12 @@ export class FilterPreviewEditor
               
               // Draw HIDDEN indicator
               if (item.hidden) {
-                const hiddenFontSize = Math.max(16 * camera.zoom, 16);
+                const hiddenFontSize = (item.fontSize || 32) * camera.zoom * 1.5;
                 ctx.font = \`bold \${hiddenFontSize}px Arial\`;
                 ctx.fillStyle = 'rgba(255, 0, 0, 0.8)';
                 ctx.fillText('HIDDEN', x, y + textHeight/2 + padding + hiddenFontSize/2);
               }
-                           
+                                                      
               ctx.restore();
             }
             
