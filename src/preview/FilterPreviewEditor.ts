@@ -621,17 +621,18 @@ export class FilterPreviewEditor
     });
 
     return items.map((item) => {
-      // Find the first matching rule
-      const matchingRule = rules.find((rule) => {
-        const matches = wouldRuleMatchItem(rule, item);
-        // console.log(`Rule match check for ${item.name}:`, {
-        //   rule,
-        //   matches,
-        // });
-        return matches;
-      });
+      // Find all matching rules until we hit a non-continue rule
+      const matchingRules: FilterRule[] = [];
+      for (const rule of rules) {
+        if (wouldRuleMatchItem(rule, item)) {
+          matchingRules.push(rule);
+          if (!rule.hasContinue) {
+            break;
+          }
+        }
+      }
 
-      if (!matchingRule) {
+      if (matchingRules.length === 0) {
         console.log(`No matching rule for ${item.name}`, item);
         return {
           ...item,
@@ -642,9 +643,8 @@ export class FilterPreviewEditor
         };
       }
 
-      console.log(`Found matching rule for ${item.name}:`, matchingRule);
+      console.log(`Found matching rules for ${item.name}:`, matchingRules);
 
-      // Update the styles object type
       const styles: {
         matched: boolean;
         hidden: boolean;
@@ -654,41 +654,45 @@ export class FilterPreviewEditor
         backgroundColor?: number[];
         beam?: { color: string; temporary: boolean };
         minimapIcon?: string;
+        ruleLineNumber?: number;
       } = {
         matched: true,
-        hidden: !matchingRule.isShow,
+        hidden: !matchingRules[matchingRules.length - 1].isShow, // Use last rule's Show/Hide
         fontSize: 32,
         textColor: [200, 200, 200],
+        ruleLineNumber: matchingRules[matchingRules.length - 1].lineNumber, // Keep last matching rule's line number so navigating goes to that rule
       };
 
-      // Apply each action from the rule
-      for (const action of matchingRule.actions) {
-        console.log(`Applying action for ${item.name}:`, action);
-        switch (action.type) {
-          case "SetFontSize":
-            styles.fontSize = parseInt(action.values[0] as string);
-            break;
-          case "SetTextColor":
-            styles.textColor = action.values
-              .slice(0, 4)
-              .map((v) => parseInt(v as string));
-            break;
-          case "SetBorderColor":
-            styles.borderColor = action.values
-              .slice(0, 4)
-              .map((v) => parseInt(v as string));
-            break;
-          case "SetBackgroundColor":
-            styles.backgroundColor = action.values
-              .slice(0, 4)
-              .map((v) => parseInt(v as string));
-            break;
-          case "PlayEffect":
-            styles.beam = {
-              color: action.values[0] as string,
-              temporary: action.values[1] === "Temp",
-            };
-            break;
+      // Apply actions from all matching rules in order
+      for (const rule of matchingRules) {
+        for (const action of rule.actions) {
+          console.log(`Applying action for ${item.name}:`, action);
+          switch (action.type) {
+            case "SetFontSize":
+              styles.fontSize = parseInt(action.values[0] as string);
+              break;
+            case "SetTextColor":
+              styles.textColor = action.values
+                .slice(0, 4)
+                .map((v) => parseInt(v as string));
+              break;
+            case "SetBorderColor":
+              styles.borderColor = action.values
+                .slice(0, 4)
+                .map((v) => parseInt(v as string));
+              break;
+            case "SetBackgroundColor":
+              styles.backgroundColor = action.values
+                .slice(0, 4)
+                .map((v) => parseInt(v as string));
+              break;
+            case "PlayEffect":
+              styles.beam = {
+                color: action.values[0] as string,
+                temporary: action.values[1] === "Temp",
+              };
+              break;
+          }
         }
       }
 
