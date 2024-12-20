@@ -50,6 +50,19 @@ To open the Live Filter Preview:
 - Use the command palette (Ctrl/Cmd+Shift+P) and search for "Show Filter Preview"
 - Right-click the file in the explorer and select "Show Filter Preview"
 
+#### Font Setup (Optional)
+
+For the most authentic Path of Exile look, you can install the Fontin font family:
+
+1. Visit [exljbris Font Foundry](https://www.exljbris.com/fontin.html)
+2. Scroll to the "Fontin" section
+3. Download and install the font for your operating system:
+   - Mac users: Download the Type1 version
+   - Windows users: Download the TTF version
+   - For OpenType support: Download the OpenType version
+
+If Fontin is not installed, the preview will fall back to Arial, Helvetica Neue, or your system's default sans-serif font.
+
 Features:
 
 - Real-time updates as you edit your filter

@@ -125,6 +125,15 @@ export class FilterPreviewEditor
     //   console.log(`${item.name}:`, JSON.stringify(item, null, 2));
     // });
 
+    const fontFace = `
+      <style>
+        @font-face {
+          font-family: 'Fontin SmallCaps';
+          src: local('Fontin SmallCaps');
+        }
+      </style>
+    `;
+
     return `<!DOCTYPE html>
       <html>
         <head>
@@ -137,6 +146,7 @@ export class FilterPreviewEditor
             <button id="showSampleItems">Show Sample Items</button>
           </div>
           <canvas id="filterPreview"></canvas>
+          ${fontFace}
           <script>
             const vscode = acquireVsCodeApi();
             const canvas = document.getElementById('filterPreview');
@@ -213,7 +223,7 @@ export class FilterPreviewEditor
               
               // Calculate text metrics (used for background and border)
               const fontSize = (item.fontSize || 32) * camera.zoom;
-              ctx.font = \`\${fontSize}px Arial\`;
+              ctx.font = \`\${fontSize}px "Fontin SmallCaps", Arial\`;
               ctx.textAlign = 'center';
               ctx.textBaseline = 'middle';
               const metrics = ctx.measureText(item.name);
@@ -245,7 +255,7 @@ export class FilterPreviewEditor
               // Draw HIDDEN indicator
               if (item.hidden) {
                 const hiddenFontSize = (item.fontSize || 32) * camera.zoom * 1.5;
-                ctx.font = \`bold \${hiddenFontSize}px Arial\`;
+                ctx.font = \`bold \${hiddenFontSize}px "Fontin SmallCaps", Arial\`;
                 ctx.fillStyle = 'rgba(255, 0, 0, 0.8)';
                 ctx.fillText('HIDDEN', x, y + textHeight/2 + padding + hiddenFontSize/2);
               }
@@ -419,7 +429,7 @@ export class FilterPreviewEditor
               
               // Calculate text metrics for hit testing
               const fontSize = (item.fontSize || 32) * camera.zoom;
-              ctx.font = \`\${fontSize}px Arial\`;
+              ctx.font = \`\${fontSize}px "Fontin SmallCaps", Arial\`;
               const metrics = ctx.measureText(item.name);
               const padding = 10 * camera.zoom;
               
