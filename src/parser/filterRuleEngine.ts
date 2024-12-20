@@ -139,7 +139,9 @@ export function doConditionsOverlap(
   prev: FilterCondition,
   current: FilterCondition
 ): boolean {
-  if (prev.type !== current.type) return false;
+  if (prev.type !== current.type) {
+    return false;
+  }
 
   // Special handling for Rarity
   if (prev.type === "Rarity") {
@@ -152,7 +154,9 @@ export function doConditionsOverlap(
       const prevIndex = rarityLevels.indexOf(prevRarity);
       const currentIndex = rarityLevels.indexOf(currentRarity);
 
-      if (prevIndex === -1 || currentIndex === -1) return false;
+      if (prevIndex === -1 || currentIndex === -1) {
+        return false;
+      }
 
       if (prev.operator === "<" || prev.operator === "<=") {
         return currentIndex <= prevIndex;

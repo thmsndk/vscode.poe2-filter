@@ -24,11 +24,15 @@ export function parseFilter(content: string): FilterRule[] {
     const trimmedLine = line.trim();
 
     // Skip empty lines and comments
-    if (!trimmedLine || trimmedLine.startsWith("#")) continue;
+    if (!trimmedLine || trimmedLine.startsWith("#")) {
+      continue;
+    }
 
     // Start a new rule block
     if (trimmedLine === "Show" || trimmedLine === "Hide") {
-      if (currentRule) rules.push(currentRule);
+      if (currentRule) {
+        rules.push(currentRule);
+      }
       currentRule = {
         type: trimmedLine as "Show" | "Hide",
         conditions: [],
@@ -38,7 +42,9 @@ export function parseFilter(content: string): FilterRule[] {
     }
 
     // Skip if we're not in a rule block
-    if (!currentRule) continue;
+    if (!currentRule) {
+      continue;
+    }
 
     // Parse conditions and actions
     if (trimmedLine.startsWith("Set")) {
@@ -62,7 +68,9 @@ export function parseFilter(content: string): FilterRule[] {
   }
 
   // Add the last rule if exists
-  if (currentRule) rules.push(currentRule);
+  if (currentRule) {
+    rules.push(currentRule);
+  }
 
   return rules;
 }
