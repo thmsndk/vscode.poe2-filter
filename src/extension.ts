@@ -11,6 +11,10 @@ import { FilterCodeActionProvider } from "./diagnostics/filterCodeActions";
 import { MinimapIconDecorator } from "./decorations/minimapIconDecorator";
 import { FilterPreviewEditor } from "./preview/FilterPreviewEditor";
 
+import { CodelensProvider } from "./CodelensProvider";
+import { SoundPlayer } from "./utils/soundPlayer";
+import path from "path";
+
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
@@ -200,6 +204,43 @@ export function activate(context: vscode.ExtensionContext) {
     )
   );
 
+  // Register code lens
+  context.subscriptions.push(
+    vscode.languages.registerCodeLensProvider(
+      "poe2-filter",
+      new CodelensProvider()
+    )
+  );
+
+  // Register command
+  context.subscriptions.push(
+    vscode.commands.registerCommand(
+      "poe2-filter.playDefaultSound",
+      async (sound, volume) => {
+        const soundPath = vscode.Uri.joinPath(
+          context.extensionUri,
+          "sounds",
+          `AlertSound${sound}.mp3`
+        ).fsPath;
+
+        SoundPlayer.play(soundPath, volume);
+      }
+    )
+  );
+  context.subscriptions.push(
+    vscode.commands.registerCommand(
+      "poe2-filter.playCustomSound",
+      async (sound, volume) => {
+        const soundPath = vscode.Uri.joinPath(
+          vscode.Uri.file(path.dirname(vscode.window.activeTextEditor?.document.uri.fsPath || vscode.workspace.workspaceFolders![0].uri.fsPath)),
+          `${sound}`
+        ).fsPath;
+
+        SoundPlayer.play(soundPath, volume);
+      }
+    )
+  );
+  
   // Register the preview editor
   context.subscriptions.push(FilterPreviewEditor.register(context));
 
