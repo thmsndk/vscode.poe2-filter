@@ -58,18 +58,10 @@
         "priority": "option"
       }
     ],
-    "keybindings": [
-      {
-        "command": "poe2-filter.openPreview",
-        "key": "ctrl+shift+v",
-        "mac": "cmd+shift+v",
-        "when": "editorLangId == poe2-filter"
-      }
-    ],
     "commands": [
       {
         "command": "poe2-filter.openPreview",
-        "title": "Open Preview",
+        "title": "Show Filter Preview",
         "icon": "$(preview)",
         "category": "POE2 Filter"
       }
