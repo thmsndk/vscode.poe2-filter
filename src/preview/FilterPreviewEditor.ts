@@ -6,6 +6,7 @@ import {
   generateItemFromRule,
   parseRules,
 } from "../parser/filterRuleEngine";
+import { calculateNameSimilarity } from "../utils/stringUtils";
 
 export class FilterPreviewEditor
   implements vscode.CustomReadonlyEditorProvider
@@ -43,7 +44,7 @@ export class FilterPreviewEditor
     const filterContent = await vscode.workspace.fs.readFile(document.uri);
     const filterText = Buffer.from(filterContent).toString("utf8");
     const rules = parseRules(filterText);
-    console.log("Parsed rules:", JSON.stringify(rules, null, 2)); // Debug log
+    // console.log("Parsed rules:", JSON.stringify(rules, null, 2)); // Debug log
 
     // Set up initial HTML content with the preview
     webviewPanel.webview.html = this._getPreviewHtml(
@@ -99,6 +100,10 @@ export class FilterPreviewEditor
     const items = this._generateItemsFromRules(rules);
     const styledItems = this._applyFilterRules(items, rules);
     const initialItems = this._spreadItemsNaturally(styledItems);
+    // loop each item output the name and the item object
+    // initialItems.forEach((item) => {
+    //   console.log(`${item.name}:`, JSON.stringify(item, null, 2));
+    // });
 
     return `<!DOCTYPE html>
       <html>
@@ -160,23 +165,23 @@ export class FilterPreviewEditor
               
               // Draw beam effect if item has PlayEffect
               if (item.beam) {
-                const beamHeight = 300 * camera.zoom;  // Scale beam height with zoom
+                const beamHeight = 150 * camera.zoom;  // Reduced from 300 to 150
                 const beamColor = beamColors[item.beam.color] || beamColors.White;
                 const intensity = item.beam.temporary ? 0.8 : 1;
                 
                 ctx.shadowColor = toRGBA(beamColor, 0.8 * intensity);
-                ctx.shadowBlur = 15 * camera.zoom;  // Scale blur with zoom
+                ctx.shadowBlur = 15 * camera.zoom;
                 
                 ctx.beginPath();
                 ctx.strokeStyle = toRGBA(beamColor, intensity);
-                ctx.lineWidth = 2 * camera.zoom;  // Scale line width with zoom
+                ctx.lineWidth = 2 * camera.zoom;
                 ctx.moveTo(x, y);
                 ctx.lineTo(x, y - beamHeight);
                 ctx.stroke();
                 
                 ctx.beginPath();
                 ctx.strokeStyle = toRGBA(beamColor, 0.3 * intensity);
-                ctx.lineWidth = 6 * camera.zoom;  // Scale line width with zoom
+                ctx.lineWidth = 6 * camera.zoom;
                 ctx.moveTo(x, y);
                 ctx.lineTo(x, y - beamHeight);
                 ctx.stroke();
@@ -549,82 +554,21 @@ export class FilterPreviewEditor
   private _spreadItemsNaturally(items: any[]): any[] {
     const width = 4000;
     const height = 3000;
-    const padding = 200;
-    const baseSpacing = 400;
+    const cellSize = 300; // Minimum space between items
+    const centerX = width / 2;
+    const centerY = height / 2;
 
-    // Calculate "mass" and size for each item based on name length
-    let positions = items.map((item, index) => {
-      const angle = (index / items.length) * Math.PI * 2;
-      const radius = Math.sqrt(items.length) * 150;
-      const mass = Math.max(1, item.name.length / 10); // Mass based on name length
-      const size = Math.max(100, item.name.length * 15); // Size based on name length
+    return items.map((item, index) => {
+      // Create a spiral pattern
+      const angle = Math.sqrt(index) * Math.PI;
+      const radius = cellSize * Math.sqrt(index);
 
       return {
         ...item,
-        x: width / 2 + Math.cos(angle) * radius + (Math.random() - 0.5) * 300,
-        y: height / 2 + Math.sin(angle) * radius + (Math.random() - 0.5) * 300,
-        mass,
-        size,
-        vx: 0,
-        vy: 0,
+        x: centerX + radius * Math.cos(angle),
+        y: centerY + radius * Math.sin(angle),
       };
     });
-
-    // Run force-directed layout simulation
-    for (let iteration = 0; iteration < 200; iteration++) {
-      positions = positions.map((item) => {
-        let fx = 0,
-          fy = 0;
-
-        // Repulsion from other items, considering both items' sizes
-        positions.forEach((other) => {
-          if (other === item) return;
-
-          const dx = item.x - other.x;
-          const dy = item.y - other.y;
-          const distance = Math.sqrt(dx * dx + dy * dy);
-
-          // Combined spacing based on both items' sizes
-          const desiredSpacing = (item.size + other.size) / 2;
-
-          if (distance < desiredSpacing) {
-            // Force increases with combined mass and decreases with distance
-            const force = Math.pow(desiredSpacing - distance, 1.2) / distance;
-            const combinedMass = (item.mass + other.mass) / 2;
-
-            fx += dx * force * combinedMass * 0.5;
-            fy += dy * force * combinedMass * 0.5;
-          }
-        });
-
-        // Center gravity force inversely proportional to mass
-        const centerX = width / 2;
-        const centerY = height / 2;
-        const dx = centerX - item.x;
-        const dy = centerY - item.y;
-        const distanceToCenter = Math.sqrt(dx * dx + dy * dy);
-
-        // Heavier items resist center gravity more
-        const gravityFactor = 0.0002 / item.mass;
-        fx += dx * gravityFactor * distanceToCenter;
-        fy += dy * gravityFactor * distanceToCenter;
-
-        // Apply forces with mass-based damping
-        const damping = 0.98 / item.mass;
-        item.vx = (item.vx + fx) * damping;
-        item.vy = (item.vy + fy) * damping;
-
-        // Update position with bounds checking
-        return {
-          ...item,
-          x: Math.max(padding, Math.min(width - padding, item.x + item.vx)),
-          y: Math.max(padding, Math.min(height - padding, item.y + item.vy)),
-        };
-      });
-    }
-
-    // Remove temporary properties before returning
-    return positions.map(({ vx, vy, mass, size, ...item }) => item);
   }
 
   private _generateItemsFromRules(rules: FilterRule[]): FilterItem[] {
