@@ -56,8 +56,8 @@ export class FilterPreviewEditor
     const changeSubscription = vscode.workspace.onDidChangeTextDocument((e) => {
       if (e.document.uri.toString() === document.uri.toString()) {
         const updatedRules = parseRules(e.document.getText());
-        console.log("Updated rules:", JSON.stringify(updatedRules, null, 2)); // Debug log
-        this._updatePreview(webviewPanel.webview, updatedRules);
+        const items = this._generateItemsFromRules(updatedRules);
+        this._updatePreview(webviewPanel.webview, updatedRules, items);
       }
     });
 
@@ -499,16 +499,21 @@ export class FilterPreviewEditor
 
       console.log(`Found matching rule for ${item.name}:`, matchingRule);
 
-      // Start with default styles
-      const styles = {
+      // Update the styles object type
+      const styles: {
+        matched: boolean;
+        hidden: boolean;
+        fontSize: number;
+        textColor: number[];
+        borderColor?: number[];
+        backgroundColor?: number[];
+        beam?: { color: string; temporary: boolean };
+        minimapIcon?: string;
+      } = {
         matched: true,
         hidden: !matchingRule.isShow,
         fontSize: 32,
         textColor: [200, 200, 200],
-        borderColor: undefined,
-        backgroundColor: undefined,
-        beam: undefined,
-        minimapIcon: undefined,
       };
 
       // Apply each action from the rule
