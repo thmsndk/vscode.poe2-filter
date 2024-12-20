@@ -297,8 +297,10 @@ export class FilterPreviewEditor
               if (isDragging) {
                 const dx = e.clientX - lastX;
                 const dy = e.clientY - lastY;
-                camera.x -= dx;
-                camera.y -= dy;
+                // Adjust pan speed based on zoom level
+                const panSpeed = 1 / camera.zoom;
+                camera.x -= dx * panSpeed;
+                camera.y -= dy * panSpeed;
                 lastX = e.clientX;
                 lastY = e.clientY;
               }
