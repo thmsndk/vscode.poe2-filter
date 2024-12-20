@@ -1,9 +1,9 @@
 import * as vscode from "vscode";
 
 export interface FilterCondition {
-  type: string;
-  operator?: string;
-  values: string[];
+  type: string; // Class, BaseType, MapTier, etc.
+  operator?: string; // >=, <=, ==, etc.
+  values: string[]; // For BaseType/Class can have multiple values
   lineNumber: number;
 }
 
@@ -140,6 +140,32 @@ export function doConditionsOverlap(
   current: FilterCondition
 ): boolean {
   if (prev.type !== current.type) return false;
+
+  // Special handling for Rarity
+  if (prev.type === "Rarity") {
+    const rarityLevels = ["Normal", "Magic", "Rare", "Unique"];
+
+    // Case 1: If either condition uses an operator (e.g., "Rarity <= Rare")
+    if (prev.operator || current.operator) {
+      const prevRarity = prev.values[0];
+      const currentRarity = current.values[0];
+      const prevIndex = rarityLevels.indexOf(prevRarity);
+      const currentIndex = rarityLevels.indexOf(currentRarity);
+
+      if (prevIndex === -1 || currentIndex === -1) return false;
+
+      if (prev.operator === "<" || prev.operator === "<=") {
+        return currentIndex <= prevIndex;
+      }
+      if (current.operator === "<" || current.operator === "<=") {
+        return prevIndex <= currentIndex;
+      }
+    }
+
+    // Case 2: Multiple values without operator (e.g., "Rarity Magic Rare")
+    // Check if any value appears in both conditions
+    return prev.values.some((value) => current.values.includes(value));
+  }
 
   // For numeric comparisons
   if (prev.operator && current.operator) {
@@ -429,6 +455,9 @@ export function parseCondition(
     case "StackSize":
     case "Height":
     case "Width":
+    case "BaseArmour":
+    case "BaseEnergyShield":
+    case "BaseEvasion":
       return {
         type,
         operator: parts[1]?.match(/[<>=]+/)?.[0],

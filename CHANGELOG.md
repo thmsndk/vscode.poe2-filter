@@ -34,6 +34,14 @@ All notable changes to the "poe2-filter" extension will be documented in this fi
   - Corrected numeric condition comparison logic to properly handle ranges
   - Fixed false positives when rules had mutually exclusive conditions
   - Improved detection of overlapping conditions with different operators
+  - Enhanced Rarity condition comparison to properly handle:
+    - Comparison operators (<=, <)
+    - Multiple values (e.g., "Rarity Magic Rare")
+    - Single value matches
+  - Added proper comparison support for defensive stats:
+    - BaseArmour condition
+    - BaseEnergyShield condition
+    - BaseEvasion condition
 
 ## [0.0.9] - 2024-12-17 21:25
 
