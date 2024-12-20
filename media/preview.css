@@ -187,3 +187,21 @@
 .beam {
   animation: pulse 2s ease-in-out infinite;
 }
+
+.tooltip {
+  position: fixed;
+  background: var(--vscode-editor-background);
+  color: var(--vscode-foreground);
+  padding: 10px;
+  border-radius: 4px;
+  font-size: 14px;
+  pointer-events: none;
+  z-index: 1000;
+  max-width: 300px;
+  white-space: pre-wrap;
+  display: none;
+  border: 1px solid var(--vscode-panel-border);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  opacity: 1;
+  visibility: visible;
+}

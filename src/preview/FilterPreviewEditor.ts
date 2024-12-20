@@ -111,6 +111,7 @@ export class FilterPreviewEditor
           <link href="${styleUri}" rel="stylesheet">
         </head>
         <body>
+          <div id="tooltip" class="tooltip"></div>
           <div class="button-container">
             <button id="refreshPreview">Refresh Preview</button>
             <button id="showSampleItems">Show Sample Items</button>
@@ -371,6 +372,97 @@ export class FilterPreviewEditor
             resizeCanvas();
             canvas.style.cursor = 'grab';
             render();
+
+            // Add tooltip element reference
+            const tooltip = document.getElementById('tooltip');
+            
+            // Add function to check if mouse is over an item
+            function isMouseOverItem(mouseX, mouseY, item) {
+              if (!item || item.hidden) return false;
+              
+              const x = (item.x - camera.x) * camera.zoom;
+              const y = (item.y - camera.y) * camera.zoom;
+              
+              // Calculate text metrics for hit testing
+              const fontSize = (item.fontSize || 32) * camera.zoom;
+              ctx.font = \`\${fontSize}px Arial\`;
+              const metrics = ctx.measureText(item.name);
+              const padding = 5 * camera.zoom;
+              
+              const boxX = x - metrics.width/2 - padding;
+              const boxY = y - fontSize/2 - padding;
+              const boxWidth = metrics.width + padding * 2;
+              const boxHeight = fontSize + padding * 2;
+              
+              return mouseX >= boxX && mouseX <= boxX + boxWidth &&
+                     mouseY >= boxY && mouseY <= boxY + boxHeight;
+            }
+            
+            // Add mousemove handler for tooltip
+            canvas.addEventListener('mousemove', (e) => {
+              const tooltip = document.getElementById('tooltip');
+              if (!tooltip) {
+                console.error('Tooltip element not found');
+                return;
+              }
+
+              if (isDragging) {
+                tooltip.style.display = 'none';
+                return;
+              }
+              
+              const rect = canvas.getBoundingClientRect();
+              const mouseX = e.clientX - rect.left;
+              const mouseY = e.clientY - rect.top;
+              
+              const hoveredItem = items.find(item => isMouseOverItem(mouseX, mouseY, item));
+              
+              if (hoveredItem) {
+                const skipProps = ['x', 'y', 'matched', 'hidden', 'textColor', 'fontSize', 'borderColor', 'backgroundColor', 'beam'];
+                const formatKey = (key) => key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+                
+                const details = Object.entries(hoveredItem)
+                  .sort(([keyA], [keyB]) => {
+                    if (keyA === 'name') return -1;
+                    if (keyB === 'name') return 1;
+                    return keyA.localeCompare(keyB);
+                  })
+                  .reduce((acc, [key, value]) => {
+                    if (!skipProps.includes(key) && value !== undefined && value !== null && value !== false && value !== '') {
+                      acc.push(\`\${formatKey(key)}: \${value}\`);
+                    }
+                    return acc;
+                  }, [])
+                  .join('\\n');
+                
+                tooltip.textContent = details;
+                tooltip.style.display = 'block';
+                
+                // Position tooltip near mouse but ensure it stays within viewport
+                const tooltipX = e.clientX + 15;
+                const tooltipY = e.clientY + 15;
+                
+                tooltip.style.left = tooltipX + 'px';
+                tooltip.style.top = tooltipY + 'px';
+                
+                // After positioning, check if tooltip is visible
+                console.log('Tooltip positioned:', {
+                  left: tooltip.style.left,
+                  top: tooltip.style.top,
+                  display: tooltip.style.display
+                });
+              } else {
+                tooltip.style.display = 'none';
+              }
+            });
+            
+            // Hide tooltip when mouse leaves canvas
+            canvas.addEventListener('mouseleave', () => {
+              const tooltip = document.getElementById('tooltip');
+              if (tooltip) {
+                tooltip.style.display = 'none';
+              }
+            });
           </script>
         </body>
       </html>`;
