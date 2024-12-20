@@ -7,6 +7,7 @@ A Visual Studio Code extension for Path of Exile 2 item filter files.
 - [Syntax highlighting](#syntax-highlighting) for POE2 filter files
 - [Color previews and editing](#color-features) for filter colors
   - [Minimap icon previews](#minimap-icons) with shape indicators
+- [Live Filter Preview](#live-filter-preview) for visualizing filter rules
 - [Document formatting](#document-formatting) support
 - [Document Outline](#document-outline) for easy navigation
 - [Error Detection and Validation](#error-detection-and-validation) for common mistakes
@@ -36,6 +37,34 @@ Visual preview of minimap icons directly in the editor:
 - Displays in 11 different colors (Red, Green, Blue, etc.)
 
 ![Minimap Icons](images/minimap-icons.png)
+
+### Live Filter Preview
+
+Interactive preview of your filter rules showing how items will appear in-game:
+
+To open the Live Filter Preview:
+
+- Click the filter preview icon in the editor title bar ![Preview Icon](images/preview-icon.png)
+- Right-click the editor and select "Show Filter Preview"
+- Use the command palette (Ctrl/Cmd+Shift+P) and search for "Show Filter Preview"
+- Right-click the file in the explorer and select "Show Filter Preview"
+
+Features:
+
+- Real-time updates as you edit your filter
+- Visual representation of all styling rules:
+  - Text colors and font sizes
+  - Border and background colors
+  - Beam effects with proper coloring
+- Interactive features:
+  - Zoom and pan to explore your filter
+  - Click items to jump to their corresponding rules
+  - Hover tooltips showing item details
+- Sample items to test your filter
+- Clearly indicates hidden items
+- Supports Continue rules showing combined effects
+
+![Live Preview](images/live-preview.png)
 
 ### Document Formatting
 

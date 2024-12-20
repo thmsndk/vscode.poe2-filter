@@ -4,6 +4,24 @@ All notable changes to the "poe2-filter" extension will be documented in this fi
 
 ## [0.0.10] - [Unreleased]
 
+### Added
+
+- ✨ Added Live Filter Preview
+  - Interactive visualization of filter rules
+  - Real-time updates as you edit
+  - Visual representation of all styling:
+    - Text colors and font sizes
+    - Border and background colors
+    - Beam effects
+  - Interactive features:
+    - Zoom and pan to explore
+    - Click items to jump to rules
+    - Hover tooltips with item details
+    - Highlights currently edited rule
+  - Sample items for testing
+  - Clear indication of hidden items
+  - Support for Continue rules
+
 ### Fixed
 
 - 🐛 Fixed rule conflict detection
