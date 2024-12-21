@@ -8,7 +8,7 @@ import {
   FilterRule,
 } from "../parser/filterRuleEngine";
 // TODO: make findRuleConflicts return an object with the conflicting conditions as well as the message for use in checkRuleConflict
-
+// TODO: To solve NeverSinks Uncut Skill Gem rule conflict, if there is mismatch in conditions, we can try and generate an item based on the previous rule, and compare it with the current rule
 export function checkRuleConflicts(
   document: vscode.TextDocument
 ): vscode.Diagnostic[] {
@@ -74,7 +74,32 @@ function findRuleConflict(
     return null;
   }
 
-  // Check if all conditions in the previous rule are satisfied by the current rule
+  // Get condition types for both rules
+  const currentConditionTypes = new Set(
+    currentRule.conditions.map((c) => c.type)
+  );
+  const previousConditionTypes = new Set(
+    previous.conditions.map((c) => c.type)
+  );
+
+  // Check if there are mismatched conditions
+  const hasMismatchedConditions =
+    [...currentConditionTypes].some(
+      (type) => !previousConditionTypes.has(type)
+    ) ||
+    [...previousConditionTypes].some(
+      (type) => !currentConditionTypes.has(type)
+    );
+
+  if (hasMismatchedConditions) {
+    // Double-check by generating an item from previous rule
+    const previousItem = generateItemFromRule(previous);
+    if (!wouldRuleMatchItem(currentRule, previousItem)) {
+      return null; // No real conflict if the items don't match both ways
+    }
+  }
+
+  // Rest of existing conflict check logic...
   const allPreviousConditionsSatisfied = previous.conditions.every((prevCond) =>
     currentRule.conditions.some(
       (currentCond) =>

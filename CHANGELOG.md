@@ -2,6 +2,15 @@
 
 All notable changes to the "poe2-filter" extension will be documented in this file.
 
+## [Unreleased]
+
+### Fixed
+
+- 🐛 Improved rule conflict detection
+  - Added bidirectional item matching verification for potential conflicts
+  - Prevents false positives by checking if generated items would match both rules
+  - Better handling of rules with different condition types (like AreaLevel vs ItemLevel)
+
 ## [0.0.10] - 2024-12-21 00:25
 
 ### Added
