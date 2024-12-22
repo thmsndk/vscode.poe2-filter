@@ -3,7 +3,7 @@
   "tables": [
     {
       "name": "BaseItemTypes",
-      "columns": ["Id", "Name", "ItemClassesKey"]
+      "columns": ["Id", "Name", "ItemClassesKey", "DropLevel"]
     },
     {
       "name": "ItemClasses",
