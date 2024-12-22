@@ -1,0 +1,14 @@
+{
+  "patch": "4.1.0.11",
+  "tables": [
+    {
+      "name": "BaseItemTypes",
+      "columns": ["Id", "Name", "ItemClassesKey"]
+    },
+    {
+      "name": "ItemClasses",
+      "columns": ["Id", "Name"]
+    }
+  ],
+  "translations": ["English"]
+}

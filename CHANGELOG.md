@@ -2,6 +2,16 @@
 
 All notable changes to the "poe2-filter" extension will be documented in this file.
 
+## [Unreleased]
+
+### Added
+
+- ✨ Added PoE2 data extraction integration
+  - Data extraction using SnosMe's poe-dat-viewer tool
+  - Configured for PoE2 patch 4.1.0.11
+  - Selective table and column extraction
+  - Support for English translations
+
 ## [0.0.11] - 2024-12-22 22:00
 
 ### Fixed
