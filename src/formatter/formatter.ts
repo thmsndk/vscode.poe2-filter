@@ -18,15 +18,17 @@ export class FilterFormatter {
     let result = "";
     let lastLineWasBlock = false;
     let lastLineWasComment = false;
+    let lastLineWasEmpty = false;
     let insideBlock = false;
-    let isCommentedBlock = false; // New flag to track commented blocks
+    let isCommentedBlock = false;
     let i = 0;
 
     while (i < lines.length) {
       const line = lines[i].trim();
 
-      // Skip empty lines
+      // Skip empty lines but track them
       if (!line) {
+        lastLineWasEmpty = true;
         i++;
         continue;
       }
@@ -58,12 +60,16 @@ export class FilterFormatter {
       const nextLine = i + 1 < lines.length ? lines[i + 1].trim() : "";
       const isNextLineBlock = this.isBlockStart(nextLine);
 
-      if (isBlock && (!lastLineWasComment || isCommentedBlock)) {
+      if (
+        isBlock &&
+        (!lastLineWasComment || isCommentedBlock || lastLineWasEmpty)
+      ) {
         // If we encounter a new block we need to make sure there is a blank line before it
         result += "\n";
       }
 
       if (
+        !isBlock &&
         isComment &&
         ((!insideBlock && !lastLineWasComment) || isNextLineBlock)
       ) {
@@ -103,6 +109,7 @@ export class FilterFormatter {
 
       lastLineWasBlock = isBlock;
       lastLineWasComment = isComment;
+      lastLineWasEmpty = false;
       i++;
     }
 

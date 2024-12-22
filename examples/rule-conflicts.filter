@@ -21,3 +21,14 @@ Show # conflicts because of line 14 catching all Rarity Normal items no matter t
 	Rarity Normal
 	Class == "Body Armours"
 	SetBorderColor 100 100 100 150
+
+Show # Scroll of Wisdom after lvl 10 is less important
+    Class == "Currency"
+    BaseType == "Scroll of Wisdom"
+    AreaLevel > 10 
+    SetFontSize 15
+
+Hide # Hide rule would conflict with line 25 due to AreaLevel
+    Class == "Currency"
+    BaseType == "Scroll of Wisdom"
+    AreaLevel > 15

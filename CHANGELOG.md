@@ -10,6 +10,10 @@ All notable changes to the "poe2-filter" extension will be documented in this fi
   - Added bidirectional item matching verification for potential conflicts
   - Prevents false positives by checking if generated items would match both rules
   - Better handling of rules with different condition types (like AreaLevel vs ItemLevel)
+- 🐛 Improved formatter spacing handling
+  - Fixed inconsistent spacing between commented and uncommented blocks
+  - Better handling of empty lines between blocks
+  - Maintains proper spacing when transitioning between block types
 
 ## [0.0.10] - 2024-12-21 00:25
 
