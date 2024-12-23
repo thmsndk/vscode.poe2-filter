@@ -31,6 +31,23 @@ export function levenshteinDistance(a: string, b: string): number {
   return matrix[b.length][a.length];
 }
 
+export function findSimilarValues(
+  input: string,
+  validValues: string[],
+  maxDistance = 3,
+  maxSuggestions = 3
+): string[] {
+  return validValues
+    .map((valid) => ({
+      value: valid,
+      distance: levenshteinDistance(input.toLowerCase(), valid.toLowerCase()),
+    }))
+    .filter((result) => result.distance <= maxDistance)
+    .sort((a, b) => a.distance - b.distance)
+    .slice(0, maxSuggestions)
+    .map((result) => result.value);
+}
+
 export function calculateNameSimilarity(a: string, b: string): number {
   const distance = levenshteinDistance(a, b);
   const maxLength = Math.max(a.length, b.length);

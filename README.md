@@ -124,7 +124,11 @@ Helps catch common mistakes and provides quick fixes:
 
 - Syntax error highlighting
 - Command validation with suggestions for misspelled commands
-- Parameter validation for color values
+- Parameter validation:
+  - Color values validation
+  - Class names validation against game data (supports both singular/plural forms)
+  - BaseType validation against actual game items
+  - Suggestions for similar valid values when mistyped
 - Detection of conflicting rules that may never trigger
 - Quick fixes for common mistakes like command typos
 

@@ -2,7 +2,8 @@ import * as vscode from "vscode";
 import * as path from "path";
 import * as fs from "fs";
 import { checkRuleConflicts } from "./filterConflicts";
-import { levenshteinDistance } from "../utils/stringUtils";
+import { levenshteinDistance, findSimilarValues } from "../utils/stringUtils";
+import { GameDataService } from "../services/gameDataService";
 // TODO: Forgetting a hide/show function above conditions or actions, especially if there is a comment above it saying "Show" or "Hide"
 // TODO: Suggest using == for comparison instead of = or not at all, as the game will validate the name
 interface CommandPattern {
@@ -279,7 +280,10 @@ const VALID_COMMANDS = extractCommandsFromGrammar();
 // TODO: detect definitions later that is being overriden earlier? e.g. doing something explicit later in the file, but a previous rule catches it instead
 // TODO: PlayAlertSound|PlayAlertSoundPositional number volume with custom sound requires CustomAlertSound "file" volume
 
-export function registerDiagnostics(context: vscode.ExtensionContext) {
+export function registerDiagnostics(
+  context: vscode.ExtensionContext,
+  gameData: GameDataService
+) {
   const diagnostics =
     vscode.languages.createDiagnosticCollection("poe2-filter");
   context.subscriptions.push(diagnostics);
@@ -288,7 +292,8 @@ export function registerDiagnostics(context: vscode.ExtensionContext) {
   if (vscode.window.activeTextEditor) {
     validateAndUpdateDiagnostics(
       vscode.window.activeTextEditor.document,
-      diagnostics
+      diagnostics,
+      gameData
     );
   }
 
@@ -296,7 +301,7 @@ export function registerDiagnostics(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.window.onDidChangeActiveTextEditor((editor) => {
       if (editor) {
-        validateAndUpdateDiagnostics(editor.document, diagnostics);
+        validateAndUpdateDiagnostics(editor.document, diagnostics, gameData);
       }
     })
   );
@@ -305,7 +310,7 @@ export function registerDiagnostics(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.workspace.onDidChangeTextDocument((event) => {
       if (event.document.languageId === "poe2-filter") {
-        validateAndUpdateDiagnostics(event.document, diagnostics);
+        validateAndUpdateDiagnostics(event.document, diagnostics, gameData);
       }
     })
   );
@@ -313,10 +318,11 @@ export function registerDiagnostics(context: vscode.ExtensionContext) {
 
 function validateAndUpdateDiagnostics(
   document: vscode.TextDocument,
-  diagnostics: vscode.DiagnosticCollection
+  diagnostics: vscode.DiagnosticCollection,
+  gameData: GameDataService
 ) {
   if (document.languageId === "poe2-filter") {
-    const problems = validateDocument(document);
+    const problems = validateDocument(document, gameData);
     diagnostics.set(document.uri, problems);
   }
 }
@@ -456,7 +462,8 @@ function validateSoundFile(
 }
 
 export function validateDocument(
-  document: vscode.TextDocument
+  document: vscode.TextDocument,
+  gameData: GameDataService
 ): vscode.Diagnostic[] {
   const problems: vscode.Diagnostic[] = [];
   const validCommands = Object.keys(VALID_COMMANDS);
@@ -464,7 +471,6 @@ export function validateDocument(
   // Add rule conflict checks
   problems.push(...checkRuleConflicts(document));
 
-  // Rest of the existing validation logic
   for (let i = 0; i < document.lineCount; i++) {
     const line = document.lineAt(i);
     const trimmedText = line.text.trim();
@@ -478,6 +484,13 @@ export function validateDocument(
     const parts = trimmedText.split("#")[0].trim().split(/\s+/);
     const command = parts[0];
     const commandDef = VALID_COMMANDS[command];
+
+    // Check BaseType and Class commands first
+    if (command === "BaseType" || command === "Class") {
+      const value = parts.slice(1).join(" ");
+      validateBaseTypeOrClass(command, value, line, gameData, problems);
+      continue;
+    }
 
     if (!commandDef) {
       const suggestions = findSimilarCommands(command, validCommands);
@@ -796,23 +809,6 @@ function validateVolumeParameter(
   return true;
 }
 
-function findSimilarValues(
-  input: string,
-  validValues: string[],
-  maxDistance = 3,
-  maxSuggestions = 3
-): string[] {
-  return validValues
-    .map((valid) => ({
-      value: valid,
-      distance: levenshteinDistance(input.toLowerCase(), valid.toLowerCase()),
-    }))
-    .filter((result) => result.distance <= maxDistance)
-    .sort((a, b) => a.distance - b.distance)
-    .slice(0, maxSuggestions)
-    .map((result) => result.value);
-}
-
 function extractValidValuesFromRegex(regex: RegExp): string[] {
   const regexStr = regex.source
     .replace(/^\^/, "") // Remove start anchor
@@ -825,4 +821,93 @@ function extractValidValuesFromRegex(regex: RegExp): string[] {
   }
 
   return [];
+}
+
+function validateBaseTypeOrClass(
+  command: string,
+  value: string,
+  line: vscode.TextLine,
+  gameData: GameDataService,
+  problems: vscode.Diagnostic[]
+) {
+  const isBaseType = command === "BaseType";
+  const isCommandClass = command === "Class";
+  // Class always needs exact match, BaseType only when == is used
+  const isExactMatch = isCommandClass || line.text.includes("==");
+
+  // Split by quotes and filter out empty strings and operators
+  const values =
+    value
+      .match(/"[^"]*"|[^\s"]+/g)
+      ?.map((v) => v.replace(/^"(.*)"$/, "$1")) // Extract quoted strings or single words
+      .filter((v) => !v.match(/^[=<>]=?$/)) || []; // Filter out operators
+
+  if (isExactMatch) {
+    // For exact matches (== or Class), validate that each value exists exactly
+    const found = isBaseType
+      ? gameData.findExactBaseType(values)
+      : gameData.findExactClass(values);
+
+    const invalidValues = values.filter((v) => {
+      if (isCommandClass) {
+        const isSingular = !v.endsWith("s");
+        const plural = isSingular ? v + "s" : v;
+        return !found.some((f) => f.Name === v || f.Name === plural);
+      }
+
+      return !found.some((f) => f.Name === v);
+    });
+
+    if (invalidValues.length > 0) {
+      for (const missingValue of invalidValues) {
+        const allValues = isBaseType
+          ? gameData.baseItemTypes.map((i) => i.Name)
+          : gameData.itemClasses.map((i) => i.Name);
+
+        const suggestions = findSimilarValues(missingValue, allValues);
+
+        const message =
+          suggestions.length > 0
+            ? `${command} "${missingValue}" not found. Did you mean: ${suggestions.join(
+                ", "
+              )}?`
+            : `${command} "${missingValue}" not found`;
+
+        problems.push(
+          createDiagnostic(
+            new vscode.Range(
+              line.range.start.translate(0, line.text.indexOf(missingValue)),
+              line.range.start.translate(
+                0,
+                line.text.indexOf(missingValue) + missingValue.length
+              )
+            ),
+            message,
+            vscode.DiagnosticSeverity.Error
+          )
+        );
+      }
+    }
+  } else {
+    // Only BaseType can do partial matches
+    for (const searchValue of values) {
+      const matches = gameData.findMatchingBaseTypes(searchValue);
+
+      if (matches.length === 0) {
+        problems.push(
+          createDiagnostic(
+            new vscode.Range(
+              line.range.start.translate(0, line.text.indexOf(searchValue)),
+              line.range.start.translate(
+                0,
+                line.text.indexOf(searchValue) + searchValue.length
+              )
+            ),
+            `BaseType "${searchValue}" not found`,
+            vscode.DiagnosticSeverity.Error
+          )
+        );
+      }
+    }
+  }
 }

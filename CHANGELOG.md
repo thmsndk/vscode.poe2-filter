@@ -11,6 +11,10 @@ All notable changes to the "poe2-filter" extension will be documented in this fi
   - Configured for PoE2 patch 4.1.0.11
   - Selective table and column extraction
   - Support for English translations
+- ✨ Added Class and BaseType validation
+  - Validates against actual game data
+  - Supports both singular and plural forms for Class names (e.g., "Charm" and "Charms")
+  - Shows suggestions for similar valid values when mistyped
 
 ## [0.0.11] - 2024-12-22 22:00
 
