@@ -13,6 +13,7 @@ A Visual Studio Code extension for Path of Exile 2 item filter files.
 - [Error Detection and Validation](#error-detection-and-validation) for common mistakes
   - [Rule Conflict Detection](#rule-conflict-detection) to identify redundant rules
 - [Sound Playback](#sound-playback) for testing alert sounds directly in the editor
+- [BaseType Matching Indicators](#basetype-matching-indicators) for identifying broad patterns
 
 ## Feature Details
 
@@ -160,6 +161,17 @@ Test your filter's sound alerts directly in the editor (implemented by [@RobertF
   - Linux: Supports multiple players (paplay, aplay, mpg123, etc.)
 - Volume control support (where available)
 - Intelligent player selection based on system capabilities
+
+### BaseType Matching Indicators
+
+The extension provides visual feedback for BaseType matches:
+
+- Shows the number of potential matches before items that have multiple matches
+- Hover over BaseType values to see the list of matching items
+- Only displays indicators when there are multiple potential matches to reduce noise
+- Helps identify broad BaseType patterns that might catch unintended items
+
+![BaseType Matches](images/basetype-matches.png)
 
 ## Known Issues
 

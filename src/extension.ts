@@ -15,11 +15,61 @@ import { CodelensProvider } from "./CodelensProvider";
 import { SoundPlayer } from "./utils/soundPlayer";
 import path from "path";
 import { GameDataService } from "./services/gameDataService";
+import { FilterHoverProvider } from "./providers/filterHoverProvider";
+import { FilterDecorationProvider } from "./providers/filterDecorationProvider";
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
-export function activate(context: vscode.ExtensionContext) {
+export async function activate(context: vscode.ExtensionContext) {
   console.log("POE2 Filter extension is now active");
+
+  // Initialize game data service
+  const gameData = new GameDataService();
+  await gameData.loadData(context);
+
+  // Register hover provider
+  context.subscriptions.push(
+    vscode.languages.registerHoverProvider(
+      "poe2-filter",
+      new FilterHoverProvider(gameData)
+    )
+  );
+
+  // Initialize and register decoration provider
+  const decorationProvider = new FilterDecorationProvider();
+
+  // Update decorations when active editor changes
+  vscode.window.onDidChangeActiveTextEditor(
+    (editor) => {
+      if (editor && editor.document.languageId === "poe2-filter") {
+        decorationProvider.updateDecorations(editor, gameData);
+      }
+    },
+    null,
+    context.subscriptions
+  );
+
+  // Update decorations when document changes
+  vscode.workspace.onDidChangeTextDocument(
+    (event) => {
+      if (event.document.languageId === "poe2-filter") {
+        const editor = vscode.window.activeTextEditor;
+        if (editor && editor.document === event.document) {
+          decorationProvider.updateDecorations(editor, gameData);
+        }
+      }
+    },
+    null,
+    context.subscriptions
+  );
+
+  // Initial decoration update
+  if (vscode.window.activeTextEditor) {
+    decorationProvider.updateDecorations(
+      vscode.window.activeTextEditor,
+      gameData
+    );
+  }
 
   // Register document symbol provider for outline
   context.subscriptions.push(
@@ -233,7 +283,12 @@ export function activate(context: vscode.ExtensionContext) {
       "poe2-filter.playCustomSound",
       async (sound, volume) => {
         const soundPath = vscode.Uri.joinPath(
-          vscode.Uri.file(path.dirname(vscode.window.activeTextEditor?.document.uri.fsPath || vscode.workspace.workspaceFolders![0].uri.fsPath)),
+          vscode.Uri.file(
+            path.dirname(
+              vscode.window.activeTextEditor?.document.uri.fsPath ||
+                vscode.workspace.workspaceFolders![0].uri.fsPath
+            )
+          ),
           `${sound}`
         ).fsPath;
 
@@ -241,7 +296,7 @@ export function activate(context: vscode.ExtensionContext) {
       }
     )
   );
-  
+
   // Register the preview editor
   context.subscriptions.push(FilterPreviewEditor.register(context));
 

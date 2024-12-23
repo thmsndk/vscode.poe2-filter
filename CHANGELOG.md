@@ -15,6 +15,11 @@ All notable changes to the "poe2-filter" extension will be documented in this fi
   - Validates against actual game data
   - Supports both singular and plural forms for Class names (e.g., "Charm" and "Charms")
   - Shows suggestions for similar valid values when mistyped
+- ✨ Added BaseType match indicators
+  - Shows count of potential matches before BaseType values
+  - Hover tooltips display matching items
+  - Only shows indicators for multiple matches
+  - Helps identify overly broad BaseType patterns
 
 ## [0.0.11] - 2024-12-22 22:00
 
