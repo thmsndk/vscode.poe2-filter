@@ -2,6 +2,12 @@
 
 All notable changes to the "poe2-filter" extension will be documented in this file.
 
+## [0.0.13] - 2024-12-23 15:10
+
+### Fixed
+
+- 🐛 Fixed data not being included in extension build
+
 ## [0.0.12] - 2024-12-23
 
 ### Added
