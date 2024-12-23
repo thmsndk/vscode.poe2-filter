@@ -17,7 +17,9 @@ export class FilterDecorationProvider {
 
     for (let i = 0; i < editor.document.lineCount; i++) {
       const line = editor.document.lineAt(i);
-      if (line.text.includes("==")) continue;
+      if (line.text.includes("==")) {
+        continue;
+      }
 
       // Find "BaseType" first
       if (line.text.includes("BaseType")) {
