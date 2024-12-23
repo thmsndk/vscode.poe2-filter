@@ -2,16 +2,22 @@ import * as vscode from "vscode";
 import * as path from "path";
 import * as fs from "fs/promises";
 
-interface BaseItemType {
+export interface BaseItemType {
   Id: string;
   Name: string;
-  ItemClassesKey: string;
+  ItemClassesKey: number;
   DropLevel: number;
 }
 
-interface ItemClass {
+export interface ItemClass {
+  _index: number;
   Id: string;
   Name: string;
+}
+
+export interface Match<T> {
+  item: T;
+  matchedBy: string;
 }
 
 export class GameDataService {
@@ -66,39 +72,102 @@ export class GameDataService {
     }
   }
 
-  findExactBaseType(name: string | string[]): BaseItemType[] {
-    const names = Array.isArray(name) ? name : [name];
-    return this.baseItemTypes.filter((item) =>
-      names.some((n) => item.Name === n)
-    );
-  }
-
-  findMatchingBaseTypes(partialName: string | string[]): BaseItemType[] {
+  findMatchingBaseTypes(partialName: string | string[]): Match<BaseItemType>[] {
     const searches = Array.isArray(partialName) ? partialName : [partialName];
-
     const lowerSearches = searches.map((s) => s.toLowerCase());
-    return this.baseItemTypes.filter((item) =>
-      lowerSearches.some((search) => item.Name.toLowerCase().includes(search))
-    );
+
+    const matches: Match<BaseItemType>[] = [];
+
+    this.baseItemTypes.forEach((item) => {
+      const itemNameLower = item.Name.toLowerCase();
+      const matchingSearch = lowerSearches.find((search) =>
+        itemNameLower.includes(search)
+      );
+
+      if (matchingSearch) {
+        matches.push({
+          item,
+          matchedBy: searches[lowerSearches.indexOf(matchingSearch)],
+        });
+      }
+    });
+
+    return matches;
   }
 
-  findExactClass(name: string | string[]): ItemClass[] {
+  findExactBaseType(name: string | string[]): Match<BaseItemType>[] {
     const names = Array.isArray(name) ? name : [name];
-    return this.itemClasses.filter((cls) =>
-      names.some((n) => {
-        const isSingular = !n.endsWith("s");
-        const plural = isSingular ? n + "s" : n;
-        return cls.Name === n || cls.Name === plural;
-      })
-    );
+    const matches: Match<BaseItemType>[] = [];
+
+    this.baseItemTypes.forEach((item) => {
+      const itemNameLower = item.Name.toLowerCase();
+      const matchingName = names.find((n) => itemNameLower === n.toLowerCase());
+      if (matchingName) {
+        matches.push({
+          item,
+          matchedBy: matchingName,
+        });
+      }
+    });
+
+    return matches;
   }
 
-  findMatchingClasses(partialName: string | string[]): ItemClass[] {
+  findMatchingClasses(partialName: string | string[]): Match<ItemClass>[] {
     const searches = Array.isArray(partialName) ? partialName : [partialName];
+    const matches: Match<ItemClass>[] = [];
 
-    const lowerSearches = searches.map((s) => s.toLowerCase());
-    return this.itemClasses.filter((cls) =>
-      lowerSearches.some((search) => cls.Name.toLowerCase().includes(search))
-    );
+    this.itemClasses.forEach((cls) => {
+      const clsNameLower = cls.Name.toLowerCase();
+
+      for (const search of searches) {
+        const isSingular = !search.endsWith("s");
+        const searchPlural = isSingular ? search + "s" : search;
+        const searchLower = search.toLowerCase();
+        const searchPluralLower = searchPlural.toLowerCase();
+
+        if (
+          clsNameLower === searchLower ||
+          clsNameLower.includes(searchLower) ||
+          clsNameLower.includes(searchPluralLower)
+        ) {
+          matches.push({
+            item: cls,
+            matchedBy: search,
+          });
+        }
+      }
+    });
+
+    return matches;
+  }
+
+  findExactClass(name: string | string[]): Match<ItemClass>[] {
+    const names = Array.isArray(name) ? name : [name];
+    const matches: Match<ItemClass>[] = [];
+
+    this.itemClasses.forEach((cls) => {
+      const clsNameLower = cls.Name.toLowerCase();
+
+      for (const search of names) {
+        const isSingular = !search.endsWith("s");
+        const searchPlural = isSingular ? search + "s" : search;
+        const searchLower = search.toLowerCase();
+        const searchPluralLower = searchPlural.toLowerCase();
+
+        if (
+          clsNameLower === searchLower ||
+          clsNameLower === searchPluralLower
+        ) {
+          matches.push({
+            item: cls,
+            matchedBy: search,
+          });
+          break;
+        }
+      }
+    });
+
+    return matches;
   }
 }

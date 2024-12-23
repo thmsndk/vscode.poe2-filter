@@ -830,11 +830,6 @@ function validateBaseTypeOrClass(
   gameData: GameDataService,
   problems: vscode.Diagnostic[]
 ) {
-  const isBaseType = command === "BaseType";
-  const isCommandClass = command === "Class";
-  // Class always needs exact match, BaseType only when == is used
-  const isExactMatch = isCommandClass || line.text.includes("==");
-
   // Split by quotes and filter out empty strings and operators
   const values =
     value
@@ -842,72 +837,59 @@ function validateBaseTypeOrClass(
       ?.map((v) => v.replace(/^"(.*)"$/, "$1")) // Extract quoted strings or single words
       .filter((v) => !v.match(/^[=<>]=?$/)) || []; // Filter out operators
 
-  if (isExactMatch) {
-    // For exact matches (== or Class), validate that each value exists exactly
-    const found = isBaseType
-      ? gameData.findExactBaseType(values)
-      : gameData.findExactClass(values);
+  const isExact = line.text.includes("==");
 
-    const invalidValues = values.filter((v) => {
-      if (isCommandClass) {
-        const isSingular = !v.endsWith("s");
-        const plural = isSingular ? v + "s" : v;
-        return !found.some((f) => f.Name === v || f.Name === plural);
-      }
+  // Get matches using appropriate method
+  let matches;
+  switch (command) {
+    case "BaseType":
+      matches = isExact
+        ? gameData.findExactBaseType(values)
+        : gameData.findMatchingBaseTypes(values);
+      break;
+    case "Class":
+      matches = isExact
+        ? gameData.findExactClass(values)
+        : gameData.findMatchingClasses(values);
+      break;
+    default:
+      throw new Error(`Unexpected command: ${command}`);
+  }
 
-      return !found.some((f) => f.Name === v);
-    });
+  // Find values that didn't match anything
+  const invalidValues = values.filter(
+    (value) => !matches.some((match) => match.matchedBy === value)
+  );
 
-    if (invalidValues.length > 0) {
-      for (const missingValue of invalidValues) {
-        const allValues = isBaseType
+  if (invalidValues.length > 0) {
+    for (const missingValue of invalidValues) {
+      const allValues =
+        command === "BaseType"
           ? gameData.baseItemTypes.map((i) => i.Name)
           : gameData.itemClasses.map((i) => i.Name);
 
-        const suggestions = findSimilarValues(missingValue, allValues);
+      const suggestions = findSimilarValues(missingValue, allValues);
 
-        const message =
-          suggestions.length > 0
-            ? `${command} "${missingValue}" not found. Did you mean: ${suggestions.join(
-                ", "
-              )}?`
-            : `${command} "${missingValue}" not found`;
+      const message =
+        suggestions.length > 0
+          ? `${command} "${missingValue}" not found. Did you mean: ${suggestions.join(
+              ", "
+            )}?`
+          : `${command} "${missingValue}" not found`;
 
-        problems.push(
-          createDiagnostic(
-            new vscode.Range(
-              line.range.start.translate(0, line.text.indexOf(missingValue)),
-              line.range.start.translate(
-                0,
-                line.text.indexOf(missingValue) + missingValue.length
-              )
-            ),
-            message,
-            vscode.DiagnosticSeverity.Error
-          )
-        );
-      }
-    }
-  } else {
-    // Only BaseType can do partial matches
-    for (const searchValue of values) {
-      const matches = gameData.findMatchingBaseTypes(searchValue);
-
-      if (matches.length === 0) {
-        problems.push(
-          createDiagnostic(
-            new vscode.Range(
-              line.range.start.translate(0, line.text.indexOf(searchValue)),
-              line.range.start.translate(
-                0,
-                line.text.indexOf(searchValue) + searchValue.length
-              )
-            ),
-            `BaseType "${searchValue}" not found`,
-            vscode.DiagnosticSeverity.Error
-          )
-        );
-      }
+      problems.push(
+        createDiagnostic(
+          new vscode.Range(
+            line.range.start.translate(0, line.text.indexOf(missingValue)),
+            line.range.start.translate(
+              0,
+              line.text.indexOf(missingValue) + missingValue.length
+            )
+          ),
+          message,
+          vscode.DiagnosticSeverity.Error
+        )
+      );
     }
   }
 }

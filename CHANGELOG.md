@@ -20,6 +20,11 @@ All notable changes to the "poe2-filter" extension will be documented in this fi
   - Hover tooltips display matching items
   - Only shows indicators for multiple matches
   - Helps identify overly broad BaseType patterns
+- ✨ Enhanced item preview generation
+  - Generates representative items based on Class and BaseType conditions
+  - Respects AreaLevel and DropLevel restrictions
+  - Randomly selects items to show variety in previews
+  - Shows actual game item names instead of generic placeholders
 
 ## [0.0.11] - 2024-12-22 22:00
 

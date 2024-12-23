@@ -9,6 +9,7 @@ import {
 } from "../parser/filterRuleEngine";
 // TODO: make findRuleConflicts return an object with the conflicting conditions as well as the message for use in checkRuleConflict
 // TODO: To solve NeverSinks Uncut Skill Gem rule conflict, if there is mismatch in conditions, we can try and generate an item based on the previous rule, and compare it with the current rule
+// TODO: Show BaseType "Shard" Hide BaseType "Reagal Shard" should display a conflict
 export function checkRuleConflicts(
   document: vscode.TextDocument
 ): vscode.Diagnostic[] {

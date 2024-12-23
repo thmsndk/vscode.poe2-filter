@@ -7,6 +7,12 @@ import {
   parseRules,
 } from "../parser/filterRuleEngine";
 import { calculateNameSimilarity } from "../utils/stringUtils";
+import {
+  BaseItemType,
+  GameDataService,
+  ItemClass,
+  Match,
+} from "../services/gameDataService";
 
 type ExtendedFilterItem = FilterItem & {
   ruleLineNumber?: number;
@@ -15,10 +21,13 @@ type ExtendedFilterItem = FilterItem & {
 export class FilterPreviewEditor
   implements vscode.CustomReadonlyEditorProvider
 {
-  public static register(context: vscode.ExtensionContext): vscode.Disposable {
+  public static register(
+    context: vscode.ExtensionContext,
+    gameData: GameDataService
+  ): vscode.Disposable {
     return vscode.window.registerCustomEditorProvider(
       "poe2Filter.preview",
-      new FilterPreviewEditor(context),
+      new FilterPreviewEditor(context, gameData),
       {
         supportsMultipleEditorsPerDocument: false,
         webviewOptions: { retainContextWhenHidden: true },
@@ -26,7 +35,10 @@ export class FilterPreviewEditor
     );
   }
 
-  constructor(private readonly context: vscode.ExtensionContext) {}
+  constructor(
+    private readonly context: vscode.ExtensionContext,
+    private readonly gameData: GameDataService
+  ) {}
 
   async openCustomDocument(uri: vscode.Uri): Promise<vscode.CustomDocument> {
     return { uri, dispose: () => {} };
@@ -746,15 +758,202 @@ export class FilterPreviewEditor
   private _generateItemsFromRules(rules: FilterRule[]): ExtendedFilterItem[] {
     const items: ExtendedFilterItem[] = [];
 
-    rules.forEach((rule) => {
+    for (const rule of rules) {
+      // Find BaseType and Class conditions first
+      const baseTypeCondition = rule.conditions.find(
+        (c) => c.type === "BaseType"
+      );
+      const classCondition = rule.conditions.find((c) => c.type === "Class");
+      const areaLevelCondition = rule.conditions.find(
+        (c) => c.type === "AreaLevel"
+      );
+
+      // Calculate min and max drop level from area level if present
+      let minDropLevel: number | undefined;
+      let maxDropLevel: number | undefined;
+
+      if (areaLevelCondition) {
+        const level = Number(areaLevelCondition.values[0]);
+        if (!isNaN(level)) {
+          switch (areaLevelCondition.operator) {
+            case "==":
+              minDropLevel = level;
+              maxDropLevel = Math.floor(level * 1.25);
+              break;
+            case ">=":
+              minDropLevel = level;
+              maxDropLevel = undefined;
+              break;
+            case "<=":
+              minDropLevel = undefined;
+              maxDropLevel = Math.floor(level * 1.25);
+              break;
+            case "<":
+              minDropLevel = undefined;
+              maxDropLevel = Math.floor((level - 1) * 1.25);
+              break;
+            case ">":
+              minDropLevel = level + 1;
+              maxDropLevel = undefined;
+              break;
+          }
+        }
+      }
+
+      // Try to find a matching item
+      let matchingItem: Match<BaseItemType | ItemClass> | undefined;
+
+      if (baseTypeCondition) {
+        const isExactMatch = baseTypeCondition.operator === "==";
+        console.log("BaseType condition:", {
+          values: baseTypeCondition.values,
+          operator: baseTypeCondition.operator,
+          isExactMatch,
+        });
+
+        const matches = isExactMatch
+          ? this.gameData.findExactBaseType(baseTypeCondition.values)
+          : this.gameData.findMatchingBaseTypes(baseTypeCondition.values);
+
+        console.log(
+          "Found matches:",
+          isExactMatch,
+          baseTypeCondition.operator,
+          matches
+        );
+
+        if (matches.length > 0) {
+          if (isExactMatch) {
+            // For exact matches, pick a random match
+            matchingItem = matches[Math.floor(Math.random() * matches.length)];
+            console.log("Using random exact match:", matchingItem);
+          } else {
+            // Only apply level filtering for non-exact matches
+            const levelMatches = matches.filter((m) => {
+              const dropLevel = m.item.DropLevel;
+              if (minDropLevel && dropLevel < minDropLevel) {
+                return false;
+              }
+              if (maxDropLevel && dropLevel > maxDropLevel) {
+                return false;
+              }
+              return true;
+            });
+
+            // Pick a random match from level-filtered matches, or all matches if none match level
+            const candidateMatches =
+              levelMatches.length > 0 ? levelMatches : matches;
+            matchingItem =
+              candidateMatches[
+                Math.floor(Math.random() * candidateMatches.length)
+              ];
+          }
+        }
+      } else if (classCondition) {
+        const classMatches = this.gameData.findExactClass(
+          classCondition.values
+        );
+
+        if (classMatches.length > 0) {
+          const classMatch = classMatches[0];
+          // Find base items of this class
+          let baseItems = this.gameData.baseItemTypes.filter(
+            (item) => item.ItemClassesKey === classMatch.item._index
+          );
+
+          // For hide rules with DropLevel condition, prioritize that over AreaLevel
+          const dropLevelCondition = rule.conditions.find(
+            (c) => c.type === "DropLevel"
+          );
+          if (dropLevelCondition) {
+            const level = Number(dropLevelCondition.values[0]);
+            if (!isNaN(level)) {
+              switch (dropLevelCondition.operator) {
+                case "<":
+                  baseItems = baseItems.filter(
+                    (item) => item.DropLevel < level
+                  );
+                  break;
+                case "<=":
+                  baseItems = baseItems.filter(
+                    (item) => item.DropLevel <= level
+                  );
+                  break;
+                case ">":
+                  baseItems = baseItems.filter(
+                    (item) => item.DropLevel > level
+                  );
+                  break;
+                case ">=":
+                  baseItems = baseItems.filter(
+                    (item) => item.DropLevel >= level
+                  );
+                  break;
+                case "==":
+                  baseItems = baseItems.filter(
+                    (item) => item.DropLevel === level
+                  );
+                  break;
+              }
+            }
+          }
+          // Only apply area level filtering if we don't have a DropLevel condition
+          else if (minDropLevel || maxDropLevel) {
+            baseItems = baseItems.filter((item) => {
+              if (minDropLevel && item.DropLevel < minDropLevel) {
+                return false;
+              }
+              if (maxDropLevel && item.DropLevel > maxDropLevel) {
+                return false;
+              }
+              return true;
+            });
+          }
+
+          if (baseItems.length > 0) {
+            // Sort by drop level - for hide rules with DropLevel < X, we want the highest level item that's still under X
+            baseItems.sort((a, b) => b.DropLevel - a.DropLevel);
+            const randomItem =
+              baseItems[Math.floor(Math.random() * baseItems.length)];
+            matchingItem = {
+              item: randomItem,
+              matchedBy: classMatch.matchedBy,
+            };
+          } else {
+            // If no base items found after filtering, use a random representative item from the class
+            baseItems = this.gameData.baseItemTypes.filter(
+              (item) => item.ItemClassesKey === classMatch.item._index
+            );
+            if (baseItems.length > 0) {
+              const randomItem =
+                baseItems[Math.floor(Math.random() * baseItems.length)];
+              matchingItem = {
+                item: randomItem,
+                matchedBy: classMatch.matchedBy,
+              };
+            } else {
+              // If still no items, fall back to the class itself
+              matchingItem = classMatch;
+            }
+          }
+        }
+      }
+
       const item = generateItemFromRule(rule);
       if (item) {
+        if (matchingItem) {
+          item.name = matchingItem.item.Name;
+          if ("DropLevel" in matchingItem.item) {
+            item.dropLevel = matchingItem.item.DropLevel;
+          }
+        }
+
         items.push({
           ...item,
           ruleLineNumber: rule.lineNumber,
         });
       }
-    });
+    }
 
     return items;
   }

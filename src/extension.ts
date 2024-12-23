@@ -298,7 +298,7 @@ export async function activate(context: vscode.ExtensionContext) {
   );
 
   // Register the preview editor
-  context.subscriptions.push(FilterPreviewEditor.register(context));
+  context.subscriptions.push(FilterPreviewEditor.register(context, gameData));
 
   // Add command to open preview (similar to Markdown preview)
   context.subscriptions.push(
