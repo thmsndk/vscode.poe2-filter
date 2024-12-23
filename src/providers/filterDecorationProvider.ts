@@ -7,7 +7,6 @@ export class FilterDecorationProvider {
       margin: "0 2px 0 0",
       color: new vscode.ThemeColor("editorCodeLens.foreground"),
       contentText: "hello",
-      fontSize: "0.85em",
       fontStyle: "italic",
     },
   });
