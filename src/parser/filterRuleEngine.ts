@@ -484,10 +484,13 @@ export function parseCondition(
   switch (type) {
     case "Class":
     case "BaseType": {
+      // Check for operator before the first quote
+      const operatorMatch = text.match(/\s+([=]{1,2})\s+/);
       // Match all quoted strings, preserving spaces within quotes
       const matches = text.match(/"([^"]+)"/g) || [];
       return {
         type,
+        operator: operatorMatch?.[1] || undefined,
         values: matches.map((m) => m.replace(/"/g, "")),
         lineNumber,
       };
