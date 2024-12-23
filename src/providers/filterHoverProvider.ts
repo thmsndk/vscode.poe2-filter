@@ -43,7 +43,7 @@ export class FilterHoverProvider implements vscode.HoverProvider {
             `### ${matchingItems.length} Matching Items\n\n`
           );
           matchingItems.slice(0, 10).map((m) => {
-            content.appendMarkdown(`- ${m.Name}\n`);
+            content.appendMarkdown(`- ${m.item.Name}\n`);
           });
           if (matchingItems.length > 10) {
             content.appendMarkdown(
