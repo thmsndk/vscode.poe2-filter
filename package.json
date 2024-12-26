@@ -26,10 +26,12 @@
       {
         "id": "poe2-filter",
         "extensions": [
-          "filter"
+          "filter",
+          ".filter"
         ],
         "aliases": [
           "filter",
+          ".filter",
           "Path of Exile 2 Filter",
           "poe2-filter",
           "poe2",
