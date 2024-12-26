@@ -54,11 +54,22 @@ export class Lexer {
     }
 
     // Handle newlines
-    if (char === "\n") {
-      this.position++;
+    if (char === "\r" || char === "\n") {
+      let value: string;
+      if (
+        char === "\r" &&
+        this.position + 1 < this.source.length &&
+        this.source[this.position + 1] === "\n"
+      ) {
+        value = "\r\n";
+        this.position += 2; // Skip both \r\n
+      } else {
+        value = char;
+        this.position++; // Skip single \r or \n
+      }
       this.line++;
       this.column = 1;
-      return this.createToken("NEWLINE", "\n");
+      return this.createToken("NEWLINE", value); // Keep original newline character(s)
     }
 
     // Handle any unexpected character
@@ -256,8 +267,8 @@ export class Lexer {
             idStyle: doubleWrapped ? "double" : "single",
           };
         } else {
-          // Regular content
-          headerInfo.text += contentLine + "\n";
+          // Regular content, with newlines
+          headerInfo.text += contentLine;
         }
 
         this.advanceToEndOfLine();
