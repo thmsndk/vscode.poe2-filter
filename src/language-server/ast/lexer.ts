@@ -6,6 +6,8 @@ import {
   ColorValue,
   ShapeValue,
 } from "./tokens";
+import { ConditionType } from "./conditions";
+import { ActionType } from "./actions";
 
 export class Lexer {
   private source: string;
@@ -293,6 +295,8 @@ export class Lexer {
         return this.createToken("HIDE", value, value.length);
       case "Continue":
         return this.createToken("CONTINUE", value, value.length);
+      case "Minimal":
+        return this.createToken("MINIMAL", value, value.length);
     }
 
     // Check for special values
@@ -452,45 +456,11 @@ export class Lexer {
   }
 
   private isCondition(word: string): boolean {
-    const conditions = [
-      "BaseType",
-      "Class",
-      "Sockets",
-      "Quality",
-      "ItemLevel",
-      "DropLevel",
-      "AreaLevel",
-      "GemLevel",
-      "MapTier",
-      "WaystoneTier",
-      "StackSize",
-      "Height",
-      "Width",
-      "BaseArmour",
-      "BaseEnergyShield",
-      "BaseEvasion",
-      "Rarity",
-      "FracturedItem",
-      "Mirrored",
-      "Corrupted",
-      "SynthesisedItem",
-      "AnyEnchantment",
-      "Identified",
-    ];
-    return conditions.includes(word);
+    return Object.values(ConditionType).includes(word as ConditionType);
   }
 
   private isAction(word: string): boolean {
-    const actions = [
-      "SetFontSize",
-      "PlayAlertSound",
-      "MinimapIcon",
-      "PlayEffect",
-      "SetTextColor",
-      "SetBorderColor",
-      "SetBackgroundColor",
-    ];
-    return actions.includes(word);
+    return Object.values(ActionType).includes(word as ActionType);
   }
 
   private isLineStart(position: number): boolean {
