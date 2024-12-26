@@ -295,6 +295,17 @@ export class Lexer {
         return this.createToken("CONTINUE", value, value.length);
     }
 
+    // Check for special values
+    if (this.isRarityValue(value)) {
+      return this.createToken("RARITY", value as RarityValue, value.length);
+    }
+    if (this.isColorValue(value)) {
+      return this.createToken("COLOR", value as ColorValue, value.length);
+    }
+    if (this.isShapeValue(value)) {
+      return this.createToken("SHAPE", value as ShapeValue, value.length);
+    }
+
     // Check for conditions/actions
     if (this.isCondition(value)) {
       return this.createToken("CONDITION", value, value.length);
@@ -309,6 +320,18 @@ export class Lexer {
     }
 
     return this.createToken("WORD", value, value.length);
+  }
+
+  private isRarityValue(word: string): boolean {
+    return Object.values(RarityValue).includes(word as RarityValue);
+  }
+
+  private isColorValue(word: string): boolean {
+    return Object.values(ColorValue).includes(word as ColorValue);
+  }
+
+  private isShapeValue(word: string): boolean {
+    return Object.values(ShapeValue).includes(word as ShapeValue);
   }
 
   private readQuotedString(): Token {
