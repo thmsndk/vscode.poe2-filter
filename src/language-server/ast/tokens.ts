@@ -13,6 +13,7 @@ export type TokenType =
   // Block Keywords
   | "SHOW"
   | "HIDE"
+  | "MINIMAL"
   | "CONTINUE"
 
   // Commands
