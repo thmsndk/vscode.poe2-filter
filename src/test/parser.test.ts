@@ -104,18 +104,27 @@ Show
     const parser = new Parser(input);
     const ast = parser.parse();
 
-    assert.strictEqual(parser.diagnostics.length, 2);
+    assert.strictEqual(
+      parser.diagnostics.length,
+      2,
+      "Expected exactly 2 errors"
+    );
 
     // Check first error - BaseType missing value
     assert.strictEqual(parser.diagnostics[0].severity, "error");
     assert.strictEqual(
-      parser.diagnostics[0].message.includes("BaseType"),
-      true
+      parser.diagnostics[0].message,
+      "Expected at least one value for condition",
+      "First error should be about missing BaseType value"
     );
 
     // Check second error - Invalid color value
     assert.strictEqual(parser.diagnostics[1].severity, "error");
-    assert.strictEqual(parser.diagnostics[1].message.includes("999"), true);
+    assert.strictEqual(
+      parser.diagnostics[1].message,
+      "Value 999 out of range [0,255] for parameter Red",
+      "Second error should be about invalid color value"
+    );
   });
 
   test("should parse Continue action correctly", () => {
