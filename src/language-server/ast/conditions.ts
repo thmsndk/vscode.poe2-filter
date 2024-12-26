@@ -51,6 +51,7 @@ export enum ConditionType {
   WaystoneTier = "WaystoneTier",
 }
 
+// TODO: Some conditions are more complex for example HasExplicitMod >= 2 A B C we need to be able to describe this in our syntax
 export interface ConditionSyntax {
   type: ConditionType;
   valueType: "string" | "number" | "boolean" | "array" | "rarity";

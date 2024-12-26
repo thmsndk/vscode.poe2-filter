@@ -17,11 +17,45 @@ import path from "path";
 import { GameDataService } from "./services/gameDataService";
 import { FilterHoverProvider } from "./providers/filterHoverProvider";
 import { FilterDecorationProvider } from "./providers/filterDecorationProvider";
+import {
+  LanguageClient,
+  ServerOptions,
+  TransportKind,
+} from "vscode-languageclient/node";
+
+let client: LanguageClient;
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export async function activate(context: vscode.ExtensionContext) {
   console.log("POE2 Filter extension is now active");
+
+  // Initialize language server client
+  const serverModule = context.asAbsolutePath(
+    path.join("dist", "language-server", "server.js")
+  );
+
+  const serverOptions: ServerOptions = {
+    run: { module: serverModule, transport: TransportKind.ipc },
+    debug: {
+      module: serverModule,
+      transport: TransportKind.ipc,
+      options: { execArgv: ["--nolazy", "--inspect=6009"] },
+    },
+  };
+
+  client = new LanguageClient(
+    "poeFilterLanguageServer",
+    "PoE Filter Language Server",
+    serverOptions,
+    {
+      documentSelector: [{ scheme: "file", language: "poe2-filter" }],
+    }
+  );
+
+  // Start the language server
+  client.start();
+  context.subscriptions.push(client);
 
   // Initialize game data service
   const gameData = new GameDataService();
@@ -318,6 +352,10 @@ export async function activate(context: vscode.ExtensionContext) {
     })
   );
 }
-
 // This method is called when your extension is deactivated
-export function deactivate() {}
+export function deactivate(): Thenable<void> | undefined {
+  if (!client) {
+    return undefined;
+  }
+  return client.stop();
+}
