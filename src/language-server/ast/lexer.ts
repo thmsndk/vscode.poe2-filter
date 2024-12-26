@@ -61,9 +61,10 @@ export class Lexer {
       return this.createToken("NEWLINE", "\n");
     }
 
-    throw new Error(
-      `Unexpected character: ${char} at line ${this.line}, column ${this.column}`
-    );
+    // Handle any unexpected character
+    this.position++;
+    this.column++;
+    return this.createToken("UNKNOWN", char);
   }
 
   private createToken(type: TokenType, value: any, length: number = 1): Token {
