@@ -115,4 +115,67 @@ Show
       ]
     );
   });
+
+  test("should tokenize special values correctly", () => {
+    const input = `
+Show
+    Rarity Unique
+    MinimapIcon 0 Red Star
+    MinimapIcon 1 Green Circle
+    MinimapIcon 2 Blue Diamond
+`;
+
+    const lexer = new Lexer(input);
+    const tokens = [];
+    let token;
+
+    do {
+      token = lexer.nextToken();
+      tokens.push(token);
+    } while (token.type !== "EOF");
+
+    assert.deepStrictEqual(
+      tokens.map((t) => t.type),
+      [
+        "NEWLINE",
+        "SHOW",
+        "NEWLINE",
+        "CONDITION",
+        "RARITY",
+        "NEWLINE",
+        "ACTION",
+        "NUMBER",
+        "COLOR",
+        "SHAPE",
+        "NEWLINE",
+        "ACTION",
+        "NUMBER",
+        "COLOR",
+        "SHAPE",
+        "NEWLINE",
+        "ACTION",
+        "NUMBER",
+        "COLOR",
+        "SHAPE",
+        "NEWLINE",
+        "EOF",
+      ]
+    );
+
+    // Check specific values
+    const rarityToken = tokens.find((t) => t.type === "RARITY");
+    assert.strictEqual(rarityToken?.value, "Unique");
+
+    const colorTokens = tokens.filter((t) => t.type === "COLOR");
+    assert.deepStrictEqual(
+      colorTokens.map((t) => t.value),
+      ["Red", "Green", "Blue"]
+    );
+
+    const shapeTokens = tokens.filter((t) => t.type === "SHAPE");
+    assert.deepStrictEqual(
+      shapeTokens.map((t) => t.value),
+      ["Star", "Circle", "Diamond"]
+    );
+  });
 });
