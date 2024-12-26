@@ -1,0 +1,16 @@
+export enum ActionType {
+  CustomAlertSound = "CustomAlertSound",
+  CustomAlertSoundOptional = "CustomAlertSoundOptional",
+  DisableDropSound = "DisableDropSound",
+  DisableDropSoundIfAlertSound = "DisableDropSoundIfAlertSound",
+  EnableDropSound = "EnableDropSound",
+  EnableDropSoundIfAlertSound = "EnableDropSoundIfAlertSound",
+  MinimapIcon = "MinimapIcon",
+  PlayAlertSound = "PlayAlertSound",
+  PlayAlertSoundPositional = "PlayAlertSoundPositional",
+  PlayEffect = "PlayEffect",
+  SetBackgroundColor = "SetBackgroundColor",
+  SetBorderColor = "SetBorderColor",
+  SetFontSize = "SetFontSize",
+  SetTextColor = "SetTextColor",
+}
