@@ -35,6 +35,7 @@ export type TokenType =
   | "OPERATOR" // ==, >=, <=, <, >
 
   // Special
+  | "UNKNOWN"
   | "EOF";
 
 // Header metadata
