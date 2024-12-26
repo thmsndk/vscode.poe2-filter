@@ -229,6 +229,7 @@ export class Parser {
     const values: Array<
       string | number | boolean | RarityValue | ColorValue | ShapeValue
     > = [];
+    let inlineComment: string | undefined;
 
     while (this.shouldContinueParsing()) {
       switch (this.currentToken.type) {
@@ -269,18 +270,8 @@ export class Parser {
           break;
 
         case "INLINE_COMMENT":
-          return {
-            type: "Condition",
-            condition,
-            operator,
-            values,
-            inlineComment: this.consumeInlineComment(),
-            commented: isCommented,
-            start,
-            end: this.currentToken.start,
-            line,
-            column,
-          };
+          inlineComment = this.consumeInlineComment();
+          continue;
 
         default:
           this.addError(
@@ -310,6 +301,7 @@ export class Parser {
       condition,
       operator,
       values,
+      inlineComment,
       commented: isCommented,
       start,
       end: this.currentToken.start,
@@ -343,6 +335,7 @@ export class Parser {
     const values: Array<string | number | boolean | ColorValue | ShapeValue> =
       [];
     let parameterIndex = 0;
+    let inlineComment: string | undefined;
 
     while (this.shouldContinueParsing()) {
       const parameter = syntax?.parameters[parameterIndex];
@@ -391,17 +384,8 @@ export class Parser {
           break;
 
         case "INLINE_COMMENT":
-          return {
-            type: "Action",
-            action,
-            values,
-            inlineComment: this.consumeInlineComment(),
-            commented: isCommented,
-            start,
-            end: this.currentToken.start,
-            line,
-            column,
-          };
+          inlineComment = this.consumeInlineComment();
+          continue;
 
         default:
           this.addError(
@@ -436,6 +420,7 @@ export class Parser {
       type: "Action",
       action,
       values,
+      inlineComment,
       commented: isCommented,
       start,
       end: this.currentToken.start,
