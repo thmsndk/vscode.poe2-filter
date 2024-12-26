@@ -32,6 +32,11 @@ export interface ActionSyntax {
 }
 
 export const ActionSyntaxMap: Record<ActionType, ActionSyntax> = {
+  [ActionType.Continue]: {
+    type: ActionType.Continue,
+    parameters: [],
+    description: "Continues processing rules after this block",
+  },
   [ActionType.CustomAlertSound]: {
     type: ActionType.CustomAlertSound,
     parameters: [

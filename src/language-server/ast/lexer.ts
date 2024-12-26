@@ -148,8 +148,8 @@ export class Lexer {
     // Read the rest of the line
     const line = this.peekLine().trim();
 
-    // Check for commented blocks (Show/Hide/Continue)
-    if (/^(Show|Hide|Continue)\b/i.test(line)) {
+    // Check for commented blocks (Show/Hide)
+    if (/^(Show|Hide)\b/i.test(line)) {
       return {
         type: "COMMENTED_BLOCK",
         value: line,
@@ -305,8 +305,6 @@ export class Lexer {
         return this.createToken("SHOW", value, value.length);
       case "Hide":
         return this.createToken("HIDE", value, value.length);
-      case "Continue":
-        return this.createToken("CONTINUE", value, value.length);
       case "Minimal":
         return this.createToken("MINIMAL", value, value.length);
     }
