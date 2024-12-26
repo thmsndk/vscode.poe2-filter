@@ -71,6 +71,10 @@ export class Parser {
         case "COMMENT":
           children.push(this.parseComment());
           break;
+        case "NEWLINE":
+          // Skip newlines at root level
+          this.advance();
+          break;
         default:
           this.addError(
             `Unexpected token at root level: ${this.currentToken.type}`,
