@@ -380,15 +380,6 @@ export function generateItemFromRule(rule: FilterRule): FilterItem {
     } else {
       item.name = "Item";
     }
-
-    // Add stack size in front of the name if there is one
-    if (item.stackSize && item.stackSize > 1) {
-      item.name = `${item.stackSize}x ${item.name}`;
-    }
-
-    if (item.baseType === "Gold") {
-      console.log("Gold", rule, item);
-    }
   }
 
   return item;
