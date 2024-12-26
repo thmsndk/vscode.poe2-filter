@@ -39,7 +39,11 @@ export interface HeaderNode extends BaseNode {
   };
 }
 
-export type BlockType = "Show" | "Hide" | "Continue" | "Minimal";
+export enum BlockType {
+  Show = "Show",
+  Hide = "Hide",
+  Minimal = "Minimal",
+}
 
 // A block statement (Show/Hide/Continue)
 export interface BlockNode extends BaseNode {

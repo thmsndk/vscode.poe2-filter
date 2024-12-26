@@ -102,22 +102,25 @@ export class Parser {
 
     let blockType: BlockType;
     if (isCommented) {
-      const value = this.currentToken.value as string;
-      if (!this.isBlockType(value)) {
-        this.addError(`Invalid block type: ${value}`, this.currentToken);
-        blockType = "Show"; // Still need a value for the AST, but we've reported the error
-      } else {
-        blockType = value;
-      }
+      blockType = this.currentToken.value as BlockType;
     } else {
-      blockType =
-        this.currentToken.type === "SHOW"
-          ? "Show"
-          : this.currentToken.type === "HIDE"
-          ? "Hide"
-          : this.currentToken.type === "CONTINUE"
-          ? "Continue"
-          : "Minimal";
+      switch (this.currentToken.type) {
+        case "SHOW":
+          blockType = BlockType.Show;
+          break;
+        case "HIDE":
+          blockType = BlockType.Hide;
+          break;
+        case "MINIMAL":
+          blockType = BlockType.Minimal;
+          break;
+        default:
+          this.addError(
+            `Unexpected block type: ${this.currentToken.type}`,
+            this.currentToken
+          );
+          blockType = BlockType.Show; // Fallback for AST
+      }
     }
 
     let inlineComment: string | undefined;
@@ -557,13 +560,10 @@ export class Parser {
     return (
       this.currentToken.type !== "EOF" &&
       this.currentToken.type !== "NEWLINE" &&
+      // TODO: What actually happens if we have a Continue in the middle of a block? i'd assume we have to keep parsing until we hit a new block or header
       !["CONDITION", "ACTION", "SHOW", "HIDE", "CONTINUE"].includes(
         this.currentToken.type
       )
     );
-  }
-
-  private isBlockType(value: string): value is BlockType {
-    return ["Show", "Hide", "Continue", "Minimal"].includes(value);
   }
 }

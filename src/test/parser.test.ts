@@ -105,7 +105,53 @@ Show
     const ast = parser.parse();
 
     assert.strictEqual(parser.diagnostics.length, 2);
+
+    // Check first error - BaseType missing value
     assert.strictEqual(parser.diagnostics[0].severity, "error");
+    assert.strictEqual(
+      parser.diagnostics[0].message.includes("BaseType"),
+      true
+    );
+
+    // Check second error - Invalid color value
     assert.strictEqual(parser.diagnostics[1].severity, "error");
+    assert.strictEqual(parser.diagnostics[1].message.includes("999"), true);
+  });
+
+  test("should parse Continue action correctly", () => {
+    // TODO: What actually happens if we have a Continue in the middle of a block?
+    const input = `
+Show
+    BaseType "Mirror"
+    SetTextColor 255 0 0
+    Continue    # Keep checking rules
+`;
+    const parser = new Parser(input);
+    const ast = parser.parse();
+
+    const block = ast.children[0] as BlockNode;
+    assert.strictEqual(block.body.length, 3);
+
+    const continueAction = block.body[2] as ActionNode;
+    assert.strictEqual(continueAction.type, "Action");
+    assert.strictEqual(continueAction.action, ActionType.Continue);
+    assert.strictEqual(continueAction.values.length, 0);
+    assert.strictEqual(continueAction.inlineComment, "Keep checking rules");
+  });
+
+  test("should error on Continue at root level", () => {
+    const input = `
+Continue
+Show
+    BaseType "Mirror"
+`;
+    const parser = new Parser(input);
+    const ast = parser.parse();
+
+    assert.strictEqual(parser.diagnostics.length, 1);
+    assert.strictEqual(
+      parser.diagnostics[0].message,
+      "Continue must be inside a block"
+    );
   });
 });
