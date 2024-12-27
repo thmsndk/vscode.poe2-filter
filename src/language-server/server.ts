@@ -12,6 +12,10 @@ import {
 } from "vscode-languageserver/node";
 import { TextDocument } from "vscode-languageserver-textdocument";
 import { Parser, ParserDiagnostic } from "./ast/parser";
+import {
+  SemanticValidator,
+  SemanticDiagnostic,
+} from "./validation/semanticValidator";
 
 // Create a connection for the server
 const connection = createConnection(ProposedFeatures.all);
@@ -35,7 +39,9 @@ documents.onDidChangeContent((change) => {
   validateDocument(change.document);
 });
 
-function convertToLSPDiagnostic(diagnostic: ParserDiagnostic): Diagnostic {
+function convertToLSPDiagnostic(
+  diagnostic: ParserDiagnostic | SemanticDiagnostic
+): Diagnostic {
   return {
     severity:
       diagnostic.severity === "error"
@@ -55,9 +61,14 @@ async function validateDocument(document: TextDocument): Promise<void> {
   const parser = new Parser(text);
   const ast = parser.parse();
 
+  // Create and run semantic validator
+  const semanticValidator = new SemanticValidator();
+  semanticValidator.validate(ast);
+
   // Convert internal diagnostics to LSP diagnostics
   const diagnostics: Diagnostic[] = [
     ...parser.diagnostics.map(convertToLSPDiagnostic),
+    ...semanticValidator.diagnostics.map(convertToLSPDiagnostic),
   ];
 
   // Send the diagnostics to VSCode

@@ -8,11 +8,11 @@ Syntax highlighting is handled by the existing TextMate grammar (tmLanguage) fil
 
 1. Semantic Validations
 
-   - [ ] Create SemanticValidator class
-   - [ ] Number range validation (value bounds checking)
+   - [x] Create SemanticValidator class
+   - [x] Number range validation (value bounds checking)
    - [ ] Color validation
-     - [ ] RGB value range checking (0-255)
-     - [ ] Alpha value validation
+     - [x] RGB value range checking (0-255)
+     - [x] Alpha value validation
      - [ ] Named color validation (Red, Green, Blue, etc)
    - [ ] Shape validation
      - [ ] Valid shape names (Circle, Diamond, etc)
