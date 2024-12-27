@@ -6,6 +6,7 @@ import {
   BlockNode,
   ConditionNode,
   ActionNode,
+  ErrorNode,
 } from "../language-server/ast/nodes";
 
 suite("Parser Test Suite", () => {
@@ -161,6 +162,30 @@ Show
     assert.strictEqual(
       parser.diagnostics[0].message,
       "Continue must be inside a block"
+    );
+  });
+
+  test("should create error node for invalid block keyword", () => {
+    const input = `
+Sho
+    BaseType "Mirror"
+`;
+    const parser = new Parser(input);
+    const ast = parser.parse();
+
+    // BaseType "Mirror" causes two additional errors because they are dangling
+    assert.strictEqual(ast.children.length, 3);
+    const errorNode = ast.children[0] as ErrorNode;
+    assert.strictEqual(errorNode.type, "Error");
+    assert.strictEqual(errorNode.token.type, "WORD");
+    assert.strictEqual(errorNode.token.value, "Sho");
+    assert.strictEqual(errorNode.line, 2);
+
+    // Basic parser error without suggestions
+    assert.strictEqual(parser.diagnostics.length, 3);
+    assert.strictEqual(
+      parser.diagnostics[0].message,
+      "Unexpected token at root level: WORD"
     );
   });
 });

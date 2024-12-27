@@ -8,7 +8,8 @@ export type Node =
   | ConditionNode
   | ActionNode
   | CommentNode
-  | HeaderNode;
+  | HeaderNode
+  | ErrorNode;
 
 export interface BaseNode {
   type: string;
@@ -74,4 +75,9 @@ export interface ActionNode extends BaseNode {
 export interface CommentNode extends BaseNode {
   type: "Comment" | "InlineComment";
   value: string;
+}
+
+export interface ErrorNode extends BaseNode {
+  type: "Error";
+  token: Token;
 }
