@@ -5,6 +5,8 @@ import {
   ConditionNode,
   ActionNode,
   BlockNode,
+  ErrorNode,
+  BlockType,
 } from "../ast/nodes";
 import { ConditionSyntaxMap } from "../ast/conditions";
 import { ActionSyntaxMap } from "../ast/actions";
@@ -12,6 +14,7 @@ import { ColorValue, ShapeValue } from "../ast/tokens";
 import { SoundNameValue } from "../ast/tokens";
 import path from "path";
 import fs from "fs";
+import { findSimilarValues } from "../../utils/stringUtils";
 
 export interface SemanticDiagnostic {
   message: string;
@@ -71,6 +74,9 @@ export class SemanticValidator {
           this.visitNode(child);
         }
         break;
+      case "Error":
+        this.validateErrorNode(node as ErrorNode);
+        break;
       case "Condition":
         this.validateCondition(node as ConditionNode);
         break;
@@ -86,6 +92,32 @@ export class SemanticValidator {
         }
         break;
     }
+  }
+
+  private validateErrorNode(node: ErrorNode): void {
+    // Only suggest block keywords for WORD tokens at the root level
+    if (node.token.type === "WORD" && this.isAtBlockPosition(node)) {
+      const suggestions = findSimilarValues(
+        node.token.value as string,
+        Object.values(BlockType)
+      );
+      const suggestionText =
+        suggestions.length > 0
+          ? `. Did you mean: ${suggestions.join(", ")}?`
+          : "";
+
+      this.diagnostics.push({
+        message: `Invalid block keyword "${node.token.value}"${suggestionText}`,
+        severity: "error",
+        line: node.line,
+        columnStart: node.columnStart,
+        columnEnd: node.columnEnd,
+      });
+    }
+  }
+
+  private isAtBlockPosition(node: Node): boolean {
+    return node.columnStart === 1;
   }
 
   private validateCondition(node: ConditionNode): void {

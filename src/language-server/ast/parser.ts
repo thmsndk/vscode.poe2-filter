@@ -75,6 +75,15 @@ export class Parser {
           this.advance();
           break;
         default:
+          children.push({
+            type: "Error",
+            token: this.currentToken,
+            start: this.currentToken.start,
+            end: this.currentToken.end,
+            line: this.currentToken.line,
+            columnStart: this.currentToken.columnStart,
+            columnEnd: this.currentToken.columnEnd,
+          });
           this.addError(
             `Unexpected token at root level: ${this.currentToken.type}`,
             this.currentToken
