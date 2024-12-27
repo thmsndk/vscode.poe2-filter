@@ -21,7 +21,7 @@ Syntax highlighting is handled by the existing TextMate grammar (tmLanguage) fil
      - [x] Volume range validation (0-300)
      - [x] Custom sound file path validation
    - [ ] Block/Condition/Action keyword validation
-     - [ ] Block keyword validation
+     - [x] Block keyword validation
      - [ ] Condition keyword validation
      - [ ] Action keyword validation
 
