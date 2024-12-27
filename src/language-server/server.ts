@@ -62,7 +62,7 @@ async function validateDocument(document: TextDocument): Promise<void> {
   const ast = parser.parse();
 
   // Create and run semantic validator
-  const semanticValidator = new SemanticValidator();
+  const semanticValidator = new SemanticValidator(document.uri);
   semanticValidator.validate(ast);
 
   // Convert internal diagnostics to LSP diagnostics

@@ -18,11 +18,20 @@ export enum ActionType {
   SetTextColor = "SetTextColor",
 }
 
+export type ParameterType =
+  | "string"
+  | "number"
+  | "boolean"
+  | "color"
+  | "shape"
+  | "sound-id" // Can be number or named sound
+  | "filepath";
+
 export interface ActionSyntax {
   type: ActionType;
   parameters: {
     name: string;
-    type: "number" | "string" | "color" | "shape" | "boolean";
+    type: ParameterType;
     required: boolean;
     range?: { min: number; max: number };
     defaultValue?: number | string;
@@ -45,7 +54,7 @@ export const ActionSyntaxMap: Record<ActionType, ActionSyntax> = {
         name: "Path",
         type: "string",
         required: true,
-        description: "Path to the sound file",
+        description: "Path to the sound file  (relative to PoE directory)",
       },
       {
         name: "Volume",
@@ -56,7 +65,8 @@ export const ActionSyntaxMap: Record<ActionType, ActionSyntax> = {
         description: "Volume percentage (0-300)",
       },
     ],
-    description: "Plays a custom alert sound when item drops",
+    description:
+      'Plays a custom alert sound when item drops. Overrides PlayAlertSound and PlayAlertSoundPositional. Can be disabled by specifying "None"',
   },
   [ActionType.CustomAlertSoundOptional]: {
     type: ActionType.CustomAlertSoundOptional,
@@ -77,7 +87,7 @@ export const ActionSyntaxMap: Record<ActionType, ActionSyntax> = {
       },
     ],
     description:
-      "Plays a custom alert sound if file exists, silently continues if not found",
+      "Similar to CustomAlertSound, but if the specified file does not exist then this line is ignored and it does not override PlayAlertSound or PlayAlertSoundPositional.",
   },
   [ActionType.DisableDropSound]: {
     type: ActionType.DisableDropSound,
@@ -145,10 +155,10 @@ export const ActionSyntaxMap: Record<ActionType, ActionSyntax> = {
     parameters: [
       {
         name: "SoundId",
-        type: "number",
+        type: "sound-id",
         required: true,
         range: { min: 1, max: 16 },
-        description: "Built-in sound effect ID",
+        description: "Built-in sound effect ID or named sound",
       },
       {
         name: "Volume",
