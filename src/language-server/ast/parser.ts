@@ -359,14 +359,21 @@ export class Parser {
 
       switch (this.currentToken.type) {
         case "NUMBER":
-          this.validateTokenType(
-            parameter?.type ?? "",
-            "number",
-            `parameter ${parameter?.name}`,
-            this.currentToken
-          );
-          const num = this.currentToken.value as number;
-          values.push(num);
+          {
+            let receivedType = "number";
+            if (parameter?.type === "sound-id") {
+              receivedType = "sound-id";
+            }
+
+            this.validateTokenType(
+              parameter?.type ?? "",
+              receivedType,
+              `parameter ${parameter?.name}`,
+              this.currentToken
+            );
+            const num = this.currentToken.value as number;
+            values.push(num);
+          }
           break;
 
         case "BOOLEAN":
@@ -380,7 +387,6 @@ export class Parser {
           break;
 
         case "QUOTED_STRING":
-        case "WORD":
           this.validateTokenType(
             parameter?.type ?? "",
             "string",
@@ -388,6 +394,23 @@ export class Parser {
             this.currentToken
           );
           values.push(this.currentToken.value as string);
+          break;
+
+        case "WORD":
+          {
+            let receivedType = "string";
+            if (parameter?.type === "sound-id") {
+              receivedType = "sound-id";
+            }
+
+            this.validateTokenType(
+              parameter?.type ?? "",
+              receivedType,
+              `parameter ${parameter?.name}`,
+              this.currentToken
+            );
+            values.push(this.currentToken.value as string);
+          }
           break;
 
         case "COLOR":
