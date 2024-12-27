@@ -16,10 +16,10 @@ Syntax highlighting is handled by the existing TextMate grammar (tmLanguage) fil
      - [x] Named color validation (Red, Green, Blue, etc)
    - [x] Shape validation
      - [x] Valid shape names (Circle, Diamond, etc)
-   - [ ] Sound file validation
-     - [ ] Sound ID range validation (1-16)
-     - [ ] Volume range validation (0-300)
-     - [ ] Custom sound file path validation
+   - [x] Sound file validation
+     - [x] Sound ID range validation (1-16)
+     - [x] Volume range validation (0-300)
+     - [x] Custom sound file path validation
    - [ ] Block/Condition/Action keyword validation
      - [ ] Block keyword validation
      - [ ] Condition keyword validation

@@ -87,6 +87,20 @@ export enum ShapeValue {
   UpsideDownHouse = "UpsideDownHouse",
 }
 
+// Add new enum for named sounds
+export enum SoundNameValue {
+  ShAlchemy = "ShAlchemy",
+  ShBlessed = "ShBlessed",
+  ShChaos = "ShChaos",
+  ShDivine = "ShDivine",
+  ShExalted = "ShExalted",
+  ShFusing = "ShFusing",
+  ShGeneral = "ShGeneral",
+  ShMirror = "ShMirror",
+  ShRegal = "ShRegal",
+  ShVaal = "ShVaal",
+}
+
 /**
  * Represents a token in the source code with position information
  */
