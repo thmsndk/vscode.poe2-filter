@@ -1,6 +1,7 @@
 import { ColorValue, ShapeValue } from "./tokens";
 
 export enum ActionType {
+  Continue = "Continue",
   CustomAlertSound = "CustomAlertSound",
   CustomAlertSoundOptional = "CustomAlertSoundOptional",
   DisableDropSound = "DisableDropSound",
