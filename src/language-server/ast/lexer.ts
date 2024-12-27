@@ -10,9 +10,16 @@ import { ConditionType } from "./conditions";
 import { ActionType } from "./actions";
 
 export class Lexer {
+  /** The full source text being lexed */
   private source: string;
+
+  /** Current character position in the source text */
   private position: number = 0;
+
+  /** Current line number (1-based) */
   private line: number = 1;
+
+  /** Current column number (1-based, resets on newline) */
   private column: number = 1;
 
   constructor(source: string) {
@@ -101,6 +108,7 @@ export class Lexer {
 
   private readCommentOrHeader(): Token {
     const start = this.position;
+    // Check if this might be a header
     const startLine = this.line;
     const startColumn = this.column;
 
@@ -147,38 +155,46 @@ export class Lexer {
 
     // Read the rest of the line
     const line = this.peekLine().trim();
+    const firstWord = line.split(/\s+/)[0];
 
-    // Check for commented blocks (Show/Hide)
-    if (/^(Show|Hide)\b/i.test(line)) {
+    // Check all commented tokens using firstWord
+    if (firstWord === "Show" || firstWord === "Hide") {
+      const end = this.position + firstWord.length;
+      this.advanceToPosition(end);
+
       return {
         type: "COMMENTED_BLOCK",
-        value: line,
+        value: firstWord,
         start,
-        end: this.advanceToEndOfLine(),
+        end,
         line: startLine,
         column: startColumn,
       };
     }
 
-    // Check for commented conditions
-    if (this.isCondition(line.split(/\s+/)[0])) {
+    if (this.isCondition(firstWord)) {
+      const end = this.position + firstWord.length;
+      this.advanceToPosition(end);
+
       return {
         type: "COMMENTED_CONDITION",
-        value: line,
+        value: firstWord,
         start,
-        end: this.advanceToEndOfLine(),
+        end,
         line: startLine,
         column: startColumn,
       };
     }
 
-    // Check for commented actions
-    if (this.isAction(line.split(/\s+/)[0])) {
+    if (this.isAction(firstWord)) {
+      const end = this.position + firstWord.length;
+      this.advanceToPosition(end);
+
       return {
         type: "COMMENTED_ACTION",
-        value: line,
+        value: firstWord,
         start,
-        end: this.advanceToEndOfLine(),
+        end,
         line: startLine,
         column: startColumn,
       };
@@ -500,5 +516,18 @@ export class Lexer {
       this.column++;
     }
     return value;
+  }
+
+  private advanceToPosition(newPosition: number): void {
+    // Count columns we're advancing
+    for (let i = this.position; i < newPosition; i++) {
+      if (this.source[i] === "\n") {
+        this.line++;
+        this.column = 1;
+      } else {
+        this.column++;
+      }
+    }
+    this.position = newPosition;
   }
 }
