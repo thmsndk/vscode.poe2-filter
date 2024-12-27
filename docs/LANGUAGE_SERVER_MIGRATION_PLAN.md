@@ -14,8 +14,8 @@ Syntax highlighting is handled by the existing TextMate grammar (tmLanguage) fil
      - [x] RGB value range checking (0-255)
      - [x] Alpha value validation
      - [x] Named color validation (Red, Green, Blue, etc)
-   - [ ] Shape validation
-     - [ ] Valid shape names (Circle, Diamond, etc)
+   - [x] Shape validation
+     - [x] Valid shape names (Circle, Diamond, etc)
    - [ ] Sound file validation
      - [ ] Sound ID range validation (1-16)
      - [ ] Volume range validation (0-300)
