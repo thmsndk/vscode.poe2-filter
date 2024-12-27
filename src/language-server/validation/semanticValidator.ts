@@ -8,6 +8,7 @@ import {
 } from "../ast/nodes";
 import { ConditionSyntaxMap } from "../ast/conditions";
 import { ActionSyntaxMap } from "../ast/actions";
+import { ColorValue } from "../ast/tokens";
 
 export interface SemanticDiagnostic {
   message: string;
@@ -121,6 +122,9 @@ export class SemanticValidator {
       }
 
       switch (parameter.type) {
+        case "color":
+          this.validateColor(value, node, index);
+          break;
         case "number":
           if (parameter.range && typeof value === "number") {
             this.validateNumberValue(
@@ -133,6 +137,55 @@ export class SemanticValidator {
           }
           break;
       }
+    }
+  }
+
+  private validateColor(
+    value: string | number | boolean,
+    node: Node,
+    valueIndex: number
+  ): void {
+    if (typeof value !== "string") {
+      // works, but kinda does not make sense, our nodes should have children for values with correct column positions
+      let valueStart = node.columnEnd + 1;
+      const values = (node as ActionNode).values;
+
+      for (let i = 0; i < valueIndex; i++) {
+        valueStart += String(values[i]).length + 1;
+      }
+
+      const valueLength = String(value).length;
+
+      this.diagnostics.push({
+        message: `Invalid color value: expected a named color, got ${JSON.stringify(
+          value
+        )}`,
+        severity: "error",
+        line: node.line,
+        columnStart: valueStart,
+        columnEnd: valueStart + String(value).length,
+      });
+
+      return;
+    }
+
+    if (!(value in ColorValue)) {
+      let valueStart = node.columnEnd + 1;
+      const values = (node as ActionNode).values;
+
+      for (let i = 0; i < valueIndex; i++) {
+        valueStart += String(values[i]).length + 1;
+      }
+
+      this.diagnostics.push({
+        message: `Invalid color name: "${value}". Valid colors are: ${Object.values(
+          ColorValue
+        ).join(", ")}`,
+        severity: "error",
+        line: node.line,
+        columnStart: valueStart,
+        columnEnd: valueStart + value.length,
+      });
     }
   }
 }

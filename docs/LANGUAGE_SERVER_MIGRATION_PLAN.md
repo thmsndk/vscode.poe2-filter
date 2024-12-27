@@ -10,10 +10,10 @@ Syntax highlighting is handled by the existing TextMate grammar (tmLanguage) fil
 
    - [x] Create SemanticValidator class
    - [x] Number range validation (value bounds checking)
-   - [ ] Color validation
+   - [x] Color validation
      - [x] RGB value range checking (0-255)
      - [x] Alpha value validation
-     - [ ] Named color validation (Red, Green, Blue, etc)
+     - [x] Named color validation (Red, Green, Blue, etc)
    - [ ] Shape validation
      - [ ] Valid shape names (Circle, Diamond, etc)
    - [ ] Sound file validation
