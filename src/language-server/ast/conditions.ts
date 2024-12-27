@@ -53,7 +53,7 @@ export enum ConditionType {
 
 export interface ConditionSyntax {
   type: ConditionType;
-  valueType: "string" | "number" | "boolean" | "array";
+  valueType: "string" | "number" | "boolean" | "array" | "rarity";
   operatorBehavior: {
     allowed: boolean;
     optional?: boolean; // If true, condition can be used with or without operator
@@ -163,10 +163,10 @@ export const ConditionSyntaxMap: Record<ConditionType, ConditionSyntax> = {
   },
   [ConditionType.Rarity]: {
     type: ConditionType.Rarity,
-    valueType: "string",
+    valueType: "rarity",
     operatorBehavior: {
       allowed: true,
-      optional: false,
+      optional: true,
       allowedOperators: ["==", "<", "<=", ">", ">="],
     },
     valueSyntax: {
