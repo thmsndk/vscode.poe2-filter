@@ -58,7 +58,6 @@ export class Parser {
       switch (this.currentToken.type) {
         case "SHOW":
         case "HIDE":
-        case "CONTINUE":
         case "MINIMAL":
           children.push(this.parseBlock());
           break;
@@ -135,10 +134,7 @@ export class Parser {
 
     const body: (ConditionNode | ActionNode | CommentNode)[] = [];
 
-    while (
-      this.currentToken.type !== "EOF" &&
-      !["SHOW", "HIDE", "CONTINUE", "MINIMAL"].includes(this.currentToken.type)
-    ) {
+    parseBlock: while (this.currentToken.type !== "EOF") {
       switch (this.currentToken.type) {
         case "CONDITION":
         case "COMMENTED_CONDITION":
@@ -152,6 +148,12 @@ export class Parser {
         case "INLINE_COMMENT":
           body.push(this.parseComment());
           break;
+        case "SHOW":
+        case "HIDE":
+        case "MINIMAL":
+        case "COMMENTED_BLOCK":
+          // Break out of while loop when we hit another block
+          break parseBlock;
         default:
           this.advance();
       }
