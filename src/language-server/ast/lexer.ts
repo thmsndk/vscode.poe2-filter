@@ -92,7 +92,8 @@ export class Lexer {
       start: this.position - length,
       end: this.position,
       line: this.line,
-      column: this.column,
+      columnStart: this.column - length,
+      columnEnd: this.column,
     };
   }
 
@@ -125,7 +126,8 @@ export class Lexer {
         start,
         end: this.position,
         line: startLine,
-        column: startColumn,
+        columnStart: startColumn,
+        columnEnd: this.column,
       };
     }
 
@@ -146,7 +148,8 @@ export class Lexer {
         start,
         end: this.position,
         line: startLine,
-        column: startColumn,
+        columnStart: startColumn,
+        columnEnd: this.column,
       };
     }
 
@@ -168,7 +171,8 @@ export class Lexer {
         start,
         end,
         line: startLine,
-        column: startColumn,
+        columnStart: startColumn,
+        columnEnd: this.column,
       };
     }
 
@@ -182,7 +186,8 @@ export class Lexer {
         start,
         end,
         line: startLine,
-        column: startColumn,
+        columnStart: startColumn,
+        columnEnd: this.column,
       };
     }
 
@@ -196,7 +201,8 @@ export class Lexer {
         start,
         end,
         line: startLine,
-        column: startColumn,
+        columnStart: startColumn,
+        columnEnd: this.column,
       };
     }
 
@@ -207,7 +213,8 @@ export class Lexer {
       start,
       end: this.advanceToEndOfLine(),
       line: startLine,
-      column: startColumn,
+      columnStart: startColumn,
+      columnEnd: this.column,
     };
   }
 
@@ -395,7 +402,8 @@ export class Lexer {
       start,
       end: this.position,
       line: startLine,
-      column: startColumn,
+      columnStart: startColumn,
+      columnEnd: this.column,
     };
   }
 
@@ -420,7 +428,8 @@ export class Lexer {
       start,
       end: this.position,
       line: startLine,
-      column: startColumn,
+      columnStart: startColumn,
+      columnEnd: this.column,
     };
   }
 
@@ -449,7 +458,8 @@ export class Lexer {
       start,
       end: this.position,
       line: startLine,
-      column: startColumn,
+      columnStart: startColumn,
+      columnEnd: this.column,
     };
   }
 
