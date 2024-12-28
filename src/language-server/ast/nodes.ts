@@ -47,10 +47,16 @@ export enum BlockType {
   Minimal = "Minimal",
 }
 
+export type BlockNodeBodyType =
+  | ConditionNode
+  | ActionNode
+  | CommentNode
+  | ErrorNode;
+
 // A block statement (Show/Hide/Continue)
 export interface BlockNode extends BaseNode {
   type: BlockType;
-  body: (ConditionNode | ActionNode | CommentNode)[];
+  body: BlockNodeBodyType[];
 }
 
 // A condition with its operator and values

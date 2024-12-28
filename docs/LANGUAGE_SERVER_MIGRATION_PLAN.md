@@ -22,8 +22,8 @@ Syntax highlighting is handled by the existing TextMate grammar (tmLanguage) fil
      - [x] Custom sound file path validation
    - [ ] Block/Condition/Action keyword validation
      - [x] Block keyword validation
-     - [ ] Condition keyword validation
-     - [ ] Action keyword validation
+     - [x] Condition keyword validation
+     - [x] Action keyword validation
 
 2. Clean up
    - [ ] Remove extractCommandsFromGrammar() and related code
