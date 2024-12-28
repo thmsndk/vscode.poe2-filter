@@ -1,4 +1,6 @@
 export function levenshteinDistance(a: string, b: string): number {
+  console.log(`Comparing '${a}' with '${b}'`);
+
   if (a.length === 0) {
     return b.length;
   }
@@ -28,6 +30,9 @@ export function levenshteinDistance(a: string, b: string): number {
     }
   }
 
+  console.log("Distance matrix:");
+  console.log(matrix);
+
   return matrix[b.length][a.length];
 }
 
@@ -37,7 +42,8 @@ export function findSimilarValues(
   maxDistance = 3,
   maxSuggestions = 3
 ): string[] {
-  return validValues
+  // First try Levenshtein distance
+  const levenshteinMatches = validValues
     .map((valid) => ({
       value: valid,
       distance: levenshteinDistance(input.toLowerCase(), valid.toLowerCase()),
@@ -46,6 +52,18 @@ export function findSimilarValues(
     .sort((a, b) => a.distance - b.distance)
     .slice(0, maxSuggestions)
     .map((result) => result.value);
+
+  // If no matches found, try partial matching
+  if (levenshteinMatches.length === 0) {
+    const partialMatches = validValues
+      .filter((valid) => valid.toLowerCase().includes(input.toLowerCase()))
+      .sort((a, b) => a.length - b.length) // Prefer shorter matches
+      .slice(0, maxSuggestions);
+
+    return partialMatches;
+  }
+
+  return levenshteinMatches;
 }
 
 export function calculateNameSimilarity(a: string, b: string): number {

@@ -15,6 +15,7 @@ import {
   CommentNode,
   HeaderNode,
   BlockType,
+  BlockNodeBodyType,
 } from "./nodes";
 import { ConditionType, ConditionSyntaxMap } from "./conditions";
 import { ActionType, ActionSyntaxMap } from "./actions";
@@ -142,7 +143,7 @@ export class Parser {
       this.advance();
     }
 
-    const body: (ConditionNode | ActionNode | CommentNode)[] = [];
+    const body: BlockNodeBodyType[] = [];
 
     parseBlock: while (this.currentToken.type !== "EOF") {
       switch (this.currentToken.type) {
@@ -162,9 +163,27 @@ export class Parser {
         case "HIDE":
         case "MINIMAL":
         case "COMMENTED_BLOCK":
+        case "HEADER":
           // Break out of while loop when we hit another block
           break parseBlock;
+        case "NEWLINE":
+          this.advance();
+          break;
         default:
+          // Handle unexpected tokens like in root parse
+          body.push({
+            type: "Error",
+            token: this.currentToken,
+            start: this.currentToken.start,
+            end: this.currentToken.end,
+            line: this.currentToken.line,
+            columnStart: this.currentToken.columnStart,
+            columnEnd: this.currentToken.columnEnd,
+          });
+          this.addError(
+            `Unexpected token in block: ${this.currentToken.type}`,
+            this.currentToken
+          );
           this.advance();
       }
     }
