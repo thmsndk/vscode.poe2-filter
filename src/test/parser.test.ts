@@ -152,7 +152,7 @@ Show
     assert.strictEqual(parser.diagnostics.length, 1);
     assert.strictEqual(
       parser.diagnostics[0].message,
-      "Continue must be inside a block"
+      "Unexpected token at root level: ACTION"
     );
   });
 

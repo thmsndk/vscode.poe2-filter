@@ -32,17 +32,12 @@ Syntax highlighting is handled by the existing TextMate grammar (tmLanguage) fil
 
 1. Port rule conflict detection
    - [ ] Port FilterRuleEngine to use new AST (from filterRuleEngine.ts)
-     - [ ] Update rule matching logic
-     - [ ] Update condition evaluation
-     - [ ] Update action evaluation
-     - [ ] Add support for Continue blocks
-     - [ ] Add support for nested rules
+     - [x] Update rule matching logic
+     - [x] Update condition evaluation
+     - [x] Update action evaluation
+     - [x] Add support for Continue blocks
    - [ ] Adapt conflict detection logic (from filterConflicts.ts)
      - [ ] Blocks with empty conditions should catch all rules below them
-   - [ ] Convert diagnostic output format
-   - [ ] Add related information support (goto links)
-   - [ ] Add nested block detection
-   - [ ] Add empty block detection
 
 ## Phase 3: Game Data Integration
 
