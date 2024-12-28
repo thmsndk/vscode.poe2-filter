@@ -16,6 +16,7 @@ import {
   SemanticValidator,
   SemanticDiagnostic,
 } from "./validation/semanticValidator";
+import { FilterRuleEngine } from "./analysis/ruleEngine";
 
 // Create a connection for the server
 const connection = createConnection(ProposedFeatures.all);
@@ -65,10 +66,26 @@ async function validateDocument(document: TextDocument): Promise<void> {
   const semanticValidator = new SemanticValidator(document.uri);
   semanticValidator.validate(ast);
 
+  // Create and run rule engine for conflict detection
+  const ruleEngine = new FilterRuleEngine(ast);
+  const conflicts = ruleEngine.detectConflicts();
+
   // Convert internal diagnostics to LSP diagnostics
   const diagnostics: Diagnostic[] = [
     ...parser.diagnostics.map(convertToLSPDiagnostic),
     ...semanticValidator.diagnostics.map(convertToLSPDiagnostic),
+    ...conflicts.map((conflict) => ({
+      severity:
+        conflict.severity === "error"
+          ? DiagnosticSeverity.Error
+          : DiagnosticSeverity.Warning,
+      range: Range.create(
+        Position.create(conflict.node.line - 1, conflict.node.columnStart - 1),
+        Position.create(conflict.node.line - 1, conflict.node.columnEnd - 1)
+      ),
+      message: conflict.message,
+      source: "poe-filter-ls",
+    })),
   ];
 
   // Send the diagnostics to VSCode
