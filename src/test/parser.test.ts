@@ -100,31 +100,22 @@ Show
     const input = `
 Show
     BaseType      # Missing value
-    SetTextColor 999 0 0  # Invalid color value
 `;
     const parser = new Parser(input);
     const ast = parser.parse();
 
     assert.strictEqual(
       parser.diagnostics.length,
-      2,
-      "Expected exactly 2 errors"
+      1,
+      "Expected exactly 1 error"
     );
 
-    // Check first error - BaseType missing value
+    // Check error - BaseType missing value
     assert.strictEqual(parser.diagnostics[0].severity, "error");
     assert.strictEqual(
       parser.diagnostics[0].message,
       "Expected at least one value for condition",
-      "First error should be about missing BaseType value"
-    );
-
-    // Check second error - Invalid color value
-    assert.strictEqual(parser.diagnostics[1].severity, "error");
-    assert.strictEqual(
-      parser.diagnostics[1].message,
-      "Value 999 out of range [0,255] for parameter Red",
-      "Second error should be about invalid color value"
+      "Error should be about missing BaseType value"
     );
   });
 

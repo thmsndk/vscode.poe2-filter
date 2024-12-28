@@ -8,13 +8,16 @@ import {
   ErrorNode,
   BlockType,
 } from "../ast/nodes";
-import { ConditionSyntaxMap } from "../ast/conditions";
-import { ActionSyntaxMap } from "../ast/actions";
+import { ConditionSyntaxMap, ConditionType } from "../ast/conditions";
+import { ActionSyntaxMap, ActionType } from "../ast/actions";
 import { ColorValue, ShapeValue } from "../ast/tokens";
 import { SoundNameValue } from "../ast/tokens";
 import path from "path";
 import fs from "fs";
-import { findSimilarValues } from "../../utils/stringUtils";
+import {
+  findSimilarValues,
+  levenshteinDistance,
+} from "../../utils/stringUtils";
 
 export interface SemanticDiagnostic {
   message: string;
@@ -30,7 +33,7 @@ export class SemanticValidator {
   constructor(private documentUri?: string) {}
 
   public validate(ast: RootNode): void {
-    this.visitNode(ast);
+    this.visitNode(ast, undefined);
   }
 
   private validateNumberValue(
@@ -63,7 +66,7 @@ export class SemanticValidator {
     }
   }
 
-  private visitNode(node: Node): void {
+  private visitNode(node: Node, parent: Node | undefined): void {
     switch (node.type) {
       case "Show":
       case "Hide":
@@ -71,11 +74,11 @@ export class SemanticValidator {
         // Visit all nodes in the block's body
         const blockNode = node as BlockNode;
         for (const child of blockNode.body) {
-          this.visitNode(child);
+          this.visitNode(child, node);
         }
         break;
       case "Error":
-        this.validateErrorNode(node as ErrorNode);
+        this.validateErrorNode(node as ErrorNode, parent);
         break;
       case "Condition":
         this.validateCondition(node as ConditionNode);
@@ -87,19 +90,105 @@ export class SemanticValidator {
         // Visit all children of root node
         if ("children" in node) {
           for (const child of node.children) {
-            this.visitNode(child);
+            this.visitNode(child, node);
           }
         }
         break;
     }
   }
 
-  private validateErrorNode(node: ErrorNode): void {
-    // Only suggest block keywords for WORD tokens at the root level
-    if (node.token.type === "WORD" && this.isAtBlockPosition(node)) {
+  private isAtBlockPosition(node: Node, parent: Node | undefined): boolean {
+    return node.columnStart === 1 && parent?.type === "Root";
+  }
+
+  private validateErrorNode(node: ErrorNode, parent: Node | undefined): void {
+    if (node.token.type === "WORD") {
+      if (this.isAtBlockPosition(node, parent)) {
+        // Block keyword validation (existing code)
+        const suggestions = findSimilarValues(
+          node.token.value as string,
+          Object.values(BlockType)
+        );
+        const suggestionText =
+          suggestions.length > 0
+            ? `. Did you mean: ${suggestions.join(", ")}?`
+            : "";
+
+        this.diagnostics.push({
+          message: `Invalid block keyword "${node.token.value}"${suggestionText}`,
+          severity: "error",
+          line: node.line,
+          columnStart: node.columnStart,
+          columnEnd: node.columnEnd,
+        });
+      } else {
+        // Could be either a condition or action
+        const word = node.token.value as string;
+        const conditionSuggestions = findSimilarValues(
+          word,
+          Object.values(ConditionType)
+        );
+        const actionSuggestions = findSimilarValues(
+          word,
+          Object.values(ActionType)
+        );
+
+        let message: string;
+        if (conditionSuggestions.length > 0 || actionSuggestions.length > 0) {
+          if (
+            conditionSuggestions.length > 0 &&
+            actionSuggestions.length === 0
+          ) {
+            message = `Unknown condition "${word}". Did you mean: ${conditionSuggestions.join(
+              ", "
+            )}?`;
+          } else if (
+            actionSuggestions.length > 0 &&
+            conditionSuggestions.length === 0
+          ) {
+            message = `Unknown action "${word}". Did you mean: ${actionSuggestions.join(
+              ", "
+            )}?`;
+          } else {
+            // Combine and sort by Levenshtein distance, then take top 3
+            const allSuggestions = [
+              ...conditionSuggestions,
+              ...actionSuggestions,
+            ]
+              .map((suggestion) => ({
+                value: suggestion,
+                distance: levenshteinDistance(word, suggestion),
+              }))
+              .sort((a, b) => a.distance - b.distance)
+              .slice(0, 3)
+              .map((s) => s.value);
+
+            message = `Unknown keyword "${word}". Did you mean: ${allSuggestions.join(
+              ", "
+            )}?`;
+          }
+        } else {
+          message = `Unknown keyword "${word}"`;
+        }
+
+        this.diagnostics.push({
+          message,
+          severity: "error",
+          line: node.line,
+          columnStart: node.columnStart,
+          columnEnd: node.columnEnd,
+        });
+      }
+    }
+  }
+
+  private validateCondition(node: ConditionNode): void {
+    // Validate condition keyword exists
+    const syntax = ConditionSyntaxMap[node.condition];
+    if (!syntax) {
       const suggestions = findSimilarValues(
-        node.token.value as string,
-        Object.values(BlockType)
+        node.condition,
+        Object.values(ConditionType)
       );
       const suggestionText =
         suggestions.length > 0
@@ -107,22 +196,12 @@ export class SemanticValidator {
           : "";
 
       this.diagnostics.push({
-        message: `Invalid block keyword "${node.token.value}"${suggestionText}`,
+        message: `Unknown condition: "${node.condition}"${suggestionText}`,
         severity: "error",
         line: node.line,
         columnStart: node.columnStart,
         columnEnd: node.columnEnd,
       });
-    }
-  }
-
-  private isAtBlockPosition(node: Node): boolean {
-    return node.columnStart === 1;
-  }
-
-  private validateCondition(node: ConditionNode): void {
-    const syntax = ConditionSyntaxMap[node.condition];
-    if (!syntax) {
       return;
     }
 
