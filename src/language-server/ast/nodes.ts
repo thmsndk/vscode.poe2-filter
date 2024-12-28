@@ -15,7 +15,8 @@ export interface BaseNode {
   start: number;
   end: number;
   line: number;
-  column: number;
+  columnStart: number;
+  columnEnd: number;
   inlineComment?: string;
   commented?: boolean;
 }
