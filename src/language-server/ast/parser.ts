@@ -23,8 +23,8 @@ export interface ParserDiagnostic {
   message: string;
   severity: "error" | "warning";
   line: number;
-  column: number;
-  length: number;
+  columnStart: number;
+  columnEnd: number;
 }
 
 export class Parser {
@@ -45,8 +45,8 @@ export class Parser {
       message,
       severity: "error",
       line: token.line,
-      column: token.column,
-      length: token.end - token.start,
+      columnStart: token.columnStart,
+      columnEnd: token.columnEnd,
     });
   }
 
@@ -89,14 +89,15 @@ export class Parser {
       start,
       end: this.currentToken.start,
       line: 1,
-      column: 1,
+      columnStart: 1,
+      columnEnd: 1,
     };
   }
 
   private parseBlock(): BlockNode {
     const start = this.currentToken.start;
     const line = this.currentToken.line;
-    const column = this.currentToken.column;
+    const columnStart = this.currentToken.columnStart;
     const isCommented = this.currentToken.type === "COMMENTED_BLOCK";
 
     let blockType: BlockType;
@@ -167,7 +168,8 @@ export class Parser {
       start,
       end: this.currentToken.start,
       line,
-      column,
+      columnStart,
+      columnEnd: this.currentToken.columnEnd,
     };
   }
 
@@ -180,7 +182,8 @@ export class Parser {
   private parseCondition(): ConditionNode {
     const start = this.currentToken.start;
     const line = this.currentToken.line;
-    const column = this.currentToken.column;
+    const columnStart = this.currentToken.columnStart;
+    const columnEnd = this.currentToken.columnEnd;
     const isCommented = this.currentToken.type === "COMMENTED_CONDITION";
 
     if (!this.currentToken || !this.currentToken.value) {
@@ -188,7 +191,7 @@ export class Parser {
         "Expected condition type after condition marker",
         this.currentToken
       );
-      return this.createErrorConditionNode(start, line, column);
+      return this.createErrorConditionNode(start, line, columnStart, columnEnd);
     }
 
     const condition = this.currentToken.value as ConditionType;
@@ -308,14 +311,16 @@ export class Parser {
       start,
       end: this.currentToken.start,
       line,
-      column,
+      columnStart,
+      columnEnd: this.currentToken.columnEnd,
     };
   }
 
   private parseAction(): ActionNode {
     const start = this.currentToken.start;
     const line = this.currentToken.line;
-    const column = this.currentToken.column;
+    const columnStart = this.currentToken.columnStart;
+    const columnEnd = this.currentToken.columnEnd;
     const isCommented = this.currentToken.type === "COMMENTED_ACTION";
 
     if (!this.currentToken || !this.currentToken.value) {
@@ -323,7 +328,7 @@ export class Parser {
         "Expected action type after action marker",
         this.currentToken
       );
-      return this.createErrorActionNode(start, line, column);
+      return this.createErrorActionNode(start, line, columnStart, columnEnd);
     }
 
     const action = this.currentToken.value as ActionType;
@@ -427,14 +432,16 @@ export class Parser {
       start,
       end: this.currentToken.start,
       line,
-      column,
+      columnStart,
+      columnEnd,
     };
   }
 
   private parseComment(): CommentNode {
     const start = this.currentToken.start;
     const line = this.currentToken.line;
-    const column = this.currentToken.column;
+    const columnStart = this.currentToken.columnStart;
+    const columnEnd = this.currentToken.columnEnd;
     const type =
       this.currentToken.type === "COMMENT" ? "Comment" : "InlineComment";
     const value = this.currentToken.value as string;
@@ -447,14 +454,16 @@ export class Parser {
       start,
       end: this.currentToken.start,
       line,
-      column,
+      columnStart,
+      columnEnd,
     };
   }
 
   private parseHeader(): HeaderNode {
     const start = this.currentToken.start;
     const line = this.currentToken.line;
-    const column = this.currentToken.column;
+    const columnStart = this.currentToken.columnStart;
+    const columnEnd = this.currentToken.columnEnd;
     const headerInfo = this.currentToken.value as any;
 
     this.advance(); // Consume header
@@ -468,7 +477,8 @@ export class Parser {
       start,
       end: this.currentToken.start,
       line,
-      column,
+      columnStart,
+      columnEnd,
     };
   }
 
@@ -485,7 +495,8 @@ export class Parser {
   private createErrorConditionNode(
     start: number,
     line: number,
-    column: number
+    columnStart: number,
+    columnEnd: number
   ): ConditionNode {
     return {
       type: "Condition",
@@ -494,14 +505,16 @@ export class Parser {
       start,
       end: this.currentToken.start,
       line,
-      column,
+      columnStart,
+      columnEnd,
     };
   }
 
   private createErrorActionNode(
     start: number,
     line: number,
-    column: number
+    columnStart: number,
+    columnEnd: number
   ): ActionNode {
     return {
       type: "Action",
@@ -510,7 +523,8 @@ export class Parser {
       start,
       end: this.currentToken.start,
       line,
-      column,
+      columnStart,
+      columnEnd,
     };
   }
 

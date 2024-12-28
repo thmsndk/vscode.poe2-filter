@@ -87,9 +87,22 @@ export enum ShapeValue {
   UpsideDownHouse = "UpsideDownHouse",
 }
 
-// Token interface
+/**
+ * Represents a token in the source code with position information
+ */
 export interface Token {
+  /** The type of token */
   type: TokenType;
+  /**
+   * The value of the token, which can be one of several types:
+   * - string: Raw string value
+   * - number: Numeric value
+   * - boolean: Boolean value
+   * - HeaderInfo: Header metadata
+   * - RarityValue: Item rarity enum value
+   * - ColorValue: Color name enum value
+   * - ShapeValue: Shape name enum value
+   */
   value:
     | string
     | number
@@ -98,8 +111,14 @@ export interface Token {
     | RarityValue
     | ColorValue
     | ShapeValue;
+  /** Absolute character offset from start of document */
   start: number;
+  /** Absolute character offset from start of document */
   end: number;
-  line: number;
-  column: number;
+  /** Position in line */
+  line: number; // 1-based line number
+  /** 1-based starting character position in line */
+  columnStart: number;
+  /** 1-based ending character position in line */
+  columnEnd: number;
 }
