@@ -41,20 +41,48 @@ documents.onDidChangeContent((change) => {
 });
 
 function convertToLSPDiagnostic(
-  diagnostic: ParserDiagnostic | SemanticDiagnostic
+  diagnostic: ParserDiagnostic | SemanticDiagnostic,
+  source: string = "poe-filter-ls"
 ): Diagnostic {
-  return {
-    severity:
-      diagnostic.severity === "error"
-        ? DiagnosticSeverity.Error
-        : DiagnosticSeverity.Warning,
-    range: Range.create(
-      Position.create(diagnostic.line - 1, diagnostic.columnStart - 1),
-      Position.create(diagnostic.line - 1, diagnostic.columnEnd - 1)
-    ),
-    message: diagnostic.message,
-    source: "poe-filter-ls",
-  };
+  try {
+    return {
+      severity:
+        diagnostic.severity === "error"
+          ? DiagnosticSeverity.Error
+          : DiagnosticSeverity.Warning,
+      range: Range.create(
+        Position.create(
+          Math.max(0, diagnostic.line - 1),
+          Math.max(0, diagnostic.columnStart - 1)
+        ),
+        Position.create(
+          Math.max(0, diagnostic.line - 1),
+          Math.max(0, diagnostic.columnEnd - 1)
+        )
+      ),
+      message: diagnostic.message,
+      source: source,
+    };
+  } catch (error: any) {
+    connection.console.error(
+      `Failed to convert diagnostic: ${JSON.stringify(
+        {
+          diagnostic,
+          error: error.message,
+        },
+        null,
+        2
+      )}`
+    );
+
+    // Return a fallback diagnostic at position 0,0
+    return {
+      severity: DiagnosticSeverity.Error,
+      range: Range.create(diagnostic.line, 0, diagnostic.line, 0),
+      message: `Internal error: ${error.message}`,
+      source: source,
+    };
+  }
 }
 
 async function validateDocument(document: TextDocument): Promise<void> {
@@ -72,8 +100,12 @@ async function validateDocument(document: TextDocument): Promise<void> {
 
   // Convert internal diagnostics to LSP diagnostics
   const diagnostics: Diagnostic[] = [
-    ...parser.diagnostics.map(convertToLSPDiagnostic),
-    ...semanticValidator.diagnostics.map(convertToLSPDiagnostic),
+    ...parser.diagnostics.map((diagnostic) =>
+      convertToLSPDiagnostic(diagnostic, "poe-filter-ls-parser")
+    ),
+    ...semanticValidator.diagnostics.map((diagnostic) =>
+      convertToLSPDiagnostic(diagnostic, "poe-filter-ls-semanticValidator")
+    ),
     ...conflicts.map((conflict) => ({
       severity:
         conflict.severity === "error"
@@ -84,7 +116,7 @@ async function validateDocument(document: TextDocument): Promise<void> {
         Position.create(conflict.node.line - 1, conflict.node.columnEnd - 1)
       ),
       message: conflict.message,
-      source: "poe-filter-ls",
+      source: "poe-filter-ls-conflicts",
     })),
   ];
 
