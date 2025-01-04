@@ -80,12 +80,26 @@ export const ActionSyntaxMap: Record<ActionType, ActionSyntax> = {
   },
   [ActionType.DisableDropSound]: {
     type: ActionType.DisableDropSound,
-    parameters: [],
+    parameters: [
+      {
+        name: "Enabled",
+        type: "boolean",
+        required: false,
+        description: "Whether the drop sound is enabled",
+      },
+    ],
     description: "Disables the default drop sound for this item",
   },
   [ActionType.DisableDropSoundIfAlertSound]: {
     type: ActionType.DisableDropSoundIfAlertSound,
-    parameters: [],
+    parameters: [
+      {
+        name: "Enabled",
+        type: "boolean",
+        required: false,
+        description: "Whether the drop sound is enabled",
+      },
+    ],
     description: "Disables the default drop sound if an alert sound is played",
   },
   [ActionType.EnableDropSound]: {
