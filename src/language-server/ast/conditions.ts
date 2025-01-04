@@ -301,7 +301,7 @@ export const ConditionSyntaxMap: Record<ConditionType, ConditionSyntax> = {
     valueType: "number",
     operatorBehavior: {
       allowed: true,
-      optional: false,
+      optional: true,
       allowedOperators: ["==", "<=", ">=", "<", ">"],
     },
     valueSyntax: {
@@ -314,7 +314,7 @@ export const ConditionSyntaxMap: Record<ConditionType, ConditionSyntax> = {
     valueType: "number",
     operatorBehavior: {
       allowed: true,
-      optional: false,
+      optional: true,
       allowedOperators: ["==", "<=", ">=", "<", ">"],
     },
     valueSyntax: {
