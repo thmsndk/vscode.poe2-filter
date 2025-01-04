@@ -249,6 +249,16 @@ export class Parser {
           values.push(num);
           break;
 
+        case "BOOLEAN":
+          this.validateTokenType(
+            syntax?.valueType ?? "",
+            "boolean",
+            `condition ${condition}`,
+            this.currentToken
+          );
+          values.push(this.currentToken.value as boolean);
+          break;
+
         case "QUOTED_STRING":
         case "WORD":
           this.validateTokenType(
