@@ -180,3 +180,140 @@ Sho
     );
   });
 });
+
+suite("Block Boundary Detection", () => {
+  test.skip("should associate all content between block statements with first block", () => {
+    const input = `
+Show # First block
+    BaseType "Mirror"
+    SetTextColor 255 0 0
+    # Random comment
+    #SetBackgroundColor 0 0 0
+
+# Random comment between blocks
+# Another comment
+
+Show # Second block
+    BaseType "Chaos Orb"
+`;
+    const parser = new Parser(input);
+    const ast = parser.parse();
+
+    // TODO: This should result in 2 blocks seperated by two comments or headers
+
+    assert.strictEqual(ast.children.length, 2, "Should have exactly 2 blocks");
+
+    const block1 = ast.children[0] as BlockNode;
+    assert.strictEqual(
+      block1.body.length,
+      5,
+      "First block should include comments and all actions"
+    );
+    assert.strictEqual(block1.inlineComment, "First block");
+
+    // Verify standalone comments are attached to first block
+    const commentAction = block1.body[3] as ActionNode;
+    assert.strictEqual(commentAction.type, "Comment");
+    assert.strictEqual(commentAction.values[0], "Random comment");
+
+    const block2 = ast.children[1] as BlockNode;
+    assert.strictEqual(block2.body.length, 1);
+    assert.strictEqual(block2.inlineComment, "Second block");
+  });
+
+  test("should handle empty lines and comments between blocks", () => {
+    const input = `
+Show
+    BaseType "Mirror"
+
+
+# Comment 1
+# Comment 2
+
+Show
+    BaseType "Chaos"
+`;
+    const parser = new Parser(input);
+    const ast = parser.parse();
+    // TODO: This should result in 2 blocks seperated by two comments
+
+    assert.strictEqual(ast.children.length, 2);
+    const block1 = ast.children[0] as BlockNode;
+    assert.strictEqual(
+      block1.body.length,
+      3,
+      "Should include empty lines and comments"
+    );
+  });
+
+  test.skip("should handle mixed commented and uncommented content between blocks", () => {
+    const input = `
+Show # Currency
+    BaseType "Mirror"
+    SetTextColor 255 0 0
+    #SetBackgroundColor 0 0 0
+    # Comment within block
+    Continue
+
+    # Floating comment
+    #MinimapIcon 1 Yellow Diamond
+    SetFontSize 45
+
+Show # Weapons
+    Class "Dagger"
+`;
+    const parser = new Parser(input);
+    const ast = parser.parse();
+
+    assert.strictEqual(ast.children.length, 2);
+
+    const block1 = ast.children[0] as BlockNode;
+    assert.strictEqual(
+      block1.body.length,
+      8,
+      "Should include all content until next Show"
+    );
+
+    // Verify the "floating" content is attached to first block
+    const floatingComment = block1.body[6] as ActionNode;
+    assert.strictEqual(floatingComment.type, "Comment");
+    assert.strictEqual(floatingComment.values[0], "Floating comment");
+
+    const floatingAction = block1.body[7] as ActionNode;
+    assert.strictEqual(floatingAction.type, "Action");
+    assert.strictEqual(floatingAction.action, ActionType.SetFontSize);
+  });
+
+  test.skip("should handle commented blocks with content between them", () => {
+    const input = `
+#Show # First
+#    BaseType "Mirror"
+
+    # Floating comment
+    SetFontSize 45
+
+#Show # Second
+#    BaseType "Chaos"
+`;
+    const parser = new Parser(input);
+    const ast = parser.parse();
+
+    assert.strictEqual(
+      ast.children.length,
+      2,
+      "Should have two commented blocks"
+    );
+
+    const block1 = ast.children[0] as BlockNode;
+    assert.strictEqual(block1.commented, true);
+    assert.strictEqual(
+      block1.body.length,
+      3,
+      "Should include floating content"
+    );
+
+    const block2 = ast.children[1] as BlockNode;
+    assert.strictEqual(block2.commented, true);
+    assert.strictEqual(block2.body.length, 1);
+  });
+});
