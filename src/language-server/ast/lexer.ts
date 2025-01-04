@@ -8,6 +8,7 @@ import {
 } from "./tokens";
 import { ConditionType } from "./conditions";
 import { ActionType } from "./actions";
+import { BlockType } from "./nodes";
 
 export class Lexer {
   /** The full source text being lexed */
@@ -113,23 +114,75 @@ export class Lexer {
     const startLine = this.line;
     const startColumn = this.column;
 
-    // Skip the # character
-    this.position++;
-    this.column++;
+    // Read the rest of the line
+    let line = this.peekLine().trim();
 
-    // Check if this might be a header
-    const headerInfo = this.tryReadHeader();
-    if (headerInfo) {
+    const leadingCharacters = line.match(/^[#\s]+/)?.[0].length || 0;
+    const trimmedLine = line.slice(leadingCharacters);
+
+    const words = trimmedLine.split(/\s/);
+    const firstWord = words[0];
+
+    if (firstWord in BlockType) {
+      const end = this.position + leadingCharacters + firstWord.length;
+      this.advanceToPosition(end);
+
       return {
-        type: "HEADER",
-        value: headerInfo,
+        type: "COMMENTED_BLOCK",
+        value: firstWord,
         start,
-        end: this.position,
+        end,
+        line: startLine,
+        columnStart: startColumn,
+        columnEnd: this.column,
+      };
+    } else if (this.isCondition(firstWord)) {
+      const end = this.position + leadingCharacters + firstWord.length;
+      this.advanceToPosition(end);
+
+      return {
+        type: "COMMENTED_CONDITION",
+        value: firstWord,
+        start,
+        end,
+        line: startLine,
+        columnStart: startColumn,
+        columnEnd: this.column,
+      };
+    } else if (this.isAction(firstWord)) {
+      const end = this.position + leadingCharacters + firstWord.length;
+      this.advanceToPosition(end);
+
+      return {
+        type: "COMMENTED_ACTION",
+        value: firstWord,
+        start,
+        end,
         line: startLine,
         columnStart: startColumn,
         columnEnd: this.column,
       };
     }
+
+    // Check if this might be a header
+    if (startColumn === 1) {
+      const headerInfo = this.tryReadHeader();
+      if (headerInfo) {
+        return {
+          type: "HEADER",
+          value: headerInfo,
+          start,
+          end: this.position,
+          line: startLine,
+          columnStart: startColumn,
+          columnEnd: this.column,
+        };
+      }
+    }
+
+    // Skip the # character
+    this.position++;
+    this.column++;
 
     // If there's non-whitespace before this comment on the same line, it's an inline comment
     if (!this.isLineStart(start)) {
@@ -156,55 +209,8 @@ export class Lexer {
     // Skip whitespace after #
     this.skipWhitespace();
 
-    // Read the rest of the line
-    const line = this.peekLine().trim();
-    const firstWord = line.split(/\s+/)[0];
-
-    // Check all commented tokens using firstWord
-    if (firstWord === "Show" || firstWord === "Hide") {
-      const end = this.position + firstWord.length;
-      this.advanceToPosition(end);
-
-      return {
-        type: "COMMENTED_BLOCK",
-        value: firstWord,
-        start,
-        end,
-        line: startLine,
-        columnStart: startColumn,
-        columnEnd: this.column,
-      };
-    }
-
-    if (this.isCondition(firstWord)) {
-      const end = this.position + firstWord.length;
-      this.advanceToPosition(end);
-
-      return {
-        type: "COMMENTED_CONDITION",
-        value: firstWord,
-        start,
-        end,
-        line: startLine,
-        columnStart: startColumn,
-        columnEnd: this.column,
-      };
-    }
-
-    if (this.isAction(firstWord)) {
-      const end = this.position + firstWord.length;
-      this.advanceToPosition(end);
-
-      return {
-        type: "COMMENTED_ACTION",
-        value: firstWord,
-        start,
-        end,
-        line: startLine,
-        columnStart: startColumn,
-        columnEnd: this.column,
-      };
-    }
+    // Read the rest of the line because we've skipped # and whitespace
+    line = this.peekLine().trim();
 
     // Regular comment
     return {
@@ -236,7 +242,9 @@ export class Lexer {
 
     // Check for bordered sections first (higher priority)
     if (this.isBorderLine(firstLine)) {
-      const border = firstLine[0];
+      // Remove leading #s and trim to get the actual border character
+      const withoutHashes = firstLine.trim().replace(/^#+/, "").trim();
+      const border = withoutHashes[0];
 
       // Advance past the border line
       this.advanceToEndOfLine();
@@ -244,8 +252,14 @@ export class Lexer {
       this.line++;
       this.column = 1;
 
+      /* 
+        TODO: There is actually different strategies for determining the level
+        markdown style is one, 
+        using -- as the secondary border level is another, 
+        and then there is the id in increments
+      */
       let headerInfo: HeaderInfo = {
-        level: border === "-" ? 2 : 1,
+        level: (firstLine.match(/^#+/) || [""])[0].length || 1, // Count #s for level
         text: "",
         style: {
           border,
@@ -307,6 +321,11 @@ export class Lexer {
     // Fallback: Check for markdown headers
     const markdownLevel = this.countInitialHashes(firstLine);
     if (markdownLevel > 0) {
+      this.advanceToEndOfLine();
+      this.position++; // Skip the newline
+      this.line++;
+      this.column = 1;
+
       return {
         level: markdownLevel,
         text: firstLine.slice(markdownLevel).trim(),
@@ -468,10 +487,17 @@ export class Lexer {
     if (trimmed.length === 0) {
       return false;
     }
+
+    // Remove leading #s and trim again
+    const withoutHashes = trimmed.replace(/^#+/, "").trim();
+    if (withoutHashes.length === 0) {
+      return false;
+    }
+
     // Get the first non-space character
-    const firstChar = trimmed[0];
+    const firstChar = withoutHashes[0];
     // Check if all non-space characters are the same
-    return trimmed.split("").every((c) => c === firstChar || c === " ");
+    return withoutHashes.split("").every((c) => c === firstChar || c === " ");
   }
 
   private countInitialHashes(line: string): number {
