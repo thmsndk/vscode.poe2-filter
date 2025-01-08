@@ -15,7 +15,6 @@ import { CodelensProvider } from "./CodelensProvider";
 import { SoundPlayer } from "./utils/soundPlayer";
 import path from "path";
 import { GameDataService } from "./services/gameDataService";
-import { FilterDecorationProvider } from "./providers/filterDecorationProvider";
 import {
   LanguageClient,
   ServerOptions,
@@ -62,50 +61,6 @@ export async function activate(context: vscode.ExtensionContext) {
   // Initialize game data service
   const gameData = new GameDataService();
   await gameData.loadData(context.extensionPath);
-
-  // // Register hover provider
-  // context.subscriptions.push(
-  //   vscode.languages.registerHoverProvider(
-  //     "poe2-filter",
-  //     new FilterHoverProvider(gameData)
-  //   )
-  // );
-
-  // Initialize and register decoration provider
-  const decorationProvider = new FilterDecorationProvider();
-
-  // Update decorations when active editor changes
-  vscode.window.onDidChangeActiveTextEditor(
-    (editor) => {
-      if (editor && editor.document.languageId === "poe2-filter") {
-        decorationProvider.updateDecorations(editor, gameData);
-      }
-    },
-    null,
-    context.subscriptions
-  );
-
-  // Update decorations when document changes
-  vscode.workspace.onDidChangeTextDocument(
-    (event) => {
-      if (event.document.languageId === "poe2-filter") {
-        const editor = vscode.window.activeTextEditor;
-        if (editor && editor.document === event.document) {
-          decorationProvider.updateDecorations(editor, gameData);
-        }
-      }
-    },
-    null,
-    context.subscriptions
-  );
-
-  // Initial decoration update
-  if (vscode.window.activeTextEditor) {
-    decorationProvider.updateDecorations(
-      vscode.window.activeTextEditor,
-      gameData
-    );
-  }
 
   // Register document symbol provider for outline
   context.subscriptions.push(
