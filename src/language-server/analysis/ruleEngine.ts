@@ -266,6 +266,7 @@ export class FilterRuleEngine {
    * Detects potential rule conflicts
    */
   detectConflicts(): RuleConflict[] {
+    // TODO: We need to check values for conflicts as well, for example if you have a partial rule searching for "staves" and expect a "Quarterstaves" hide rule later to hide it
     const conflicts: RuleConflict[] = [];
     const blocks = this.flattenBlocks();
 
