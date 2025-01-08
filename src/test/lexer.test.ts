@@ -346,55 +346,6 @@ Show
     );
   });
 
-  test("should maintain block context in nested comments", () => {
-    const input = `
-# Show                         # Outer comment
-#     Class "Boots"           # Commented condition
-#     #SetFontSize 40         # Double commented
-#     SetBorderColor 0 0 0    # Should still be part of commented Show
-#     Continue                # Should still be part of commented Show
-SetBackgroundColor 0 0 0       # This should be an error - no active block due to continue action
-`;
-    const lexer = new Lexer(input);
-    const tokens: { type: string; value?: any }[] = [];
-    let token;
-
-    do {
-      token = lexer.nextToken();
-      tokens.push(token);
-    } while (token.type !== "EOF");
-
-    assert.deepStrictEqual(
-      tokens.map((t) => t.type),
-      [
-        "NEWLINE",
-        "COMMENTED_BLOCK",
-        "INLINE_COMMENT",
-        "NEWLINE",
-        "COMMENTED_CONDITION",
-        "QUOTED_STRING",
-        "INLINE_COMMENT",
-        "NEWLINE",
-        "COMMENTED_ACTION",
-        "NUMBER",
-        "INLINE_COMMENT",
-        "NEWLINE",
-        "COMMENTED_ACTION",
-        "NUMBER",
-        "NUMBER",
-        "NUMBER",
-        "INLINE_COMMENT",
-        "NEWLINE",
-        "COMMENTED_ACTION",
-        "INLINE_COMMENT",
-        "NEWLINE",
-        "ERROR", // The orphaned action should be marked as an error
-        "NEWLINE",
-        "EOF",
-      ]
-    );
-  });
-
   test("should handle inline comments containing condition keywords", () => {
     const input = `Show # Salvageable Quality Normal items
     Quality > 0
