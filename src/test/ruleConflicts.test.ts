@@ -248,3 +248,79 @@ Show
     assert.strictEqual(conflicts.length, 0);
   });
 });
+
+suite("Rule Conflict Detection - Commented Blocks", () => {
+  test("should ignore commented blocks in conflict detection", () => {
+    const input = `
+Show
+    BaseType "Chaos Orb"
+    SetFontSize 45
+
+# Show                          # This block should be ignored
+#     BaseType "Chaos Orb"
+#     SetFontSize 40`;
+
+    const parser = new Parser(input);
+    const ast = parser.parse();
+    const engine = new FilterRuleEngine(ast);
+    const conflicts = engine.detectConflicts();
+
+    assert.strictEqual(
+      conflicts.length,
+      0,
+      "Commented block should not cause conflicts"
+    );
+  });
+
+  test("should ignore commented conditions in conflict detection", () => {
+    const input = `
+Show
+    BaseType "Chaos Orb"
+    # ItemLevel >= 75           # This condition should be ignored
+    SetFontSize 45
+
+Show
+    BaseType "Chaos Orb"
+    ItemLevel >= 75
+    SetFontSize 40`;
+
+    const parser = new Parser(input);
+    const ast = parser.parse();
+    const engine = new FilterRuleEngine(ast);
+    const conflicts = engine.detectConflicts();
+
+    assert.strictEqual(
+      conflicts.length,
+      0,
+      "Rule with commented condition should not conflict"
+    );
+  });
+
+  test("should detect conflicts between active blocks even with commented blocks in between", () => {
+    const input = `
+Show
+    BaseType "Chaos Orb"
+    ItemLevel >= 60
+    SetFontSize 45
+
+# Show                          # This commented block should be ignored
+#     BaseType "Something Else"
+#     SetFontSize 40
+
+Show # This should still conflict with first block
+    BaseType "Chaos Orb"
+    ItemLevel >= 75
+    SetFontSize 40`;
+
+    const parser = new Parser(input);
+    const ast = parser.parse();
+    const engine = new FilterRuleEngine(ast);
+    const conflicts = engine.detectConflicts();
+
+    assert.strictEqual(conflicts.length, 1);
+    assert.strictEqual(
+      conflicts[0].message,
+      'Rule may never trigger because it would be caught by an earlier rule with BaseType "Chaos Orb", ItemLevel >= 60'
+    );
+  });
+});

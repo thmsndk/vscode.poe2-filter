@@ -32,10 +32,20 @@ export class FilterRuleEngine {
     let inheritedBodyMap = new Map<string, BlockNodeBodyType>();
 
     for (const block of blocks) {
+      if (block.commented) {
+        // Skip commented blocks
+        continue;
+      }
+
       let hasContinue = false;
 
       // Update the inherited body map with the current block's items
       for (const item of block.body) {
+        if (item.commented) {
+          // Skip commented items
+          continue;
+        }
+
         let key: string;
         switch (item.type) {
           case "Condition":
