@@ -38,42 +38,6 @@ Show # Basic currency
     assert.deepStrictEqual(action.values, [255, 0, 0]);
   });
 
-  test("should parse commented blocks and statements", () => {
-    const input = `
-Show
-    BaseType "Mirror"
-    # BaseType "Chaos"    # Commented condition with inline comment
-# Show                    # Commented block with inline comment
-#     BaseType "Scroll"   # Part of commented block
-#     SetTextColor 0 0 0  # Part of commented block
-`;
-    const parser = new Parser(input);
-    const ast = parser.parse();
-
-    assert.strictEqual(ast.children.length, 2); // One regular block, one commented block
-
-    const regularBlock = ast.children[0] as BlockNode;
-    assert.strictEqual(regularBlock.type, "Show");
-    assert.strictEqual(regularBlock.commented, false);
-    assert.strictEqual(regularBlock.body.length, 2);
-
-    const commentedCondition = regularBlock.body[1] as ConditionNode;
-    assert.strictEqual(commentedCondition.type, "Condition");
-    assert.strictEqual(commentedCondition.commented, true);
-    assert.strictEqual(
-      commentedCondition.inlineComment,
-      "Commented condition with inline comment"
-    );
-
-    const commentedBlock = ast.children[1] as BlockNode;
-    assert.strictEqual(commentedBlock.type, "Show");
-    assert.strictEqual(commentedBlock.commented, true);
-    assert.strictEqual(
-      commentedBlock.inlineComment,
-      "Commented block with inline comment"
-    );
-  });
-
   test("should parse special values correctly", () => {
     const input = `
 Show
@@ -177,6 +141,123 @@ Sho
     assert.strictEqual(
       parser.diagnostics[0].message,
       "Unexpected token at root level: WORD"
+    );
+  });
+
+  test("should parse inline commented conditions within active block", () => {
+    const input = `
+Show
+    BaseType "Mirror"
+    # BaseType "Chaos"    # Commented condition with inline comment`;
+
+    const parser = new Parser(input);
+    const ast = parser.parse();
+
+    assert.strictEqual(
+      parser.diagnostics.length,
+      0,
+      "Should have no parsing errors"
+    );
+
+    const block = ast.children[0] as BlockNode;
+    assert.strictEqual(block.type, "Show");
+    assert.strictEqual(block.commented, false);
+    assert.strictEqual(block.body.length, 2);
+
+    // Validate active condition
+    const activeCondition = block.body[0] as ConditionNode;
+    assert.strictEqual(activeCondition.type, "Condition");
+    assert.strictEqual(activeCondition.condition, "BaseType");
+    assert.deepStrictEqual(activeCondition.values, ["Mirror"]);
+    assert.strictEqual(activeCondition.commented, false);
+
+    // Validate commented condition
+    const commentedCondition = block.body[1] as ConditionNode;
+    assert.strictEqual(commentedCondition.type, "Condition");
+    assert.strictEqual(commentedCondition.condition, "BaseType");
+    assert.deepStrictEqual(commentedCondition.values, ["Chaos"]);
+    assert.strictEqual(commentedCondition.commented, true);
+    assert.strictEqual(
+      commentedCondition.inlineComment,
+      "Commented condition with inline comment"
+    );
+  });
+
+  test("should parse fully commented blocks with nested comments", () => {
+    const input = `
+# Show                    # Commented block with inline comment
+#     BaseType "Scroll"   # Part of commented block
+#     SetTextColor 0 0 0  # Part of commented block`;
+
+    const parser = new Parser(input);
+    const ast = parser.parse();
+
+    assert.strictEqual(
+      parser.diagnostics.length,
+      0,
+      "Should have no parsing errors"
+    );
+
+    const commentedBlock = ast.children[0] as BlockNode;
+    assert.strictEqual(commentedBlock.type, "Show");
+    assert.strictEqual(commentedBlock.commented, true);
+    assert.strictEqual(
+      commentedBlock.inlineComment,
+      "Commented block with inline comment"
+    );
+
+    // Validate nested commented statements
+    assert.strictEqual(commentedBlock.body.length, 2);
+
+    // Validate commented condition
+    const condition = commentedBlock.body[0] as ConditionNode;
+    assert.strictEqual(condition.type, "Condition");
+    assert.strictEqual(condition.condition, "BaseType");
+    assert.deepStrictEqual(condition.values, ["Scroll"]);
+    assert.strictEqual(condition.commented, true);
+    assert.strictEqual(condition.inlineComment, "Part of commented block");
+
+    // Validate commented action
+    const action = commentedBlock.body[1] as ActionNode;
+    assert.strictEqual(action.type, "Action");
+    assert.strictEqual(action.action, "SetTextColor");
+    assert.deepStrictEqual(action.values, [0, 0, 0]);
+    assert.strictEqual(action.commented, true);
+    assert.strictEqual(action.inlineComment, "Part of commented block");
+  });
+
+  test("should detect missing values for conditions with correct line numbers", () => {
+    const input = `
+Show
+    BaseType ==    # Missing value after operator
+    SetFontSize 45
+`;
+    const parser = new Parser(input);
+    const ast = parser.parse();
+
+    assert.strictEqual(
+      parser.diagnostics.length,
+      1,
+      "Expected exactly 1 error"
+    );
+
+    // Check error - BaseType missing value
+    const diagnostic = parser.diagnostics[0];
+    assert.strictEqual(diagnostic.severity, "error");
+    assert.strictEqual(
+      diagnostic.message,
+      "Expected at least one value for condition BaseType",
+      "Error should be about missing BaseType value"
+    );
+    assert.strictEqual(
+      diagnostic.line,
+      3,
+      "Error should point to the BaseType line"
+    );
+    assert.strictEqual(
+      diagnostic.columnStart,
+      14,
+      "Error should point to the start of BaseType"
     );
   });
 });

@@ -31,6 +31,7 @@ export interface ParserDiagnostic {
 export class Parser {
   private lexer: Lexer;
   private currentToken: Token;
+  private previousToken: Token;
   private tokens: Token[] = [];
   private position: number = 0;
   public diagnostics: ParserDiagnostic[] = [];
@@ -38,6 +39,7 @@ export class Parser {
   constructor(source: string) {
     this.lexer = new Lexer(source);
     this.currentToken = this.lexer.nextToken();
+    this.previousToken = this.currentToken;
     this.tokens.push(this.currentToken);
   }
 
@@ -326,9 +328,14 @@ export class Parser {
     }
 
     if (values.length === 0) {
+      const errorToken =
+        this.previousToken.type === "INLINE_COMMENT"
+          ? this.tokens[this.position - 2]
+          : this.previousToken;
+
       this.addError(
-        "Expected at least one value for condition",
-        this.currentToken
+        `Expected at least one value for condition ${condition}`,
+        errorToken
       );
     }
 
@@ -494,6 +501,18 @@ export class Parser {
       );
     }
 
+    if (values.length === 0 && this.requiresValues(action)) {
+      const errorToken =
+        this.previousToken.type === "INLINE_COMMENT"
+          ? this.tokens[this.position - 2]
+          : this.previousToken;
+
+      this.addError(
+        `Expected at least one value for action ${action}`,
+        errorToken
+      );
+    }
+
     return {
       type: "Action",
       action,
@@ -554,6 +573,7 @@ export class Parser {
   }
 
   private advance(): void {
+    this.previousToken = this.currentToken;
     this.position++;
     if (this.position >= this.tokens.length) {
       this.currentToken = this.lexer.nextToken();
