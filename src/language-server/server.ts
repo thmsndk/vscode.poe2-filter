@@ -22,6 +22,8 @@ import { FilterRuleEngine } from "./analysis/ruleEngine";
 import { GameDataService } from "../services/gameDataService";
 import { RootNode } from "./ast/nodes";
 import { HoverProvider } from "./providers/hoverProvider";
+import { InlayHint, InlayHintParams } from "vscode-languageserver";
+import { InlayHintsProvider } from "./providers/inlayHintsProvider";
 
 // Create a connection for the server
 const connection = createConnection(ProposedFeatures.all);
@@ -62,6 +64,7 @@ const documents = new FilterDocuments(TextDocument);
 const gameData = new GameDataService();
 
 const hoverProvider = new HoverProvider(gameData);
+const inlayHintsProvider = new InlayHintsProvider(gameData);
 
 connection.console.info("Starting PoE Filter Language Server...");
 
@@ -88,7 +91,10 @@ connection.onInitialize(
     return {
       capabilities: {
         textDocumentSync: TextDocumentSyncKind.Incremental,
-        hoverProvider: true, // Add hover support
+        hoverProvider: true,
+        inlayHintProvider: {
+          resolveProvider: false, // We can provide all info upfront
+        },
       },
     };
   }
@@ -198,6 +204,22 @@ connection.onHover((params: TextDocumentPositionParams): Hover | null => {
 
   return hoverProvider.provideHover(ast, params);
 });
+
+connection.languages.inlayHint.on(
+  (params: InlayHintParams): InlayHint[] | null => {
+    const document = documents.get(params.textDocument.uri);
+    if (!document) {
+      return null;
+    }
+
+    const ast = documents.getAst(document.uri);
+    if (!ast) {
+      return null;
+    }
+
+    return inlayHintsProvider.provideInlayHints(ast);
+  }
+);
 
 documents.listen(connection);
 connection.listen();
