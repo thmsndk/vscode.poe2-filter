@@ -30,12 +30,18 @@ Show # Basic currency
     const condition = block.body[0] as ConditionNode;
     assert.strictEqual(condition.type, "Condition");
     assert.strictEqual(condition.condition, "BaseType");
-    assert.deepStrictEqual(condition.values, ["Chaos Orb"]);
+    assert.deepStrictEqual(
+      condition.values.map((v) => v.value),
+      ["Chaos Orb"]
+    );
 
     const action = block.body[1] as ActionNode;
     assert.strictEqual(action.type, "Action");
     assert.strictEqual(action.action, ActionType.SetTextColor);
-    assert.deepStrictEqual(action.values, [255, 0, 0]);
+    assert.deepStrictEqual(
+      action.values.map((v) => v.value),
+      [255, 0, 0]
+    );
   });
 
   test("should parse special values correctly", () => {
@@ -53,11 +59,17 @@ Show
 
     assert.strictEqual(condition.type, "Condition");
     assert.strictEqual(condition.condition, "Rarity");
-    assert.deepStrictEqual(condition.values, ["Unique"]);
+    assert.deepStrictEqual(
+      condition.values.map((v) => v.value),
+      ["Unique"]
+    );
 
     assert.strictEqual(action.type, "Action");
     assert.strictEqual(action.action, ActionType.MinimapIcon);
-    assert.deepStrictEqual(action.values, [0, "Red", "Star"]);
+    assert.deepStrictEqual(
+      action.values.map((v) => v.value),
+      [0, "Red", "Star"]
+    );
   });
 
   test("should collect syntax errors", () => {
@@ -78,7 +90,7 @@ Show
     assert.strictEqual(parser.diagnostics[0].severity, "error");
     assert.strictEqual(
       parser.diagnostics[0].message,
-      "Expected at least one value for condition",
+      "Expected at least one value for condition BaseType",
       "Error should be about missing BaseType value"
     );
   });
@@ -168,14 +180,20 @@ Show
     const activeCondition = block.body[0] as ConditionNode;
     assert.strictEqual(activeCondition.type, "Condition");
     assert.strictEqual(activeCondition.condition, "BaseType");
-    assert.deepStrictEqual(activeCondition.values, ["Mirror"]);
+    assert.deepStrictEqual(
+      activeCondition.values.map((v) => v.value),
+      ["Mirror"]
+    );
     assert.strictEqual(activeCondition.commented, false);
 
     // Validate commented condition
     const commentedCondition = block.body[1] as ConditionNode;
     assert.strictEqual(commentedCondition.type, "Condition");
     assert.strictEqual(commentedCondition.condition, "BaseType");
-    assert.deepStrictEqual(commentedCondition.values, ["Chaos"]);
+    assert.deepStrictEqual(
+      commentedCondition.values.map((v) => v.value),
+      ["Chaos"]
+    );
     assert.strictEqual(commentedCondition.commented, true);
     assert.strictEqual(
       commentedCondition.inlineComment,
@@ -213,7 +231,10 @@ Show
     const condition = commentedBlock.body[0] as ConditionNode;
     assert.strictEqual(condition.type, "Condition");
     assert.strictEqual(condition.condition, "BaseType");
-    assert.deepStrictEqual(condition.values, ["Scroll"]);
+    assert.deepStrictEqual(
+      condition.values.map((v) => v.value),
+      ["Scroll"]
+    );
     assert.strictEqual(condition.commented, true);
     assert.strictEqual(condition.inlineComment, "Part of commented block");
 
@@ -221,7 +242,10 @@ Show
     const action = commentedBlock.body[1] as ActionNode;
     assert.strictEqual(action.type, "Action");
     assert.strictEqual(action.action, "SetTextColor");
-    assert.deepStrictEqual(action.values, [0, 0, 0]);
+    assert.deepStrictEqual(
+      action.values.map((v) => v.value),
+      [0, 0, 0]
+    );
     assert.strictEqual(action.commented, true);
     assert.strictEqual(action.inlineComment, "Part of commented block");
   });
@@ -295,7 +319,7 @@ Show # Second block
     // Verify standalone comments are attached to first block
     const commentAction = block1.body[3] as ActionNode;
     assert.strictEqual(commentAction.type, "Comment");
-    assert.strictEqual(commentAction.values[0], "Random comment");
+    assert.strictEqual(commentAction.values[0].value, "Random comment");
 
     const block2 = ast.children[1] as BlockNode;
     assert.strictEqual(block2.body.length, 1);

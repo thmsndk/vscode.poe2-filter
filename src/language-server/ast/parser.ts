@@ -16,6 +16,7 @@ import {
   HeaderNode,
   BlockType,
   BlockNodeBodyType,
+  NodeValue,
 } from "./nodes";
 import { ConditionType, ConditionSyntaxMap } from "./conditions";
 import { ActionType, ActionSyntaxMap, ActionSyntax } from "./actions";
@@ -261,9 +262,7 @@ export class Parser {
       );
     }
 
-    const values: Array<
-      string | number | boolean | RarityValue | ColorValue | ShapeValue
-    > = [];
+    const values: NodeValue[] = [];
     let inlineComment: string | undefined;
 
     while (this.shouldContinueParsing()) {
@@ -275,8 +274,11 @@ export class Parser {
             `condition ${condition}`,
             this.currentToken
           );
-          const num = this.currentToken.value as number;
-          values.push(num);
+          values.push({
+            value: this.currentToken.value as number,
+            columnStart: this.currentToken.columnStart,
+            columnEnd: this.currentToken.columnEnd,
+          });
           break;
 
         case "BOOLEAN":
@@ -286,7 +288,11 @@ export class Parser {
             `condition ${condition}`,
             this.currentToken
           );
-          values.push(this.currentToken.value as boolean);
+          values.push({
+            value: this.currentToken.value as boolean,
+            columnStart: this.currentToken.columnStart,
+            columnEnd: this.currentToken.columnEnd,
+          });
           break;
 
         case "QUOTED_STRING":
@@ -297,7 +303,11 @@ export class Parser {
             `condition ${condition}`,
             this.currentToken
           );
-          values.push(this.currentToken.value as string);
+          values.push({
+            value: this.currentToken.value as string,
+            columnStart: this.currentToken.columnStart,
+            columnEnd: this.currentToken.columnEnd,
+          });
           break;
 
         case "RARITY":
@@ -309,9 +319,15 @@ export class Parser {
             `condition ${condition}`,
             this.currentToken
           );
-          values.push(
-            this.currentToken.value as RarityValue | ColorValue | ShapeValue
-          );
+          values.push({
+            value: this.currentToken.value as
+              | string
+              | number
+              | boolean
+              | RarityValue,
+            columnStart: this.currentToken.columnStart,
+            columnEnd: this.currentToken.columnEnd,
+          });
           break;
 
         case "INLINE_COMMENT":
@@ -384,8 +400,7 @@ export class Parser {
 
     this.advance(); // Consume action type
 
-    const values: Array<string | number | boolean | ColorValue | ShapeValue> =
-      [];
+    const values: NodeValue[] = [];
     let parameterIndex = 0;
     let inlineComment: string | undefined;
 
@@ -407,7 +422,11 @@ export class Parser {
               this.currentToken
             );
             const num = this.currentToken.value as number;
-            values.push(num);
+            values.push({
+              value: num,
+              columnStart: this.currentToken.columnStart,
+              columnEnd: this.currentToken.columnEnd,
+            });
           }
           break;
 
@@ -418,7 +437,11 @@ export class Parser {
             `parameter ${parameter?.name}`,
             this.currentToken
           );
-          values.push(this.currentToken.value as boolean);
+          values.push({
+            value: this.currentToken.value as boolean,
+            columnStart: this.currentToken.columnStart,
+            columnEnd: this.currentToken.columnEnd,
+          });
           break;
 
         case "QUOTED_STRING":
@@ -428,7 +451,11 @@ export class Parser {
             `parameter ${parameter?.name}`,
             this.currentToken
           );
-          values.push(this.currentToken.value as string);
+          values.push({
+            value: this.currentToken.value as string,
+            columnStart: this.currentToken.columnStart,
+            columnEnd: this.currentToken.columnEnd,
+          });
           break;
 
         case "WORD":
@@ -444,7 +471,11 @@ export class Parser {
               `parameter ${parameter?.name}`,
               this.currentToken
             );
-            values.push(this.currentToken.value as string);
+            values.push({
+              value: this.currentToken.value as string,
+              columnStart: this.currentToken.columnStart,
+              columnEnd: this.currentToken.columnEnd,
+            });
           }
           break;
 
@@ -455,7 +486,13 @@ export class Parser {
             `parameter ${parameter?.name}`,
             this.currentToken
           );
-          values.push(this.currentToken.value as ColorValue);
+
+          values.push({
+            value: this.currentToken.value as ColorValue,
+            columnStart: this.currentToken.columnStart,
+            columnEnd: this.currentToken.columnEnd,
+          });
+
           break;
 
         case "SHAPE":
@@ -465,7 +502,13 @@ export class Parser {
             `parameter ${parameter?.name}`,
             this.currentToken
           );
-          values.push(this.currentToken.value as ShapeValue);
+
+          values.push({
+            value: this.currentToken.value as ShapeValue,
+            columnStart: this.currentToken.columnStart,
+            columnEnd: this.currentToken.columnEnd,
+          });
+
           break;
 
         case "INLINE_COMMENT":
