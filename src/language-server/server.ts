@@ -9,6 +9,8 @@ import {
   DiagnosticSeverity,
   Range,
   Position,
+  TextDocumentPositionParams,
+  Hover,
 } from "vscode-languageserver/node";
 import { TextDocument } from "vscode-languageserver-textdocument";
 import { Parser, ParserDiagnostic } from "./ast/parser";
@@ -18,15 +20,48 @@ import {
 } from "./validation/semanticValidator";
 import { FilterRuleEngine } from "./analysis/ruleEngine";
 import { GameDataService } from "../services/gameDataService";
+import { RootNode } from "./ast/nodes";
+import { HoverProvider } from "./providers/hoverProvider";
 
 // Create a connection for the server
 const connection = createConnection(ProposedFeatures.all);
 
-// Create a text document manager
-const documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
+class FilterDocuments extends TextDocuments<TextDocument> {
+  private documentAsts = new Map<string, RootNode>();
+  private documentParseDiagnostics = new Map<string, ParserDiagnostic[]>();
+
+  public getAst(uri: string): RootNode | undefined {
+    return this.documentAsts.get(uri);
+  }
+
+  public setAst(uri: string, ast: RootNode): void {
+    this.documentAsts.set(uri, ast);
+  }
+
+  public getParseDiagnostics(uri: string): ParserDiagnostic[] {
+    return this.documentParseDiagnostics.get(uri) ?? [];
+  }
+
+  public parseDocument(document: TextDocument): RootNode {
+    const parser = new Parser(document.getText());
+    const ast = parser.parse();
+    this.setAst(document.uri, ast);
+    this.documentParseDiagnostics.set(document.uri, parser.diagnostics);
+    return ast;
+  }
+
+  public deleteAst(uri: string): void {
+    this.documentAsts.delete(uri);
+    this.documentParseDiagnostics.delete(uri);
+  }
+}
+
+const documents = new FilterDocuments(TextDocument);
 
 // Initialize game data service
 const gameData = new GameDataService();
+
+const hoverProvider = new HoverProvider(gameData);
 
 connection.console.info("Starting PoE Filter Language Server...");
 
@@ -53,14 +88,22 @@ connection.onInitialize(
     return {
       capabilities: {
         textDocumentSync: TextDocumentSyncKind.Incremental,
+        hoverProvider: true, // Add hover support
       },
     };
   }
 );
 
+// Parse document when content changes
 documents.onDidChangeContent((change) => {
   connection.console.info("Document changed, validating...");
+  documents.parseDocument(change.document);
   validateDocument(change.document);
+});
+
+// Clean up ASTs when documents are closed
+documents.onDidClose((e) => {
+  documents.deleteAst(e.document.uri);
 });
 
 function convertToLSPDiagnostic(
@@ -109,9 +152,8 @@ function convertToLSPDiagnostic(
 }
 
 async function validateDocument(document: TextDocument): Promise<void> {
-  const text = document.getText();
-  const parser = new Parser(text);
-  const ast = parser.parse();
+  const ast =
+    documents.getAst(document.uri) ?? documents.parseDocument(document);
 
   // Create and run semantic validator
   const semanticValidator = new SemanticValidator(gameData, document.uri);
@@ -123,11 +165,11 @@ async function validateDocument(document: TextDocument): Promise<void> {
 
   // Convert internal diagnostics to LSP diagnostics
   const diagnostics: Diagnostic[] = [
-    ...parser.diagnostics.map((diagnostic) =>
-      convertToLSPDiagnostic(diagnostic, "poe-filter-ls-parser")
-    ),
-    ...semanticValidator.diagnostics.map((diagnostic) =>
-      convertToLSPDiagnostic(diagnostic, "poe-filter-ls-semanticValidator")
+    ...documents
+      .getParseDiagnostics(document.uri)
+      .map((d) => convertToLSPDiagnostic(d, "poe-filter-ls-parser")),
+    ...semanticValidator.diagnostics.map((d) =>
+      convertToLSPDiagnostic(d, "poe-filter-ls-semanticValidator")
     ),
     ...conflicts.map((conflict) => ({
       severity:
@@ -144,11 +186,18 @@ async function validateDocument(document: TextDocument): Promise<void> {
   ];
 
   // Send the diagnostics to VSCode
-  connection.sendDiagnostics({
-    uri: document.uri,
-    diagnostics,
-  });
+  connection.sendDiagnostics({ uri: document.uri, diagnostics });
 }
+
+connection.onHover((params: TextDocumentPositionParams): Hover | null => {
+  connection.console.info(`Hover ${JSON.stringify(params)}`);
+  const ast = documents.getAst(params.textDocument.uri);
+  if (!ast) {
+    return null;
+  }
+
+  return hoverProvider.provideHover(ast, params);
+});
 
 documents.listen(connection);
 connection.listen();
