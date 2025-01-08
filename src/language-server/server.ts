@@ -11,6 +11,12 @@ import {
   Position,
   TextDocumentPositionParams,
   Hover,
+  Color,
+  ColorInformation,
+  ColorPresentation,
+  DocumentColorParams,
+  DocumentColorRequest,
+  ColorPresentationParams,
 } from "vscode-languageserver/node";
 import { TextDocument } from "vscode-languageserver-textdocument";
 import { Parser, ParserDiagnostic } from "./ast/parser";
@@ -20,10 +26,11 @@ import {
 } from "./validation/semanticValidator";
 import { FilterRuleEngine } from "./analysis/ruleEngine";
 import { GameDataService } from "../services/gameDataService";
-import { RootNode } from "./ast/nodes";
+import { RootNode, ActionNode, BlockType, BlockNode, Node } from "./ast/nodes";
 import { HoverProvider } from "./providers/hoverProvider";
 import { InlayHint, InlayHintParams } from "vscode-languageserver";
 import { InlayHintsProvider } from "./providers/inlayHintsProvider";
+import { ActionSyntaxMap, ActionType, ActionSyntax } from "./ast/actions";
 
 // Create a connection for the server
 const connection = createConnection(ProposedFeatures.all);
@@ -95,6 +102,7 @@ connection.onInitialize(
         inlayHintProvider: {
           resolveProvider: false, // We can provide all info upfront
         },
+        colorProvider: true,
       },
     };
   }
@@ -218,6 +226,116 @@ connection.languages.inlayHint.on(
     }
 
     return inlayHintsProvider.provideInlayHints(ast);
+  }
+);
+
+// Helper to identify color actions
+function isColorAction(actionType: ActionType): boolean {
+  const syntax = ActionSyntaxMap[actionType];
+  if (!syntax) return false;
+
+  // Check if first 3 parameters are RGB values
+  const [r, g, b] = syntax.parameters;
+  const hasRGB =
+    r?.type === "number" &&
+    r.range?.max === 255 &&
+    g?.type === "number" &&
+    g.range?.max === 255 &&
+    b?.type === "number" &&
+    b.range?.max === 255;
+
+  // Check if fourth parameter is optional Alpha
+  const alpha = syntax.parameters[3];
+  const hasValidAlpha =
+    !alpha ||
+    (alpha.type === "number" && alpha.range?.max === 255 && !alpha.required);
+
+  return hasRGB && hasValidAlpha;
+}
+
+// Visitor function type
+type NodeVisitor = (node: ActionNode) => void;
+
+function isBlockNode(node: Node): node is BlockNode {
+  return node.type in BlockType;
+}
+
+function visitActions(ast: RootNode, visitor: NodeVisitor) {
+  for (const node of ast.children) {
+    if (isBlockNode(node)) {
+      for (const bodyNode of node.body) {
+        if (bodyNode.type === "Action") {
+          visitor(bodyNode);
+        }
+      }
+    }
+  }
+}
+
+// Add color provider handlers
+connection.onRequest(
+  DocumentColorRequest.type,
+  (params: DocumentColorParams): ColorInformation[] => {
+    const ast = documents.getAst(params.textDocument.uri);
+    if (!ast) {
+      return [];
+    }
+
+    const colors: ColorInformation[] = [];
+
+    visitActions(ast, (action) => {
+      if (isColorAction(action.action)) {
+        const syntax = ActionSyntaxMap[action.action];
+        const values = action.values;
+
+        if (values.length >= 3) {
+          const [r, g, b] = values.map((v) => parseInt(v.value.toString()));
+          // Use alpha if provided, otherwise use default value from syntax or 255
+          const a = values[3]
+            ? parseInt(values[3].value.toString())
+            : syntax.parameters[3]?.defaultValue ?? 255;
+
+          // Use first value's start and last value's end for the range
+          const lastValueIndex = values[3] ? 3 : 2;
+          colors.push({
+            range: {
+              start: {
+                line: action.line - 1,
+                character: values[0].columnStart - 1,
+              },
+              end: {
+                line: action.line - 1,
+                character: values[lastValueIndex].columnEnd - 1,
+              },
+            },
+            color: {
+              red: Number(r) / 255,
+              green: Number(g) / 255,
+              blue: Number(b) / 255,
+              alpha: Number(a) / 255,
+            },
+          });
+        }
+      }
+    });
+
+    return colors;
+  }
+);
+
+connection.onColorPresentation(
+  (params: ColorPresentationParams): ColorPresentation[] => {
+    const color = params.color;
+    const red = Math.round(color.red * 255);
+    const green = Math.round(color.green * 255);
+    const blue = Math.round(color.blue * 255);
+    const alpha = Math.round(color.alpha * 255);
+
+    return [
+      {
+        label: ` ${red} ${green} ${blue}${alpha !== 255 ? ` ${alpha}` : ""}`,
+      },
+    ];
   }
 );
 

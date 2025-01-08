@@ -70,8 +70,8 @@ Syntax highlighting is handled by the existing TextMate grammar (tmLanguage) fil
 
 3. Document colors (`colorProvider`)
 
-   - [ ] Color previews in RGB/RGBA values (show color picker on hover)
-   - [ ] Color picker integration (click to edit)
+   - [x] Color previews in RGB/RGBA values (show color picker on hover)
+   - [x] Color picker integration (click to edit)
    - [ ] Named color validation (Red, Green, Blue)
 
 4. Document links (`documentLinkProvider`)
