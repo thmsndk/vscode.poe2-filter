@@ -17,6 +17,7 @@ import {
   SemanticDiagnostic,
 } from "./validation/semanticValidator";
 import { FilterRuleEngine } from "./analysis/ruleEngine";
+import { GameDataService } from "../services/gameDataService";
 
 // Create a connection for the server
 const connection = createConnection(ProposedFeatures.all);
@@ -24,16 +25,38 @@ const connection = createConnection(ProposedFeatures.all);
 // Create a text document manager
 const documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
 
+// Initialize game data service
+const gameData = new GameDataService();
+
 connection.console.info("Starting PoE Filter Language Server...");
 
-connection.onInitialize((_params: InitializeParams): InitializeResult => {
-  connection.console.info("Language Server initialized!");
-  return {
-    capabilities: {
-      textDocumentSync: TextDocumentSyncKind.Incremental,
-    },
-  };
-});
+connection.onInitialize(
+  async (params: InitializeParams): Promise<InitializeResult> => {
+    // Get the extension path from the initialization params
+    // This will be passed from the client (extension.ts)
+    const extensionPath = params.initializationOptions?.extensionPath;
+
+    if (!extensionPath) {
+      connection.console.error("Extension path not provided!");
+      throw new Error("Extension path not provided");
+    }
+
+    try {
+      await gameData.loadData(extensionPath);
+      connection.console.info("Game data loaded successfully!");
+    } catch (error) {
+      connection.console.error(`Failed to load game data: ${error}`);
+    }
+
+    connection.console.info("Language Server initialized!");
+
+    return {
+      capabilities: {
+        textDocumentSync: TextDocumentSyncKind.Incremental,
+      },
+    };
+  }
+);
 
 documents.onDidChangeContent((change) => {
   connection.console.info("Document changed, validating...");
@@ -91,7 +114,7 @@ async function validateDocument(document: TextDocument): Promise<void> {
   const ast = parser.parse();
 
   // Create and run semantic validator
-  const semanticValidator = new SemanticValidator(document.uri);
+  const semanticValidator = new SemanticValidator(gameData, document.uri);
   semanticValidator.validate(ast);
 
   // Create and run rule engine for conflict detection
