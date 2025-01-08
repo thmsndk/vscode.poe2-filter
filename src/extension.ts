@@ -50,6 +50,9 @@ export async function activate(context: vscode.ExtensionContext) {
     serverOptions,
     {
       documentSelector: [{ scheme: "file", language: "poe2-filter" }],
+      initializationOptions: {
+        extensionPath: context.extensionPath,
+      },
     }
   );
 
@@ -59,7 +62,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
   // Initialize game data service
   const gameData = new GameDataService();
-  await gameData.loadData(context);
+  await gameData.loadData(context.extensionPath);
 
   // Register hover provider
   context.subscriptions.push(

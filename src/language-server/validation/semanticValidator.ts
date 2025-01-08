@@ -7,6 +7,7 @@ import {
   BlockNode,
   ErrorNode,
   BlockType,
+  NodeValue,
 } from "../ast/nodes";
 import { ConditionSyntaxMap, ConditionType } from "../ast/conditions";
 import { ActionSyntaxMap, ActionType } from "../ast/actions";
@@ -18,6 +19,7 @@ import {
   findSimilarValues,
   levenshteinDistance,
 } from "../../utils/stringUtils";
+import { GameDataService } from "../../services/gameDataService";
 
 export interface SemanticDiagnostic {
   message: string;
@@ -30,7 +32,10 @@ export interface SemanticDiagnostic {
 export class SemanticValidator {
   public diagnostics: SemanticDiagnostic[] = [];
 
-  constructor(private documentUri?: string) {}
+  constructor(
+    private gameData: GameDataService,
+    private documentUri?: string
+  ) {}
 
   public validate(ast: RootNode): void {
     this.visitNode(ast, undefined);
@@ -205,20 +210,27 @@ export class SemanticValidator {
       return;
     }
 
-    // Validate number values against ranges
-    if (syntax.valueType === "number" && syntax.valueSyntax.range) {
-      for (let index = 0; index < node.values.length; index++) {
-        const value = node.values[index];
-        if (typeof value === "number") {
-          this.validateNumberValue(
-            value,
-            syntax.valueSyntax.range,
-            `condition ${node.condition}`,
-            node,
-            index
-          );
+    switch (node.condition) {
+      case "BaseType":
+      case "Class":
+        this.validateBaseTypeOrClass(node.values, node);
+        break;
+      default:
+        // Handle number validation as before
+        if (syntax.valueType === "number" && syntax.valueSyntax.range) {
+          for (let index = 0; index < node.values.length; index++) {
+            const value = node.values[index];
+            if (typeof value === "number") {
+              this.validateNumberValue(
+                value,
+                syntax.valueSyntax.range,
+                `condition ${node.condition}`,
+                node,
+                index
+              );
+            }
+          }
         }
-      }
     }
   }
 
@@ -229,7 +241,7 @@ export class SemanticValidator {
     }
 
     for (let index = 0; index < node.values.length; index++) {
-      const value = node.values[index];
+      const value = node.values[index].value;
       const parameter = syntax.parameters[index];
       if (!parameter) {
         continue;
@@ -482,6 +494,74 @@ export class SemanticValidator {
         columnStart: valueStart,
         columnEnd: valueStart + value.length,
       });
+    }
+  }
+
+  private validateBaseTypeOrClass(
+    values: NodeValue[],
+    node: ConditionNode
+  ): void {
+    if (!this.gameData) {
+      return;
+    }
+
+    const isExact = node.operator === "==";
+
+    for (const nodeValue of values) {
+      const value = nodeValue.value;
+      if (!value) {
+        continue;
+      }
+
+      if (typeof value !== "string") {
+        this.diagnostics.push({
+          message: `Invalid ${
+            node.condition
+          } value: expected a string, got ${JSON.stringify(value)}`,
+          severity: "error",
+          line: node.line,
+          columnStart: nodeValue.columnStart,
+          columnEnd: nodeValue.columnEnd,
+        });
+        continue;
+      }
+
+      let matches;
+      switch (node.condition) {
+        case "BaseType":
+          matches = isExact
+            ? this.gameData.findExactBaseType([value])
+            : this.gameData.findMatchingBaseTypes([value]);
+          break;
+        case "Class":
+          matches = isExact
+            ? this.gameData.findExactClass([value])
+            : this.gameData.findMatchingClasses([value]);
+          break;
+        default:
+          throw new Error(`Unexpected condition: ${node.condition}`);
+      }
+
+      if (matches.length === 0) {
+        const allValues =
+          node.condition === "BaseType"
+            ? this.gameData.baseItemTypes.map((i) => i.Name)
+            : this.gameData.itemClasses.map((i) => i.Name);
+
+        const suggestions = findSimilarValues(value, allValues);
+        const suggestionText =
+          suggestions.length > 0
+            ? `. Did you mean: ${suggestions.join(", ")}?`
+            : "";
+
+        this.diagnostics.push({
+          message: `${node.condition} "${value}" not found${suggestionText}`,
+          severity: "error",
+          line: node.line,
+          columnStart: nodeValue.columnStart,
+          columnEnd: nodeValue.columnEnd,
+        });
+      }
     }
   }
 }

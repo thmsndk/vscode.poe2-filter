@@ -485,13 +485,6 @@ export function validateDocument(
     const command = parts[0];
     const commandDef = VALID_COMMANDS[command];
 
-    // Check BaseType and Class commands first
-    if (command === "BaseType" || command === "Class") {
-      const value = parts.slice(1).join(" ");
-      validateBaseTypeOrClass(command, value, line, gameData, problems);
-      continue;
-    }
-
     if (!commandDef) {
       const suggestions = findSimilarCommands(command, validCommands);
       const message =
@@ -821,75 +814,4 @@ function extractValidValuesFromRegex(regex: RegExp): string[] {
   }
 
   return [];
-}
-
-function validateBaseTypeOrClass(
-  command: string,
-  value: string,
-  line: vscode.TextLine,
-  gameData: GameDataService,
-  problems: vscode.Diagnostic[]
-) {
-  // Split by quotes and filter out empty strings and operators
-  const values =
-    value
-      .match(/"[^"]*"|[^\s"]+/g)
-      ?.map((v) => v.replace(/^"(.*)"$/, "$1")) // Extract quoted strings or single words
-      .filter((v) => !v.match(/^[=<>]=?$/)) || []; // Filter out operators
-
-  const isExact = line.text.includes("==");
-
-  // Get matches using appropriate method
-  let matches;
-  switch (command) {
-    case "BaseType":
-      matches = isExact
-        ? gameData.findExactBaseType(values)
-        : gameData.findMatchingBaseTypes(values);
-      break;
-    case "Class":
-      matches = isExact
-        ? gameData.findExactClass(values)
-        : gameData.findMatchingClasses(values);
-      break;
-    default:
-      throw new Error(`Unexpected command: ${command}`);
-  }
-
-  // Find values that didn't match anything
-  const invalidValues = values.filter(
-    (value) => !matches.some((match) => match.matchedBy === value)
-  );
-
-  if (invalidValues.length > 0) {
-    for (const missingValue of invalidValues) {
-      const allValues =
-        command === "BaseType"
-          ? gameData.baseItemTypes.map((i) => i.Name)
-          : gameData.itemClasses.map((i) => i.Name);
-
-      const suggestions = findSimilarValues(missingValue, allValues);
-
-      const message =
-        suggestions.length > 0
-          ? `${command} "${missingValue}" not found. Did you mean: ${suggestions.join(
-              ", "
-            )}?`
-          : `${command} "${missingValue}" not found`;
-
-      problems.push(
-        createDiagnostic(
-          new vscode.Range(
-            line.range.start.translate(0, line.text.indexOf(missingValue)),
-            line.range.start.translate(
-              0,
-              line.text.indexOf(missingValue) + missingValue.length
-            )
-          ),
-          message,
-          vscode.DiagnosticSeverity.Error
-        )
-      );
-    }
-  }
 }

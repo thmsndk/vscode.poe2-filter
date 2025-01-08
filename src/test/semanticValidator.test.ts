@@ -1,6 +1,10 @@
 import * as assert from "assert";
 import { Parser } from "../language-server/ast/parser";
 import { SemanticValidator } from "../language-server/validation/semanticValidator";
+import { GameDataService } from "../services/gameDataService";
+
+const mockGameData = new GameDataService();
+// mockGameData.loadData("test/data");
 
 suite("Semantic Validator Test Suite", () => {
   test("should suggest similar block keywords for misspellings", () => {
@@ -11,7 +15,7 @@ Sho
     const parser = new Parser(input);
     const ast = parser.parse();
 
-    const validator = new SemanticValidator();
+    const validator = new SemanticValidator(mockGameData);
     validator.validate(ast);
 
     assert.strictEqual(validator.diagnostics.length, 1);
@@ -30,7 +34,7 @@ Show
     const parser = new Parser(input);
     const ast = parser.parse();
 
-    const validator = new SemanticValidator();
+    const validator = new SemanticValidator(mockGameData);
     validator.validate(ast);
 
     assert.strictEqual(validator.diagnostics.length, 1);
@@ -49,7 +53,7 @@ Show
     const parser = new Parser(input);
     const ast = parser.parse();
 
-    const validator = new SemanticValidator();
+    const validator = new SemanticValidator(mockGameData);
     validator.validate(ast);
 
     assert.strictEqual(validator.diagnostics.length, 1);
@@ -68,7 +72,7 @@ Show
     const parser = new Parser(input);
     const ast = parser.parse();
 
-    const validator = new SemanticValidator();
+    const validator = new SemanticValidator(mockGameData);
     validator.validate(ast);
 
     assert.strictEqual(validator.diagnostics.length, 1);
@@ -87,7 +91,7 @@ Show
     const parser = new Parser(input);
     const ast = parser.parse();
 
-    const validator = new SemanticValidator();
+    const validator = new SemanticValidator(mockGameData);
     validator.validate(ast);
 
     assert.strictEqual(validator.diagnostics.length, 1);
@@ -106,7 +110,7 @@ Show
     const parser = new Parser(input);
     const ast = parser.parse();
 
-    const validator = new SemanticValidator();
+    const validator = new SemanticValidator(mockGameData);
     validator.validate(ast);
 
     assert.strictEqual(validator.diagnostics.length, 1);
@@ -127,7 +131,7 @@ Show
     const parser = new Parser(input);
     const ast = parser.parse();
 
-    const validator = new SemanticValidator();
+    const validator = new SemanticValidator(mockGameData);
     validator.validate(ast);
 
     assert.strictEqual(validator.diagnostics.length, 1);
@@ -148,7 +152,7 @@ Show
     const parser = new Parser(input);
     const ast = parser.parse();
 
-    const validator = new SemanticValidator();
+    const validator = new SemanticValidator(mockGameData);
     validator.validate(ast);
 
     assert.strictEqual(validator.diagnostics.length, 1);
@@ -157,5 +161,95 @@ Show
       "Condition not allowed after Continue statement"
     );
     assert.strictEqual(validator.diagnostics[0].line, 5);
+  });
+
+  test("should correctly calculate positions for BaseType validation", () => {
+    const input = `
+Show
+    BaseType == "Wrong Item" "Another Wrong"`;
+    const parser = new Parser(input);
+    const ast = parser.parse();
+
+    const validator = new SemanticValidator(mockGameData);
+    validator.validate(ast);
+
+    assert.strictEqual(validator.diagnostics.length, 2);
+
+    // First value position
+    assert.deepStrictEqual(
+      {
+        message: validator.diagnostics[0].message,
+        line: 3,
+        columnStart: 15,
+        columnEnd: 26,
+      },
+      {
+        message: 'BaseType "Wrong Item" not found',
+        line: 3,
+        columnStart: 15,
+        columnEnd: 26,
+      }
+    );
+
+    // Second value position
+    assert.deepStrictEqual(
+      {
+        message: validator.diagnostics[1].message,
+        line: 3,
+        columnStart: 27,
+        columnEnd: 41,
+      },
+      {
+        message: 'BaseType "Another Wrong" not found',
+        line: 3,
+        columnStart: 27,
+        columnEnd: 41,
+      }
+    );
+  });
+
+  test("should correctly calculate positions for Class validation", () => {
+    const input = `
+Show
+    Class "Wrong Class" "Another Wrong Class"`;
+    const parser = new Parser(input);
+    const ast = parser.parse();
+
+    const validator = new SemanticValidator(mockGameData);
+    validator.validate(ast);
+
+    assert.strictEqual(validator.diagnostics.length, 2);
+
+    // First value position
+    assert.deepStrictEqual(
+      {
+        message: validator.diagnostics[0].message,
+        line: 3,
+        columnStart: 10,
+        columnEnd: 22,
+      },
+      {
+        message: 'Class "Wrong Class" not found',
+        line: 3,
+        columnStart: 10,
+        columnEnd: 22,
+      }
+    );
+
+    // Second value position
+    assert.deepStrictEqual(
+      {
+        message: validator.diagnostics[1].message,
+        line: 3,
+        columnStart: 23,
+        columnEnd: 43,
+      },
+      {
+        message: 'Class "Another Wrong Class" not found',
+        line: 3,
+        columnStart: 23,
+        columnEnd: 43,
+      }
+    );
   });
 });
