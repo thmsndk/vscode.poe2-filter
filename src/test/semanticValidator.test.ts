@@ -116,4 +116,46 @@ Show
     );
     assert.strictEqual(validator.diagnostics[0].line, 3);
   });
+
+  test("should report error for actions after Continue", () => {
+    const input = `
+Show
+    BaseType "Mirror"
+    Continue
+    SetBackgroundColor 0 0 0  # Should be invalid - no active block
+`;
+    const parser = new Parser(input);
+    const ast = parser.parse();
+
+    const validator = new SemanticValidator();
+    validator.validate(ast);
+
+    assert.strictEqual(validator.diagnostics.length, 1);
+    assert.strictEqual(
+      validator.diagnostics[0].message,
+      "Action not allowed after Continue statement"
+    );
+    assert.strictEqual(validator.diagnostics[0].line, 5);
+  });
+
+  test("should report error for conditions after Continue", () => {
+    const input = `
+Show
+    BaseType "Mirror"
+    Continue
+    ItemLevel > 68  # Should be invalid - no active block
+`;
+    const parser = new Parser(input);
+    const ast = parser.parse();
+
+    const validator = new SemanticValidator();
+    validator.validate(ast);
+
+    assert.strictEqual(validator.diagnostics.length, 1);
+    assert.strictEqual(
+      validator.diagnostics[0].message,
+      "Condition not allowed after Continue statement"
+    );
+    assert.strictEqual(validator.diagnostics[0].line, 5);
+  });
 });
