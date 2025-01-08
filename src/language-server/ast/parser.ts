@@ -18,7 +18,7 @@ import {
   BlockNodeBodyType,
 } from "./nodes";
 import { ConditionType, ConditionSyntaxMap } from "./conditions";
-import { ActionType, ActionSyntaxMap } from "./actions";
+import { ActionType, ActionSyntaxMap, ActionSyntax } from "./actions";
 
 export interface ParserDiagnostic {
   message: string;
@@ -501,7 +501,7 @@ export class Parser {
       );
     }
 
-    if (values.length === 0 && this.requiresValues(action)) {
+    if (values.length === 0 && this.requiresValues(syntax)) {
       const errorToken =
         this.previousToken.type === "INLINE_COMMENT"
           ? this.tokens[this.position - 2]
@@ -619,10 +619,12 @@ export class Parser {
     };
   }
 
-  private requiresValues(action: ActionType): boolean {
-    // List actions that don't require values
-    const noValueActions = ["DisableDropSound", "EnableDropSound"];
-    return !noValueActions.includes(action);
+  private requiresValues(syntax: ActionSyntax): boolean {
+    if (syntax.parameters.length === 0) {
+      return false;
+    }
+
+    return syntax.parameters.some((p) => p.required);
   }
 
   private validateTokenType(
