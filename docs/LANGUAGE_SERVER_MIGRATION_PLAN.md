@@ -43,9 +43,9 @@ Syntax highlighting is handled by the existing TextMate grammar (tmLanguage) fil
 
 1. Move game data validation
    - [ ] Port GameDataService to language server (from gameDataService.ts)
-   - [ ] BaseType validation (from filterDiagnostics.ts:826-895)
-   - [ ] Class validation (from filterDiagnostics.ts:826-895)
-     - [ ] Handle singular/plural forms
+   - [x] BaseType validation (from filterDiagnostics.ts:826-895)
+   - [x] Class validation (from filterDiagnostics.ts:826-895)
+     - [x] Handle singular/plural forms
    - [ ] Performance impact analysis (from README.md:187-191)
 
 ## Phase 4: Document Features

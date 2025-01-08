@@ -47,18 +47,13 @@ export class GameDataService {
   //    - Quick access to change language
   //    - Example: vscode.window.createStatusBarItem()
 
-  async loadData(context: vscode.ExtensionContext) {
+  async loadData(dataPath: string) {
     try {
-      const dataPath = path.join(
-        context.extensionPath,
-        "data",
-        "tables",
-        this.language
-      );
+      const tablesPath = path.join(dataPath, "data", "tables", this.language);
 
       const [baseItemTypesData, itemClassesData] = await Promise.all([
-        fs.readFile(path.join(dataPath, "BaseItemTypes.json"), "utf-8"),
-        fs.readFile(path.join(dataPath, "ItemClasses.json"), "utf-8"),
+        fs.readFile(path.join(tablesPath, "BaseItemTypes.json"), "utf-8"),
+        fs.readFile(path.join(tablesPath, "ItemClasses.json"), "utf-8"),
       ]);
 
       this.baseItemTypes = JSON.parse(baseItemTypesData);
