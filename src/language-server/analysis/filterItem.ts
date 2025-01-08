@@ -1,4 +1,5 @@
 import { BlockNode } from "../ast/nodes";
+import { RarityValue } from "../ast/tokens";
 
 export interface FilterItem {
   // Numeric properties
@@ -56,13 +57,13 @@ export function generateItemFromBlock(block: BlockNode): FilterItem {
 
     switch (node.condition) {
       case "BaseType":
-        item.baseType = node.values[0] as string;
+        item.baseType = node.values[0].value as string;
         break;
       case "Class":
-        item.class = node.values[0] as string;
+        item.class = node.values[0].value as string;
         break;
       case "Rarity":
-        item.rarity = node.values[0] as string;
+        item.rarity = node.values[0].value as RarityValue;
         break;
       case "StackSize":
       case "ItemLevel":
@@ -79,7 +80,7 @@ export function generateItemFromBlock(block: BlockNode): FilterItem {
           node.condition.slice(1)) as NumericProps;
 
         if (prop) {
-          const value = Number(node.values[0]);
+          const value = Number(node.values[0].value);
           switch (node.operator) {
             case ">=":
             case "==":

@@ -64,9 +64,7 @@ export interface ConditionNode extends BaseNode {
   type: "Condition";
   condition: ConditionType;
   operator?: string;
-  values: Array<
-    string | number | boolean | RarityValue | ColorValue | ShapeValue
-  >;
+  values: NodeValue[];
   negated?: boolean;
 }
 
@@ -74,7 +72,7 @@ export interface ConditionNode extends BaseNode {
 export interface ActionNode extends BaseNode {
   type: "Action";
   action: ActionType;
-  values: Array<string | number | boolean | ColorValue | ShapeValue>;
+  values: NodeValue[];
 }
 
 // A comment (either standalone or inline)
@@ -86,4 +84,10 @@ export interface CommentNode extends BaseNode {
 export interface ErrorNode extends BaseNode {
   type: "Error";
   token: Token;
+}
+
+export interface NodeValue {
+  value: string | number | boolean | RarityValue | ColorValue | ShapeValue;
+  columnStart: number;
+  columnEnd: number;
 }

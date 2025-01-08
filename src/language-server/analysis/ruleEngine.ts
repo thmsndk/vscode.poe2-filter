@@ -113,7 +113,7 @@ export class FilterRuleEngine {
 
           const itemValue = item[prop] as string;
 
-          return condition.values.some((value) => value === itemValue);
+          return condition.values.some((value) => value.value === itemValue);
         }
         case "Rarity": {
           if (!item.rarity) {
@@ -122,7 +122,7 @@ export class FilterRuleEngine {
           const rarityLevels = ["Normal", "Magic", "Rare", "Unique"];
           const itemRarityIndex = rarityLevels.indexOf(item.rarity);
           const conditionRarityIndex = rarityLevels.indexOf(
-            condition.values[0] as string
+            condition.values[0].value as string
           );
 
           if (condition.operator) {
@@ -141,7 +141,7 @@ export class FilterRuleEngine {
                 return false;
             }
           }
-          return condition.values.includes(item.rarity);
+          return condition.values.some((value) => value.value === item.rarity);
         }
         case "Quality":
         case "Sockets":
@@ -189,7 +189,8 @@ export class FilterRuleEngine {
         case "Identified": {
           const prop = condition.condition.replace(/Item$/, "").toLowerCase();
           return (
-            item[prop as keyof FilterItem] === (condition.values[0] === "True")
+            item[prop as keyof FilterItem] ===
+            (condition.values[0].value === "True")
           );
         }
         case "AlternateQuality":
@@ -208,7 +209,8 @@ export class FilterRuleEngine {
             condition.condition.charAt(0).toLowerCase() +
             condition.condition.slice(1);
           return (
-            item[prop as keyof FilterItem] === (condition.values[0] === "True")
+            item[prop as keyof FilterItem] ===
+            (condition.values[0].value === "True")
           );
         }
         case "CorruptedMods":
@@ -390,8 +392,8 @@ export class FilterRuleEngine {
 
       // Handle operator-based comparisons
       if (prev.operator || current.operator) {
-        const prevRarity = prev.values[0] as string;
-        const currentRarity = current.values[0] as string;
+        const prevRarity = prev.values[0].value as string;
+        const currentRarity = current.values[0].value as string;
         const prevIndex = rarityLevels.indexOf(prevRarity);
         const currentIndex = rarityLevels.indexOf(currentRarity);
 
