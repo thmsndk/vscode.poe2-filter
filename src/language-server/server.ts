@@ -17,6 +17,8 @@ import {
   DocumentColorParams,
   DocumentColorRequest,
   ColorPresentationParams,
+  DocumentSymbol,
+  SymbolKind,
 } from "vscode-languageserver/node";
 import { TextDocument } from "vscode-languageserver-textdocument";
 import { Parser, ParserDiagnostic } from "./ast/parser";
@@ -26,11 +28,19 @@ import {
 } from "./validation/semanticValidator";
 import { FilterRuleEngine } from "./analysis/ruleEngine";
 import { GameDataService } from "../services/gameDataService";
-import { RootNode, ActionNode, BlockType, BlockNode, Node } from "./ast/nodes";
+import {
+  RootNode,
+  ActionNode,
+  BlockType,
+  BlockNode,
+  Node,
+  isBlockNode,
+} from "./ast/nodes";
 import { HoverProvider } from "./providers/hoverProvider";
 import { InlayHint, InlayHintParams } from "vscode-languageserver";
 import { InlayHintsProvider } from "./providers/inlayHintsProvider";
 import { ActionSyntaxMap, ActionType, ActionSyntax } from "./ast/actions";
+import { SymbolProvider } from "./providers/symbolProvider";
 
 // Create a connection for the server
 const connection = createConnection(ProposedFeatures.all);
@@ -103,6 +113,7 @@ connection.onInitialize(
           resolveProvider: false, // We can provide all info upfront
         },
         colorProvider: true,
+        documentSymbolProvider: true,
       },
     };
   }
@@ -256,10 +267,6 @@ function isColorAction(actionType: ActionType): boolean {
 // Visitor function type
 type NodeVisitor = (node: ActionNode) => void;
 
-function isBlockNode(node: Node): node is BlockNode {
-  return node.type in BlockType;
-}
-
 function visitActions(ast: RootNode, visitor: NodeVisitor) {
   for (const node of ast.children) {
     if (isBlockNode(node)) {
@@ -338,6 +345,16 @@ connection.onColorPresentation(
     ];
   }
 );
+
+const symbolProvider = new SymbolProvider();
+
+connection.onDocumentSymbol((params) => {
+  const ast = documents.getAst(params.textDocument.uri);
+  if (!ast) {
+    return [];
+  }
+  return symbolProvider.provideDocumentSymbols(ast);
+});
 
 documents.listen(connection);
 connection.listen();

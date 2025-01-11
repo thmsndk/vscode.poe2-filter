@@ -62,14 +62,6 @@ export async function activate(context: vscode.ExtensionContext) {
   const gameData = new GameDataService();
   await gameData.loadData(context.extensionPath);
 
-  // Register document symbol provider for outline
-  context.subscriptions.push(
-    vscode.languages.registerDocumentSymbolProvider(
-      "poe2-filter",
-      new FilterSymbolProvider()
-    )
-  );
-
   // Register the formatter
   const formatter = new FilterFormatter();
   const formattingProvider =
@@ -255,7 +247,10 @@ export async function activate(context: vscode.ExtensionContext) {
       }
     })
   );
+
+  // TODO: can we reveal the outline item when the user clicks on it in code?
 }
+
 // This method is called when your extension is deactivated
 export function deactivate(): Thenable<void> | undefined {
   if (!client) {

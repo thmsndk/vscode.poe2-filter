@@ -41,6 +41,10 @@ export interface HeaderNode extends BaseNode {
   };
 }
 
+export function isHeaderNode(node: Node): node is HeaderNode {
+  return node.type === "Header";
+}
+
 export enum BlockType {
   Show = "Show",
   Hide = "Hide",
@@ -57,6 +61,10 @@ export type BlockNodeBodyType =
 export interface BlockNode extends BaseNode {
   type: BlockType;
   body: BlockNodeBodyType[];
+}
+
+export function isBlockNode(node: Node): node is BlockNode {
+  return node.type in BlockType;
 }
 
 // A condition with its operator and values
