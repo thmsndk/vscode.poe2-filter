@@ -52,13 +52,13 @@ Syntax highlighting is handled by the existing TextMate grammar (tmLanguage) fil
 
 1. Document symbols (`documentSymbolProvider`)
 
-   - [ ] Show/Hide block symbols in outline view
-   - [ ] Comment-based section symbols
-     - [ ] Parse section comments (e.g. "# Section: Currency")
-     - [ ] Show section hierarchy in outline
-   - [ ] Support folding ranges for sections
-   - [ ] Condition/Action symbols in outline
-   - [ ] Support breadcrumb navigation (path: Currency > High Value > Exalted Orb)
+   - [x] Show/Hide block symbols in outline view
+   - [x] Comment-based section symbols
+     - [x] Parse section comments (e.g. "# Section: Currency")
+     - [x] Show section hierarchy in outline
+   - [x] Support folding sections
+   - [x] Condition/Action symbols in outline
+   - [x] Support breadcrumb navigation (path: Currency > High Value > Exalted Orb)
 
 2. Document formatting (`documentFormattingProvider`, `documentRangeFormattingProvider`)
 
