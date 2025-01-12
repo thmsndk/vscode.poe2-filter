@@ -188,7 +188,9 @@ export class FilterPreviewEditor
               // Helper function to convert color array to rgba string
               const toRGBA = (colorArr, alpha = 1) => {
                 if (!colorArr) return 'rgba(200, 200, 200, 1)';
-                return \`rgba(\${colorArr[0]}, \${colorArr[1]}, \${colorArr[2]}, \${alpha})\`;
+                // Use the fourth value from colorArr as alpha if it exists, otherwise use the passed alpha
+                const alphaValue = colorArr[3] !== undefined ? colorArr[3] / 255 : alpha;
+                return \`rgba(\${colorArr[0]}, \${colorArr[1]}, \${colorArr[2]}, \${alphaValue})\`;
               };
               
               // Beam effect color mapping
@@ -234,11 +236,17 @@ export class FilterPreviewEditor
               }
               
               // Calculate text metrics (used for background and border)
-              const fontSize = (item.fontSize || 32) * camera.zoom;
+              const fontSize = Math.round((item.fontSize || 32) * camera.zoom);
               ctx.font = \`\${fontSize}px "Fontin SmallCaps", Arial\`;
               ctx.textAlign = 'center';
               ctx.textBaseline = 'middle';
-              const metrics = ctx.measureText(item.name);
+              
+              // Only show stacksize if it's greater than 1
+              const displayText = (item.stackSize && item.stackSize > 1) 
+                ? \`\${item.stackSize}x \${item.name}\` 
+                : item.name;
+              
+              const metrics = ctx.measureText(displayText);
               const padding = 10 * camera.zoom;
               const textWidth = metrics.width;
               const textHeight = fontSize;
@@ -260,9 +268,9 @@ export class FilterPreviewEditor
                 ctx.strokeRect(boxX, boxY, boxWidth, boxHeight);
               }
               
-              // Draw text
+              // Draw text with stacksize
               ctx.fillStyle = toRGBA(item.textColor);
-              ctx.fillText(item.name, x, y);
+              ctx.fillText(displayText, x, y);
               
               // Draw HIDDEN indicator
               if (item.hidden) {
@@ -697,7 +705,7 @@ export class FilterPreviewEditor
           console.log(`Applying action for ${item.name}:`, action);
           switch (action.type) {
             case "SetFontSize":
-              styles.fontSize = parseInt(action.values[0] as string);
+              styles.fontSize = Number(action.values[0]);
               break;
             case "SetTextColor":
               styles.textColor = action.values
