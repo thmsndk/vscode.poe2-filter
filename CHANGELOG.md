@@ -8,6 +8,15 @@ All notable changes to the "poe2-filter" extension will be documented in this fi
 
 - 🔄 Updated PoE2 game data to patch 4.1.0.12.4
 
+### Added
+
+- ✨ Added stack size display in filter preview (e.g., "5x Scroll of Wisdom")
+
+### Fixed
+
+- 🐛 Fixed alpha channel not being respected in filter preview colors
+- 🐛 Fixed font size parsing and rounding issues in preview
+
 ## [0.0.13] - 2024-12-23 15:10
 
 ### Fixed
