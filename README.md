@@ -2,7 +2,9 @@
 
 A Visual Studio Code extension for Path of Exile 2 item filter files.
 
-[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/B0B71865NT)
+<a href="https://ko-fi.com/B0B71865NT">
+  <img src="images/support_me_on_kofi_red.png" alt="ko-fi" width="150" height="auto"/>
+</a>
 
 ## Features
 
