@@ -234,7 +234,7 @@ export class FilterPreviewEditor
               }
               
               // Calculate text metrics (used for background and border)
-              const fontSize = (item.fontSize || 32) * camera.zoom;
+              const fontSize = Math.round((item.fontSize || 32) * camera.zoom);
               ctx.font = \`\${fontSize}px "Fontin SmallCaps", Arial\`;
               ctx.textAlign = 'center';
               ctx.textBaseline = 'middle';
@@ -697,7 +697,7 @@ export class FilterPreviewEditor
           console.log(`Applying action for ${item.name}:`, action);
           switch (action.type) {
             case "SetFontSize":
-              styles.fontSize = parseInt(action.values[0] as string);
+              styles.fontSize = Number(action.values[0]);
               break;
             case "SetTextColor":
               styles.textColor = action.values
