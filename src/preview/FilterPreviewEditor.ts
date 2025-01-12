@@ -188,7 +188,9 @@ export class FilterPreviewEditor
               // Helper function to convert color array to rgba string
               const toRGBA = (colorArr, alpha = 1) => {
                 if (!colorArr) return 'rgba(200, 200, 200, 1)';
-                return \`rgba(\${colorArr[0]}, \${colorArr[1]}, \${colorArr[2]}, \${alpha})\`;
+                // Use the fourth value from colorArr as alpha if it exists, otherwise use the passed alpha
+                const alphaValue = colorArr[3] !== undefined ? colorArr[3] / 255 : alpha;
+                return \`rgba(\${colorArr[0]}, \${colorArr[1]}, \${colorArr[2]}, \${alphaValue})\`;
               };
               
               // Beam effect color mapping
