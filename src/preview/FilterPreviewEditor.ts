@@ -240,7 +240,13 @@ export class FilterPreviewEditor
               ctx.font = \`\${fontSize}px "Fontin SmallCaps", Arial\`;
               ctx.textAlign = 'center';
               ctx.textBaseline = 'middle';
-              const metrics = ctx.measureText(item.name);
+              
+              // Only show stacksize if it's greater than 1
+              const displayText = (item.stackSize && item.stackSize > 1) 
+                ? \`\${item.stackSize}x \${item.name}\` 
+                : item.name;
+              
+              const metrics = ctx.measureText(displayText);
               const padding = 10 * camera.zoom;
               const textWidth = metrics.width;
               const textHeight = fontSize;
@@ -262,9 +268,9 @@ export class FilterPreviewEditor
                 ctx.strokeRect(boxX, boxY, boxWidth, boxHeight);
               }
               
-              // Draw text
+              // Draw text with stacksize
               ctx.fillStyle = toRGBA(item.textColor);
-              ctx.fillText(item.name, x, y);
+              ctx.fillText(displayText, x, y);
               
               // Draw HIDDEN indicator
               if (item.hidden) {
