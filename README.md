@@ -2,6 +2,8 @@
 
 A Visual Studio Code extension for Path of Exile 2 item filter files.
 
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/B0B71865NT)
+
 ## Features
 
 - [Syntax highlighting](#syntax-highlighting) for POE2 filter files
