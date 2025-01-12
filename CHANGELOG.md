@@ -2,6 +2,12 @@
 
 All notable changes to the "poe2-filter" extension will be documented in this file.
 
+## [Unreleased]
+
+### Changed
+
+- 🔄 Updated PoE2 game data to patch 4.1.0.12.4
+
 ## [0.0.13] - 2024-12-23 15:10
 
 ### Fixed

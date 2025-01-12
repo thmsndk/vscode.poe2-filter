@@ -5,7 +5,7 @@ import * as fs from "fs/promises";
 export interface BaseItemType {
   Id: string;
   Name: string;
-  ItemClassesKey: number;
+  ItemClass: number;
   DropLevel: number;
 }
 
