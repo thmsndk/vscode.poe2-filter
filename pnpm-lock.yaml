@@ -42,8 +42,8 @@ importers:
         specifier: ^4.1.5
         version: 4.1.5
       pathofexile-dat:
-        specifier: ^13.0.0
-        version: 13.0.0
+        specifier: ^14.0.0
+        version: 14.0.0
       ts-node:
         specifier: ^10.9.2
         version: 10.9.2(@types/node@20.17.10)(typescript@5.7.2)
@@ -1630,11 +1630,11 @@ packages:
     resolution: {integrity: sha512-T2ZUsdZFHgA3u4e5PfPbjd7HDDpxPnQb5jN0SrDsjNSuVXHJqtwTnWqG0B1jZrgmJ/7lj1EmVIByWt1gxGkWvg==}
     engines: {node: '>=4'}
 
-  pathofexile-dat-schema@7.0.0:
-    resolution: {integrity: sha512-oLCh//jZxB1KUTW357khqTyoWp5lBGuNdW3HIZ8JfAciwniuAQdwOoiSJJpkN3IkU92tJWNOEQqqwUXb3AMl4Q==}
+  pathofexile-dat-schema@8.0.0:
+    resolution: {integrity: sha512-sn/8cJHbDCM6HjLMk9LnWXXS5Nbl2YqzqZslbooC7ankKbnr0tBwfl8AxM5fI+IzX49zNnKGuqpFvQQ2UMFuig==}
 
-  pathofexile-dat@13.0.0:
-    resolution: {integrity: sha512-oxgYJu9hs4AwFbBZWsaX4vw2l1An5IOLgQoKMRARMcjPXF2x14VNDkUDcaD7kzdJg12O1p9tk0tF7h7HmLQGyw==}
+  pathofexile-dat@14.0.0:
+    resolution: {integrity: sha512-6dZkPRvKKlNcKt25rXqPCqyTLPeZMUxgyueSpj6Bad0SajmBfto/tW52yZu3i4uhWm0ptxvsgzwnHRdir79bVA==}
     engines: {node: '>=18.0.0'}
     hasBin: true
 
@@ -3925,12 +3925,12 @@ snapshots:
     dependencies:
       pify: 3.0.0
 
-  pathofexile-dat-schema@7.0.0: {}
+  pathofexile-dat-schema@8.0.0: {}
 
-  pathofexile-dat@13.0.0:
+  pathofexile-dat@14.0.0:
     dependencies:
       ooz-wasm: 2.0.0
-      pathofexile-dat-schema: 7.0.0
+      pathofexile-dat-schema: 8.0.0
 
   pend@1.2.0: {}
 

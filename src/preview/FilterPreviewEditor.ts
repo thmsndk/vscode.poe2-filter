@@ -858,7 +858,7 @@ export class FilterPreviewEditor
           const classMatch = classMatches[0];
           // Find base items of this class
           let baseItems = this.gameData.baseItemTypes.filter(
-            (item) => item.ItemClassesKey === classMatch.item._index
+            (item) => item.ItemClass === classMatch.item._index
           );
 
           // For hide rules with DropLevel condition, prioritize that over AreaLevel
@@ -922,7 +922,7 @@ export class FilterPreviewEditor
           } else {
             // If no base items found after filtering, use a random representative item from the class
             baseItems = this.gameData.baseItemTypes.filter(
-              (item) => item.ItemClassesKey === classMatch.item._index
+              (item) => item.ItemClass === classMatch.item._index
             );
             if (baseItems.length > 0) {
               const randomItem =
