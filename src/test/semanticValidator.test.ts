@@ -252,4 +252,72 @@ Show
       }
     );
   });
+
+  test("should report duplicate values in Class condition", () => {
+    const mockGameData = new GameDataService();
+    mockGameData.itemClasses = [
+      { Name: "Bow", _index: 0, Id: "Bow" },
+      { Name: "Sword", _index: 1, Id: "Sword" },
+    ];
+
+    const input = `
+Show
+    Class "Bow" "Sword" "Bow"
+`;
+    const parser = new Parser(input);
+    const ast = parser.parse();
+
+    const validator = new SemanticValidator(mockGameData);
+    validator.validate(ast);
+
+    assert.strictEqual(validator.diagnostics.length, 1);
+    assert.deepStrictEqual(
+      {
+        message: validator.diagnostics[0].message,
+        line: 3,
+        columnStart: 23,
+        columnEnd: 28,
+      },
+      {
+        message: 'Duplicate value "Bow" in Class condition',
+        line: 3,
+        columnStart: 23,
+        columnEnd: 28,
+      }
+    );
+  });
+
+  test("should report duplicate values in BaseType condition", () => {
+    const mockGameData = new GameDataService();
+    mockGameData.baseItemTypes = [
+      { Name: "Mirror", Id: "Mirror", ItemClass: 1, DropLevel: 1 },
+      { Name: "Mirror", Id: "Mirror", ItemClass: 1, DropLevel: 1 },
+    ];
+
+    const input = `
+Show
+    BaseType "Mirror" "Mirror"
+`;
+    const parser = new Parser(input);
+    const ast = parser.parse();
+
+    const validator = new SemanticValidator(mockGameData);
+    validator.validate(ast);
+
+    assert.strictEqual(validator.diagnostics.length, 1);
+    assert.deepStrictEqual(
+      {
+        message: validator.diagnostics[0].message,
+        line: 3,
+        columnStart: 21,
+        columnEnd: 29,
+      },
+      {
+        message: 'Duplicate value "Mirror" in BaseType condition',
+        line: 3,
+        columnStart: 21,
+        columnEnd: 29,
+      }
+    );
+  });
 });
