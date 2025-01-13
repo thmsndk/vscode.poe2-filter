@@ -506,6 +506,7 @@ export class SemanticValidator {
     }
 
     const isExact = node.operator === "==";
+    const seenValues = new Map<string, number>(); // value -> first column start
 
     for (const nodeValue of values) {
       const value = nodeValue.value;
@@ -525,6 +526,20 @@ export class SemanticValidator {
         });
         continue;
       }
+
+      // Check for duplicates
+      if (seenValues.has(value)) {
+        this.diagnostics.push({
+          message: `Duplicate value "${value}" in ${node.condition} condition`,
+          severity: "warning",
+          line: node.line,
+          columnStart: nodeValue.columnStart,
+          columnEnd: nodeValue.columnEnd,
+        });
+        continue;
+      }
+
+      seenValues.set(value, nodeValue.columnStart);
 
       let matches;
       switch (node.condition) {
