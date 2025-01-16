@@ -21701,758 +21701,765 @@
   },
   {
     "_index": 3100,
+    "Id": "Metadata/Items/TowerAugment/MapBossAugment",
+    "ItemClass": 105,
+    "Name": "Overseer Precursor Tablet",
+    "DropLevel": 65
+  },
+  {
+    "_index": 3101,
     "Id": "Metadata/Items/Gems/SkillGemCorpsewadeCorpseCloud",
     "ItemClass": 18,
     "Name": "Decompose",
     "DropLevel": 1
   },
   {
-    "_index": 3101,
+    "_index": 3102,
     "Id": "Metadata/Items/Gem/SkillGemAscendancyElementalExpression",
     "ItemClass": 18,
     "Name": "Elemental Expression",
     "DropLevel": 1
   },
   {
-    "_index": 3102,
+    "_index": 3103,
     "Id": "Metadata/Items/Gem/SkillGemIceShot",
     "ItemClass": 18,
     "Name": "Ice Shot",
     "DropLevel": 32
   },
   {
-    "_index": 3103,
+    "_index": 3104,
     "Id": "Metadata/Items/Gem/SkillGemWarBanner",
     "ItemClass": 18,
     "Name": "War Banner",
     "DropLevel": 11
   },
   {
-    "_index": 3104,
+    "_index": 3105,
     "Id": "Metadata/Items/Gem/SkillGemDefianceBanner",
     "ItemClass": 18,
     "Name": "Defiance Banner",
     "DropLevel": 27
   },
   {
-    "_index": 3105,
+    "_index": 3106,
     "Id": "Metadata/Items/Gem/SkillGemFreezingMark",
     "ItemClass": 18,
     "Name": "Freezing Mark",
     "DropLevel": 23
   },
   {
-    "_index": 3106,
+    "_index": 3107,
     "Id": "Metadata/Items/Gem/SkillGemVoltaicMark",
     "ItemClass": 18,
     "Name": "Voltaic Mark",
     "DropLevel": 23
   },
   {
-    "_index": 3107,
+    "_index": 3108,
     "Id": "Metadata/Items/Gem/SkillGemHandOfChayula",
     "ItemClass": 76,
     "Name": "Hand of Chayula",
     "DropLevel": 32
   },
   {
-    "_index": 3108,
+    "_index": 3109,
     "Id": "Metadata/Items/Gem/SkillGemAscendancyTemporalRift",
     "ItemClass": 18,
     "Name": "Temporal Rift",
     "DropLevel": 1
   },
   {
-    "_index": 3109,
+    "_index": 3110,
     "Id": "Metadata/Items/Gem/SkillGemAscendancyDemonForm",
     "ItemClass": 18,
     "Name": "Demon Form",
     "DropLevel": 1
   },
   {
-    "_index": 3110,
+    "_index": 3111,
     "Id": "Metadata/Items/Gem/SkillGemTimeOfNeed",
     "ItemClass": 18,
     "Name": "Time of Need",
     "DropLevel": 37
   },
   {
-    "_index": 3111,
+    "_index": 3112,
     "Id": "Metadata/Items/Gem/SkillGemElementalInvocation",
     "ItemClass": 76,
     "Name": "Elemental Invocation",
     "DropLevel": 27
   },
   {
-    "_index": 3112,
+    "_index": 3113,
     "Id": "Metadata/Items/Gem/SkillGemExplosiveGrenade",
     "ItemClass": 18,
     "Name": "Explosive Grenade",
     "DropLevel": 1
   },
   {
-    "_index": 3113,
+    "_index": 3114,
     "Id": "Metadata/Items/Gem/SkillGemFlashGrenade",
     "ItemClass": 18,
     "Name": "Flash Grenade",
     "DropLevel": 7
   },
   {
-    "_index": 3114,
+    "_index": 3115,
     "Id": "Metadata/Items/Gem/SkillGemOilGrenade",
     "ItemClass": 18,
     "Name": "Oil Grenade",
     "DropLevel": 32
   },
   {
-    "_index": 3115,
+    "_index": 3116,
     "Id": "Metadata/Items/Gem/SkillGemGasGrenade",
     "ItemClass": 18,
     "Name": "Gas Grenade",
     "DropLevel": 15
   },
   {
-    "_index": 3116,
+    "_index": 3117,
     "Id": "Metadata/Items/Gems/SkillGemVoltaicGrenade",
     "ItemClass": 18,
     "Name": "Voltaic Grenade",
     "DropLevel": 23
   },
   {
-    "_index": 3117,
+    "_index": 3118,
     "Id": "Metadata/Items/Gem/SkillGemAttrition",
     "ItemClass": 18,
     "Name": "Attrition",
     "DropLevel": 59
   },
   {
-    "_index": 3118,
+    "_index": 3119,
     "Id": "Metadata/Items/Gem/SkillGemElementalConflux",
     "ItemClass": 18,
     "Name": "Elemental Conflux",
     "DropLevel": 59
   },
   {
-    "_index": 3119,
+    "_index": 3120,
     "Id": "Metadata/Items/Gem/SkillGemAscendancyIntoTheBreach",
     "ItemClass": 18,
     "Name": "Into the Breach",
     "DropLevel": 1
   },
   {
-    "_index": 3120,
+    "_index": 3121,
     "Id": "Metadata/Items/Gem/SkillGemAscendancyAncestralSpirits",
     "ItemClass": 18,
     "Name": "Ancestral Spirits",
     "DropLevel": 1
   },
   {
-    "_index": 3121,
+    "_index": 3122,
     "Id": "Metadata/Items/Gem/SkillGemEmergencyReload",
     "ItemClass": 18,
     "Name": "Emergency Reload",
     "DropLevel": 42
   },
   {
-    "_index": 3122,
+    "_index": 3123,
     "Id": "Metadata/Items/Gems/SupportGemFontofBlood",
     "ItemClass": 19,
     "Name": "Font of Blood",
     "DropLevel": 1
   },
   {
-    "_index": 3123,
+    "_index": 3124,
     "Id": "Metadata/Items/Gems/SupportGemFontofMana",
     "ItemClass": 19,
     "Name": "Font of Mana",
     "DropLevel": 1
   },
   {
-    "_index": 3124,
+    "_index": 3125,
     "Id": "Metadata/Items/Gems/SupportGemFontofRage",
     "ItemClass": 19,
     "Name": "Font of Rage",
     "DropLevel": 1
   },
   {
-    "_index": 3125,
+    "_index": 3126,
     "Id": "Metadata/Items/Gem/SkillGemClusterGrenade",
     "ItemClass": 18,
     "Name": "Cluster Grenade",
     "DropLevel": 53
   },
   {
-    "_index": 3126,
+    "_index": 3127,
     "Id": "Metadata/Items/Gem/SkillGemDreadBanner",
     "ItemClass": 18,
     "Name": "Dread Banner",
     "DropLevel": 59
   },
   {
-    "_index": 3127,
+    "_index": 3128,
     "Id": "Metadata/Items/Gem/SkillGemTornadoShot",
     "ItemClass": 18,
     "Name": "Tornado Shot",
     "DropLevel": 42
   },
   {
-    "_index": 3128,
+    "_index": 3129,
     "Id": "Metadata/Items/Currency/OmenOnLowLifeRecoverCharges",
     "ItemClass": 106,
     "Name": "Omen of Refreshment",
     "DropLevel": 1
   },
   {
-    "_index": 3129,
+    "_index": 3130,
     "Id": "Metadata/Items/Currency/OmenOnLowLifeFullyHeal",
     "ItemClass": 106,
     "Name": "Omen of Resurgence",
     "DropLevel": 1
   },
   {
-    "_index": 3130,
+    "_index": 3131,
     "Id": "Metadata/Items/Currency/OmenOnDeathPreventExpLoss",
     "ItemClass": 106,
     "Name": "Omen of Amelioration",
     "DropLevel": 1
   },
   {
-    "_index": 3131,
+    "_index": 3132,
     "Id": "Metadata/Items/Currency/OmenOnChaosLowestLevelMod",
     "ItemClass": 106,
     "Name": "Omen of Whittling",
     "DropLevel": 75
   },
   {
-    "_index": 3132,
+    "_index": 3133,
     "Id": "Metadata/Items/Currency/OmenOnChaosPrefix",
     "ItemClass": 106,
     "Name": "Omen of Sinistral Erasure",
     "DropLevel": 80
   },
   {
-    "_index": 3133,
+    "_index": 3134,
     "Id": "Metadata/Items/Currency/OmenOnChaosSuffix",
     "ItemClass": 106,
     "Name": "Omen of Dextral Erasure",
     "DropLevel": 80
   },
   {
-    "_index": 3134,
+    "_index": 3135,
     "Id": "Metadata/Items/Currency/OmenOnAlchemyMaximumPrefixes",
     "ItemClass": 106,
     "Name": "Omen of Sinistral Alchemy",
     "DropLevel": 1
   },
   {
-    "_index": 3135,
+    "_index": 3136,
     "Id": "Metadata/Items/Currency/OmenOnAlchemyMaximumSuffixes",
     "ItemClass": 106,
     "Name": "Omen of Dextral Alchemy",
     "DropLevel": 1
   },
   {
-    "_index": 3136,
+    "_index": 3137,
     "Id": "Metadata/Items/Currency/OmenOnRegalPrefix",
     "ItemClass": 106,
     "Name": "Omen of Sinistral Coronation",
     "DropLevel": 1
   },
   {
-    "_index": 3137,
+    "_index": 3138,
     "Id": "Metadata/Items/Currency/OmenOnRegalSuffix",
     "ItemClass": 106,
     "Name": "Omen of Dextral Coronation",
     "DropLevel": 1
   },
   {
-    "_index": 3138,
+    "_index": 3139,
     "Id": "Metadata/Items/Currency/OmenOnVaalRemoveDoNothingOutcome",
     "ItemClass": 106,
     "Name": "Omen of Corruption",
     "DropLevel": 1
   },
   {
-    "_index": 3139,
+    "_index": 3140,
     "Id": "Metadata/Items/Currency/OmenOnExaltAddTwoMods",
     "ItemClass": 106,
     "Name": "Omen of Greater Exaltation",
     "DropLevel": 1
   },
   {
-    "_index": 3140,
+    "_index": 3141,
     "Id": "Metadata/Items/Currency/OmenOnExaltAddPrefixes",
     "ItemClass": 106,
     "Name": "Omen of Sinistral Exaltation",
     "DropLevel": 1
   },
   {
-    "_index": 3141,
+    "_index": 3142,
     "Id": "Metadata/Items/Currency/OmenOnExaltAddSuffixes",
     "ItemClass": 106,
     "Name": "Omen of Dextral Exaltation",
     "DropLevel": 1
   },
   {
-    "_index": 3142,
+    "_index": 3143,
     "Id": "Metadata/Items/Currency/OmenOnAnnulRemoveTwoMods",
     "ItemClass": 106,
     "Name": "Omen of Greater Annulment",
     "DropLevel": 75
   },
   {
-    "_index": 3143,
+    "_index": 3144,
     "Id": "Metadata/Items/Currency/OmenOnAnnulRemovePrefixes",
     "ItemClass": 106,
     "Name": "Omen of Sinistral Annulment",
     "DropLevel": 80
   },
   {
-    "_index": 3144,
+    "_index": 3145,
     "Id": "Metadata/Items/Currency/OmenOnAnnulRemoveSuffixes",
     "ItemClass": 106,
     "Name": "Omen of Dextral Annulment",
     "DropLevel": 80
   },
   {
-    "_index": 3145,
+    "_index": 3146,
     "Id": "Metadata/Items/Gem/SkillGemBlinkSandPlayer",
     "ItemClass": 18,
     "Name": "Blink",
     "DropLevel": 1
   },
   {
-    "_index": 3146,
+    "_index": 3147,
     "Id": "Metadata/Items/Gem/SkillGemChargeInfusion",
     "ItemClass": 18,
     "Name": "Charge Infusion",
     "DropLevel": 59
   },
   {
-    "_index": 3147,
+    "_index": 3148,
     "Id": "Metadata/Items/Gem/SupportGemHolyDescent",
     "ItemClass": 19,
     "Name": "Holy Descent",
     "DropLevel": 1
   },
   {
-    "_index": 3148,
+    "_index": 3149,
     "Id": "Metadata/Items/Gems/SupportGemBurningInscription",
     "ItemClass": 19,
     "Name": "Burning Inscription",
     "DropLevel": 1
   },
   {
-    "_index": 3149,
+    "_index": 3150,
     "Id": "Metadata/Items/Gem/SkillGemShardScavenger",
     "ItemClass": 18,
     "Name": "Shard Scavenger",
     "DropLevel": 27
   },
   {
-    "_index": 3150,
+    "_index": 3151,
     "Id": "Metadata/Items/Gem/SupportGemDoubleBarrel",
     "ItemClass": 19,
     "Name": "Double Barrel",
     "DropLevel": 1
   },
   {
-    "_index": 3151,
+    "_index": 3152,
     "Id": "Metadata/Items/Gem/SupportGemAutoReload",
     "ItemClass": 19,
     "Name": "Auto Reload",
     "DropLevel": 1
   },
   {
-    "_index": 3152,
+    "_index": 3153,
     "Id": "Metadata/Items/Gem/SupportGemAmmoConservation",
     "ItemClass": 19,
     "Name": "Ammo Conservation",
     "DropLevel": 1
   },
   {
-    "_index": 3153,
+    "_index": 3154,
     "Id": "Metadata/Items/Gem/SupportGemNimbleReload",
     "ItemClass": 19,
     "Name": "Nimble Reload",
     "DropLevel": 1
   },
   {
-    "_index": 3154,
+    "_index": 3155,
     "Id": "Metadata/Items/Gem/SupportGemFreshClip",
     "ItemClass": 19,
     "Name": "Fresh Clip",
     "DropLevel": 1
   },
   {
-    "_index": 3155,
+    "_index": 3156,
     "Id": "Metadata/Items/Gem/SupportGemSacrificialLamb",
     "ItemClass": 19,
     "Name": "Sacrificial Lamb",
     "DropLevel": 1
   },
   {
-    "_index": 3156,
+    "_index": 3157,
     "Id": "Metadata/Items/Gem/SkillGemOverwhelmingPresence",
     "ItemClass": 18,
     "Name": "Overwhelming Presence",
     "DropLevel": 27
   },
   {
-    "_index": 3157,
+    "_index": 3158,
     "Id": "Metadata/Items/Gem/SkillGemAlchemistsBoon",
     "ItemClass": 18,
     "Name": "Alchemist's Boon",
     "DropLevel": 59
   },
   {
-    "_index": 3158,
+    "_index": 3159,
     "Id": "Metadata/Items/Gem/SkillGemReapersInvocation",
     "ItemClass": 76,
     "Name": "Reaper's Invocation",
     "DropLevel": 59
   },
   {
-    "_index": 3159,
+    "_index": 3160,
     "Id": "Metadata/Items/Gem/SkillGemSacrifice",
     "ItemClass": 18,
     "Name": "Sacrifice",
     "DropLevel": 59
   },
   {
-    "_index": 3160,
+    "_index": 3161,
     "Id": "Metadata/Items/Gem/SkillGemArchmage",
     "ItemClass": 18,
     "Name": "Archmage",
     "DropLevel": 59
   },
   {
-    "_index": 3161,
+    "_index": 3162,
     "Id": "Metadata/Items/Gem/SkillGemMagneticSalvo",
     "ItemClass": 18,
     "Name": "Magnetic Salvo",
     "DropLevel": 53
   },
   {
-    "_index": 3162,
+    "_index": 3163,
     "Id": "Metadata/Items/Gem/SkillGemFreezingSalvo",
     "ItemClass": 18,
     "Name": "Freezing Salvo",
     "DropLevel": 15
   },
   {
-    "_index": 3163,
+    "_index": 3164,
     "Id": "Metadata/Items/Gem/SkillGemTriggeredGasCloud",
     "ItemClass": 18,
     "Name": "[DNT] Gas Cloud",
     "DropLevel": 1
   },
   {
-    "_index": 3164,
+    "_index": 3165,
     "Id": "Metadata/Items/Gem/SkillGemTriggeredDetonation",
     "ItemClass": 18,
     "Name": "[DNT] Detonation",
     "DropLevel": 1
   },
   {
-    "_index": 3165,
+    "_index": 3166,
     "Id": "Metadata/Items/Gem/SkillGemBerserk",
     "ItemClass": 18,
     "Name": "Berserk",
     "DropLevel": 59
   },
   {
-    "_index": 3166,
+    "_index": 3167,
     "Id": "Metadata/Items/Gem/SkillGemHeraldOfPlague",
     "ItemClass": 18,
     "Name": "Herald of Plague",
     "DropLevel": 27
   },
   {
-    "_index": 3167,
+    "_index": 3168,
     "Id": "Metadata/Items/Gem/SkillGemHeraldOfBlood",
     "ItemClass": 18,
     "Name": "",
     "DropLevel": 1
   },
   {
-    "_index": 3168,
+    "_index": 3169,
     "Id": "Metadata/Items/Gem/SkillGemWitheringPresence",
     "ItemClass": 18,
     "Name": "Withering Presence",
     "DropLevel": 10
   },
   {
-    "_index": 3169,
+    "_index": 3170,
     "Id": "Metadata/Items/Ultimatum/UltimatumKeySpecial",
     "ItemClass": 100,
     "Name": "Inscribed Ultimatum",
     "DropLevel": 39
   },
   {
-    "_index": 3170,
+    "_index": 3171,
     "Id": "Metadata/Items/Gem/SkillGemCombatFrenzy",
     "ItemClass": 18,
     "Name": "Combat Frenzy",
     "DropLevel": 27
   },
   {
-    "_index": 3171,
+    "_index": 3172,
     "Id": "Metadata/Items/Gems/SkillGemCastOnBlock",
     "ItemClass": 76,
     "Name": "Cast on Block",
     "DropLevel": 59
   },
   {
-    "_index": 3172,
+    "_index": 3173,
     "Id": "Metadata/Items/Gem/SkillGemGatheringStorm",
     "ItemClass": 18,
     "Name": "Gathering Storm",
     "DropLevel": 53
   },
   {
-    "_index": 3173,
+    "_index": 3174,
     "Id": "Metadata/Items/Gem/SupportGemUpheaval",
     "ItemClass": 19,
     "Name": "Upheaval",
     "DropLevel": 1
   },
   {
-    "_index": 3174,
+    "_index": 3175,
     "Id": "Metadata/Items/Gems/SupportGemDespoiler",
     "ItemClass": 19,
     "Name": "Despoiler",
     "DropLevel": 1
   },
   {
-    "_index": 3175,
+    "_index": 3176,
     "Id": "Metadata/Items/Gem/SupportGemRicochet",
     "ItemClass": 19,
     "Name": "Ricochet",
     "DropLevel": 1
   },
   {
-    "_index": 3176,
+    "_index": 3177,
     "Id": "Metadata/Items/Gem/SupportGemAncestralUrgency",
     "ItemClass": 19,
     "Name": "Ancestral Urgency",
     "DropLevel": 1
   },
   {
-    "_index": 3177,
+    "_index": 3178,
     "Id": "Metadata/Items/Gem/SupportGemLongFuse",
     "ItemClass": 19,
     "Name": "Long Fuse",
     "DropLevel": 1
   },
   {
-    "_index": 3178,
+    "_index": 3179,
     "Id": "Metadata/Items/Gem/SupportGemPayload",
     "ItemClass": 19,
     "Name": "Payload",
     "DropLevel": 1
   },
   {
-    "_index": 3179,
+    "_index": 3180,
     "Id": "Metadata/Items/Gem/SupportGemStripAway",
     "ItemClass": 19,
     "Name": "Strip Away",
     "DropLevel": 1
   },
   {
-    "_index": 3180,
+    "_index": 3181,
     "Id": "Metadata/Items/Gem/SupportGemIronwood",
     "ItemClass": 19,
     "Name": "Ironwood",
     "DropLevel": 1
   },
   {
-    "_index": 3181,
+    "_index": 3182,
     "Id": "Metadata/Items/Gem/SupportGemConsideredCasting",
     "ItemClass": 19,
     "Name": "Considered Casting",
     "DropLevel": 1
   },
   {
-    "_index": 3182,
+    "_index": 3183,
     "Id": "Metadata/Items/Gem/SupportGemWildshards",
     "ItemClass": 19,
     "Name": "Wildshards",
     "DropLevel": 1
   },
   {
-    "_index": 3183,
+    "_index": 3184,
     "Id": "Metadata/Items/Gem/SupportGemIcicle",
     "ItemClass": 19,
     "Name": "Icicle",
     "DropLevel": 1
   },
   {
-    "_index": 3184,
+    "_index": 3185,
     "Id": "Metadata/Items/Gem/SupportGemGlacier",
     "ItemClass": 19,
     "Name": "Glacier",
     "DropLevel": 1
   },
   {
-    "_index": 3185,
+    "_index": 3186,
     "Id": "Metadata/Items/Gem/SupportGemHeft",
     "ItemClass": 19,
     "Name": "Heft",
     "DropLevel": 1
   },
   {
-    "_index": 3186,
+    "_index": 3187,
     "Id": "Metadata/Items/Gems/SupportGemRisingTempest",
     "ItemClass": 19,
     "Name": "Rising Tempest",
     "DropLevel": 1
   },
   {
-    "_index": 3187,
+    "_index": 3188,
     "Id": "Metadata/Items/Gem/SupportGemExtraction",
     "ItemClass": 19,
     "Name": "Extraction",
     "DropLevel": 1
   },
   {
-    "_index": 3188,
+    "_index": 3189,
     "Id": "Metadata/Items/Gem/SupportGemAstralProjection",
     "ItemClass": 19,
     "Name": "Astral Projection",
     "DropLevel": 1
   },
   {
-    "_index": 3189,
+    "_index": 3190,
     "Id": "Metadata/Items/Gem/SupportGemPracticedCombo",
     "ItemClass": 19,
     "Name": "Practiced Combo",
     "DropLevel": 1
   },
   {
-    "_index": 3190,
+    "_index": 3191,
     "Id": "Metadata/Items/Gem/SupportGemLeverage",
     "ItemClass": 19,
     "Name": "Leverage",
     "DropLevel": 1
   },
   {
-    "_index": 3191,
+    "_index": 3192,
     "Id": "Metadata/Items/Gem/SupportGemCulmination",
     "ItemClass": 19,
     "Name": "Culmination",
     "DropLevel": 1
   },
   {
-    "_index": 3192,
+    "_index": 3193,
     "Id": "Metadata/Items/Gem/SupportGemPotential",
     "ItemClass": 19,
     "Name": "Potential",
     "DropLevel": 1
   },
   {
-    "_index": 3193,
+    "_index": 3194,
     "Id": "Metadata/Items/Gem/SupportGemExpanse",
     "ItemClass": 19,
     "Name": "Expanse",
     "DropLevel": 1
   },
   {
-    "_index": 3194,
+    "_index": 3195,
     "Id": "Metadata/Items/Gem/SupportGemExcise",
     "ItemClass": 19,
     "Name": "Excise",
     "DropLevel": 1
   },
   {
-    "_index": 3195,
+    "_index": 3196,
     "Id": "Metadata/Items/Gem/SupportGemExecrate",
     "ItemClass": 19,
     "Name": "Execrate",
     "DropLevel": 1
   },
   {
-    "_index": 3196,
+    "_index": 3197,
     "Id": "Metadata/Items/Gem/SupportGemEnergyRetention",
     "ItemClass": 19,
     "Name": "Energy Retention",
     "DropLevel": 1
   },
   {
-    "_index": 3197,
+    "_index": 3198,
     "Id": "Metadata/Items/Gem/SupportGemFerocity",
     "ItemClass": 19,
     "Name": "Ferocity",
     "DropLevel": 1
   },
   {
-    "_index": 3198,
+    "_index": 3199,
     "Id": "Metadata/Items/Gem/SupportGemAblation",
     "ItemClass": 19,
     "Name": "Ablation",
     "DropLevel": 1
   },
   {
-    "_index": 3199,
+    "_index": 3200,
     "Id": "Metadata/Items/Gem/SupportGemDanseMacabre",
     "ItemClass": 19,
     "Name": "Danse Macabre",
     "DropLevel": 1
   },
   {
-    "_index": 3200,
+    "_index": 3201,
     "Id": "Metadata/Items/Gem/SupportGemCapacitor",
     "ItemClass": 19,
     "Name": "Capacitor",
     "DropLevel": 1
   },
   {
-    "_index": 3201,
+    "_index": 3202,
     "Id": "Metadata/Items/Gem/SupportGemImpetus",
     "ItemClass": 19,
     "Name": "Impetus",
     "DropLevel": 1
   },
   {
-    "_index": 3202,
+    "_index": 3203,
     "Id": "Metadata/Items/Gem/SupportGemBidding",
     "ItemClass": 19,
     "Name": "Bidding",
     "DropLevel": 1
   },
   {
-    "_index": 3203,
+    "_index": 3204,
     "Id": "Metadata/Items/Gem/SupportGemTremors",
     "ItemClass": 19,
     "Name": "Tremors",
     "DropLevel": 1
   },
   {
-    "_index": 3204,
+    "_index": 3205,
     "Id": "Metadata/Items/Gem/SkillGemUniqueDuskVigilTriggeredBlazingCluster",
     "ItemClass": 18,
     "Name": "Ember Fusillade",
     "DropLevel": 7
   },
   {
-    "_index": 3205,
+    "_index": 3206,
     "Id": "Metadata/Items/Gem/SkillGemUniqueEarthboundTriggeredSpark",
     "ItemClass": 18,
     "Name": "Spark",
     "DropLevel": 1
   },
   {
-    "_index": 3206,
+    "_index": 3207,
     "Id": "Metadata/Items/Gem/SupportGemExpandingGround",
     "ItemClass": 19,
     "Name": "Expanding Ground",
     "DropLevel": 1
   },
   {
-    "_index": 3207,
+    "_index": 3208,
     "Id": "Metadata/Items/Gem/SkillGemUniqueBreachLightningBolt",
     "ItemClass": 18,
-    "Name": "Lightning Bolt",
+    "Name": "Greater Lightning Bolt",
     "DropLevel": 1
   }
 ]
