@@ -2,6 +2,13 @@
 
 All notable changes to the "poe2-filter" extension will be documented in this file.
 
+## [0.0.15] - 2025-01-25
+
+### Changed
+
+- 🔄 Updated PoE2 game data to patch 4.1.1.1
+  - Overseer Precursor Tablet should now be recognized
+
 ## [0.0.14] - 2025-01-12
 
 ### Changed
