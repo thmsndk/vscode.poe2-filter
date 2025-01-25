@@ -93,7 +93,8 @@
     "lint": "eslint src",
     "test": "vscode-test",
     "vsce:publish": "vsce publish --no-dependencies",
-    "data-sync": "ts-node scripts/data-sync.ts"
+    "data-sync": "ts-node scripts/data-sync.ts",
+    "patch-version": "ts-node scripts/patch-version.ts"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.10",
