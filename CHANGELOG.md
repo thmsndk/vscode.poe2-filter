@@ -2,6 +2,10 @@
 
 All notable changes to the "poe2-filter" extension will be documented in this file.
 
+## [0.0.15] - 2025-04-26
+
+- 🔄 Updated PoE2 game data to patch 4.2.0.1
+
 ## [0.0.15] - 2025-01-25
 
 ### Changed
