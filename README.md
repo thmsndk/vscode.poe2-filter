@@ -6,6 +6,8 @@ A Visual Studio Code extension for Path of Exile 2 item filter files.
   <img src="images/support_me_on_kofi_red.png" alt="ko-fi" width="150" height="auto"/>
 </a>
 
+I Personally used this extension when PoE2 launched and [FilterBlade.xyz](<[text](https://www.filterblade.xyz/?game=Poe2)>) was not released, I now use FilterBlade for my personal filters, so if there is any issue with the extension, it is important that you report them:)
+
 ## Features
 
 - [Syntax highlighting](#syntax-highlighting) for POE2 filter files
