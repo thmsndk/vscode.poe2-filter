@@ -1,18 +1,31 @@
 {
-  "patch": "4.2.0.9",
+  "patch": "4.2.1.2",
   "tables": [
     {
       "name": "BaseItemTypes",
-      "columns": ["Id", "Name", "ItemClass", "DropLevel"]
+      "columns": [
+        "Id",
+        "Name",
+        "ItemClass",
+        "DropLevel"
+      ]
     },
     {
       "name": "ItemClasses",
-      "columns": ["Id", "Name"]
+      "columns": [
+        "Id",
+        "Name"
+      ]
     },
     {
       "name": "Mods",
-      "columns": ["Id", "Name"]
+      "columns": [
+        "Id",
+        "Name"
+      ]
     }
   ],
-  "translations": ["English"]
+  "translations": [
+    "English"
+  ]
 }
