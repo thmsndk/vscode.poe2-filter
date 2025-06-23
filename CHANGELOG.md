@@ -2,6 +2,13 @@
 
 All notable changes to the "poe2-filter" extension will be documented in this file.
 
+## [0.0.19](https://github.com/thmsndk/vscode.poe2-filter/compare/v0.0.18...v0.0.19) (2025-06-23)
+
+
+### ### CI
+
+* add publish-extension job triggered by release-please ([#40](https://github.com/thmsndk/vscode.poe2-filter/issues/40)) ([4794532](https://github.com/thmsndk/vscode.poe2-filter/commit/479453216a1a85b5f76ffff4b77c97f42a80f6ee))
+
 ## [0.0.18](https://github.com/thmsndk/vscode.poe2-filter/compare/v0.0.17...v0.0.18) (2025-06-23)
 
 
