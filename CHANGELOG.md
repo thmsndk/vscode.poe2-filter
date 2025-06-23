@@ -2,6 +2,42 @@
 
 All notable changes to the "poe2-filter" extension will be documented in this file.
 
+## [0.0.17](https://github.com/thmsndk/vscode.poe2-filter/compare/v0.0.16...v0.0.17) (2025-06-23)
+
+
+### ### Added
+
+* **ci:** add scheduled workflow to update PoE2 data daily ([30f67b9](https://github.com/thmsndk/vscode.poe2-filter/commit/30f67b9f52e9538e19aa16caecefe6b7f058e506))
+* **ci:** scheduled workflow to update PoE2 data ([d7f33b9](https://github.com/thmsndk/vscode.poe2-filter/commit/d7f33b9d032006e94169f0c6b3003910cc6e3d93))
+* update PoE2 data to version 4.2.1.2 ([f98d757](https://github.com/thmsndk/vscode.poe2-filter/commit/f98d757f60f497a1705ff30a5b49df269e3901ed))
+* update PoE2 data to version 4.2.1.2 ([d154b9a](https://github.com/thmsndk/vscode.poe2-filter/commit/d154b9ab48e81335df863ea44ca8ce6365d27995))
+
+
+### ### Refactor
+
+* remove fontSize property from FilterDecorationProvider ([a76b11b](https://github.com/thmsndk/vscode.poe2-filter/commit/a76b11bd6ceee01148c635ec65f83455f45ec954))
+
+
+### ### CI
+
+* add GitHub Actions workflow to publish extension ([6b4aa36](https://github.com/thmsndk/vscode.poe2-filter/commit/6b4aa3614c67522622e5b0f07045fd130890a48f))
+* add GitHub Actions workflow to publish extension ([d9d65ae](https://github.com/thmsndk/vscode.poe2-filter/commit/d9d65ae389ac150a3c4dcd369e74c3c77ebbaf2d))
+
+
+### ### Chore
+
+* add empty .release-please-manifest.json for release-please ([399a3ad](https://github.com/thmsndk/vscode.poe2-filter/commit/399a3ad62413643c420dfd545c99c4f877bcad11))
+* add empty .release-please-manifest.json for release-please ([9cc8018](https://github.com/thmsndk/vscode.poe2-filter/commit/9cc8018e4aa619d31cd7e6758829b033c0be24ec))
+* add release-please for automated releases ([3b08522](https://github.com/thmsndk/vscode.poe2-filter/commit/3b085229d81861eaf590635f146317afadc39879))
+* add release-please for automated releases ([0bbe38b](https://github.com/thmsndk/vscode.poe2-filter/commit/0bbe38b2eb2112b4da2cb1fa8056ab556cf2a5ef))
+* **ci:** add issues permission to release-please workflow ([8067685](https://github.com/thmsndk/vscode.poe2-filter/commit/80676851641438aef5d15d212564c71716b585fc))
+* **ci:** add issues permission to release-please workflow ([1e91301](https://github.com/thmsndk/vscode.poe2-filter/commit/1e91301a2db38997943a5aa4c1f3f6053720b479))
+* **ci:** remove fixed pnpm version from workflow ([0793984](https://github.com/thmsndk/vscode.poe2-filter/commit/07939846abe3d95ee3675597fc527b6d5c3117e3))
+* **ci:** remove fixed pnpm version from workflow ([8ae2b08](https://github.com/thmsndk/vscode.poe2-filter/commit/8ae2b08ebeae070c358031023af80a45d03f5122))
+* **release:** update release-please manifest to 0.0.16 ([d602082](https://github.com/thmsndk/vscode.poe2-filter/commit/d6020828b174b2d22acf35b115b0274fd60ddebf))
+* **release:** update release-please manifest to 0.0.16 ([b8d522e](https://github.com/thmsndk/vscode.poe2-filter/commit/b8d522e4284879495b2c02d5e421257049099da1))
+* update version to 0.0.8 and modify CHANGELOG.md ([021bbff](https://github.com/thmsndk/vscode.poe2-filter/commit/021bbffc2f269ebaeb94330e206f700b5cbd539b))
+
 ## [0.0.15] - 2025-04-26
 
 - 🔄 Updated PoE2 game data to patch 4.2.0.1
