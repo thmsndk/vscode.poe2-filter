@@ -47,6 +47,7 @@ async function updateData() {
       console.log(`Config updated to version: ${currentVersion}`);
     } else {
       console.log("No new version available.");
+      process.exit();
     }
 
     // Run data synchronization
