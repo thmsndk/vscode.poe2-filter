@@ -67441,31 +67441,36 @@
   },
   {
     "_index": 13488,
-    "Id": "UniqueLifeLeechLocal4",
+    "Id": "MapFlyingEnabled",
     "Name": ""
   },
   {
     "_index": 13489,
-    "Id": "UniqueLocalIncreasedPhysicalDamagePercent15",
+    "Id": "UniqueLifeLeechLocal4",
     "Name": ""
   },
   {
     "_index": 13490,
-    "Id": "UniqueIncreasedAttackSpeed12",
+    "Id": "UniqueLocalIncreasedPhysicalDamagePercent15",
     "Name": ""
   },
   {
     "_index": 13491,
-    "Id": "UniquePerandusArrows1",
+    "Id": "UniqueIncreasedAttackSpeed12",
     "Name": ""
   },
   {
     "_index": 13492,
-    "Id": "ChanceToPoisonWithAttacksUnique___2",
+    "Id": "UniquePerandusArrows1",
     "Name": ""
   },
   {
     "_index": 13493,
+    "Id": "ChanceToPoisonWithAttacksUnique___2",
+    "Name": ""
+  },
+  {
+    "_index": 13494,
     "Id": "ExpeditionRelicModifierBeastSkin",
     "Name": ""
   }
