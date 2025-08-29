@@ -456,7 +456,7 @@
   },
   {
     "_index": 91,
-    "Id": "UncutSkillGem",
+    "Id": "UncutSkillGem_OLD",
     "Name": ""
   },
   {
@@ -506,12 +506,12 @@
   },
   {
     "_index": 101,
-    "Id": "UncutSupportGem",
+    "Id": "UncutSupportGem_OLD",
     "Name": ""
   },
   {
     "_index": 102,
-    "Id": "UncutReservationGem",
+    "Id": "UncutReservationGem_OLD",
     "Name": ""
   },
   {
@@ -538,5 +538,25 @@
     "_index": 107,
     "Id": "PinnacleKey",
     "Name": "Pinnacle Keys"
+  },
+  {
+    "_index": 108,
+    "Id": "Talisman",
+    "Name": "Talismans"
+  },
+  {
+    "_index": 109,
+    "Id": "UncutSkillGemStackable",
+    "Name": "Uncut Skill Gems"
+  },
+  {
+    "_index": 110,
+    "Id": "UncutSupportGemStackable",
+    "Name": "Uncut Support Gems"
+  },
+  {
+    "_index": 111,
+    "Id": "UncutReservationGemStackable",
+    "Name": "Uncut Spirit Gems"
   }
 ]
