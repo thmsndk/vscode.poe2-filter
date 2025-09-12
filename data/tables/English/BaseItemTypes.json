@@ -13409,7 +13409,7 @@
     "Id": "Metadata/Items/Weapons/OneHandWeapons/OneHandMaces/FourOneHandMace9",
     "ItemClass": 12,
     "Name": "Morning Star",
-    "DropLevel": 46
+    "DropLevel": 45
   },
   {
     "_index": 1916,
@@ -13507,7 +13507,7 @@
     "Id": "Metadata/Items/Weapons/TwoHandWeapons/TwoHandMaces/FourTwoHandMace9",
     "ItemClass": 17,
     "Name": "Pointed Maul",
-    "DropLevel": 46
+    "DropLevel": 45
   },
   {
     "_index": 1930,
@@ -13598,7 +13598,7 @@
     "Id": "Metadata/Items/Weapons/OneHandWeapons/OneHandSpears/FourSpear9",
     "ItemClass": 77,
     "Name": "Crossblade Spear",
-    "DropLevel": 46
+    "DropLevel": 45
   },
   {
     "_index": 1943,
@@ -13871,7 +13871,7 @@
     "Id": "Metadata/Items/Weapons/TwoHandWeapons/Staves/FourQuarterstaff9",
     "ItemClass": 57,
     "Name": "Hefty Quarterstaff",
-    "DropLevel": 46
+    "DropLevel": 45
   },
   {
     "_index": 1982,
@@ -14249,7 +14249,7 @@
     "Id": "Metadata/Items/Weapons/TwoHandWeapons/Bows/FourBow9",
     "ItemClass": 13,
     "Name": "Artillery Bow",
-    "DropLevel": 46
+    "DropLevel": 45
   },
   {
     "_index": 2036,
@@ -14340,7 +14340,7 @@
     "Id": "Metadata/Items/Weapons/TwoHandWeapons/Crossbows/FourCrossbow9",
     "ItemClass": 78,
     "Name": "Blackfire Crossbow",
-    "DropLevel": 46
+    "DropLevel": 45
   },
   {
     "_index": 2049,
@@ -14634,7 +14634,7 @@
     "Id": "Metadata/Items/Armours/BodyArmours/FourBodyStr9",
     "ItemClass": 24,
     "Name": "Juggernaut Plate",
-    "DropLevel": 46
+    "DropLevel": 45
   },
   {
     "_index": 2091,
@@ -14739,7 +14739,7 @@
     "Id": "Metadata/Items/Armours/BodyArmours/FourBodyDex9",
     "ItemClass": 24,
     "Name": "Corsair Vest",
-    "DropLevel": 46
+    "DropLevel": 45
   },
   {
     "_index": 2106,
@@ -14844,7 +14844,7 @@
     "Id": "Metadata/Items/Armours/BodyArmours/FourBodyInt9",
     "ItemClass": 24,
     "Name": "Elementalist Robe",
-    "DropLevel": 46
+    "DropLevel": 45
   },
   {
     "_index": 2121,
@@ -14935,7 +14935,7 @@
     "Id": "Metadata/Items/Armours/BodyArmours/FourBodyStrDex7",
     "ItemClass": 24,
     "Name": "Knight Armour",
-    "DropLevel": 46
+    "DropLevel": 45
   },
   {
     "_index": 2134,
@@ -15040,7 +15040,7 @@
     "Id": "Metadata/Items/Armours/BodyArmours/FourBodyStrInt7",
     "ItemClass": 24,
     "Name": "Cleric Vestments",
-    "DropLevel": 46
+    "DropLevel": 45
   },
   {
     "_index": 2149,
@@ -15131,7 +15131,7 @@
     "Id": "Metadata/Items/Armours/BodyArmours/FourBodyDexInt7",
     "ItemClass": 24,
     "Name": "Scoundrel Jacket",
-    "DropLevel": 46
+    "DropLevel": 45
   },
   {
     "_index": 2162,
@@ -15222,7 +15222,7 @@
     "Id": "Metadata/Items/Armours/Helmets/FourHelmetStr7",
     "ItemClass": 25,
     "Name": "Commander Greathelm",
-    "DropLevel": 46
+    "DropLevel": 45
   },
   {
     "_index": 2175,
@@ -15299,7 +15299,7 @@
     "Id": "Metadata/Items/Armours/Helmets/FourHelmetDex7",
     "ItemClass": 25,
     "Name": "Corsair Cap",
-    "DropLevel": 46
+    "DropLevel": 45
   },
   {
     "_index": 2186,
@@ -15376,7 +15376,7 @@
     "Id": "Metadata/Items/Armours/Helmets/FourHelmetInt7",
     "ItemClass": 25,
     "Name": "Vermeil Circlet",
-    "DropLevel": 46
+    "DropLevel": 45
   },
   {
     "_index": 2197,
@@ -15446,7 +15446,7 @@
     "Id": "Metadata/Items/Armours/Helmets/FourHelmetStrDex6",
     "ItemClass": 25,
     "Name": "Closed Helm",
-    "DropLevel": 46
+    "DropLevel": 45
   },
   {
     "_index": 2207,
@@ -15502,7 +15502,7 @@
     "Id": "Metadata/Items/Armours/Helmets/FourHelmetStrInt6",
     "ItemClass": 25,
     "Name": "Spiritbone Crown",
-    "DropLevel": 46
+    "DropLevel": 45
   },
   {
     "_index": 2215,
@@ -15558,7 +15558,7 @@
     "Id": "Metadata/Items/Armours/Helmets/FourHelmetDexInt6",
     "ItemClass": 25,
     "Name": "Solid Mask",
-    "DropLevel": 46
+    "DropLevel": 45
   },
   {
     "_index": 2223,
@@ -15614,7 +15614,7 @@
     "Id": "Metadata/Items/Armours/Gloves/FourGlovesStr6",
     "ItemClass": 22,
     "Name": "Detailed Mitts",
-    "DropLevel": 46
+    "DropLevel": 45
   },
   {
     "_index": 2231,
@@ -15670,7 +15670,7 @@
     "Id": "Metadata/Items/Armours/Gloves/FourGlovesDex6",
     "ItemClass": 22,
     "Name": "Fine Bracers",
-    "DropLevel": 46
+    "DropLevel": 45
   },
   {
     "_index": 2239,
@@ -15726,7 +15726,7 @@
     "Id": "Metadata/Items/Armours/Gloves/FourGlovesInt6",
     "ItemClass": 22,
     "Name": "Pauascale Gloves",
-    "DropLevel": 46
+    "DropLevel": 45
   },
   {
     "_index": 2247,
@@ -15768,7 +15768,7 @@
     "Id": "Metadata/Items/Armours/Gloves/FourGlovesStrDex4",
     "ItemClass": 22,
     "Name": "Plate Gauntlets",
-    "DropLevel": 46
+    "DropLevel": 45
   },
   {
     "_index": 2253,
@@ -15810,7 +15810,7 @@
     "Id": "Metadata/Items/Armours/Gloves/FourGlovesStrInt4",
     "ItemClass": 22,
     "Name": "Verisium Cuffs",
-    "DropLevel": 46
+    "DropLevel": 45
   },
   {
     "_index": 2259,
@@ -15852,7 +15852,7 @@
     "Id": "Metadata/Items/Armours/Gloves/FourGlovesDexInt4",
     "ItemClass": 22,
     "Name": "Buckled Wraps",
-    "DropLevel": 46
+    "DropLevel": 45
   },
   {
     "_index": 2265,
@@ -15908,7 +15908,7 @@
     "Id": "Metadata/Items/Armours/Boots/FourBootsStr6",
     "ItemClass": 23,
     "Name": "Reefsteel Greaves",
-    "DropLevel": 46
+    "DropLevel": 45
   },
   {
     "_index": 2273,
@@ -15964,7 +15964,7 @@
     "Id": "Metadata/Items/Armours/Boots/FourBootsDex6",
     "ItemClass": 23,
     "Name": "Flared Boots",
-    "DropLevel": 46
+    "DropLevel": 45
   },
   {
     "_index": 2281,
@@ -16020,7 +16020,7 @@
     "Id": "Metadata/Items/Armours/Boots/FourBootsInt6",
     "ItemClass": 23,
     "Name": "Flax Sandals",
-    "DropLevel": 46
+    "DropLevel": 45
   },
   {
     "_index": 2289,
@@ -16062,7 +16062,7 @@
     "Id": "Metadata/Items/Armours/Boots/FourBootsStrDex4",
     "ItemClass": 23,
     "Name": "Covered Sabatons",
-    "DropLevel": 46
+    "DropLevel": 45
   },
   {
     "_index": 2295,
@@ -16104,7 +16104,7 @@
     "Id": "Metadata/Items/Armours/Boots/FourBootsStrInt4",
     "ItemClass": 23,
     "Name": "Weaver Leggings",
-    "DropLevel": 46
+    "DropLevel": 45
   },
   {
     "_index": 2301,
@@ -16146,7 +16146,7 @@
     "Id": "Metadata/Items/Armours/Boots/FourBootsDexInt4",
     "ItemClass": 23,
     "Name": "Steelpoint Shoes",
-    "DropLevel": 46
+    "DropLevel": 45
   },
   {
     "_index": 2307,
@@ -16223,7 +16223,7 @@
     "Id": "Metadata/Items/Armours/Shields/FourShieldStr9",
     "ItemClass": 26,
     "Name": "Crucible Tower Shield",
-    "DropLevel": 46
+    "DropLevel": 45
   },
   {
     "_index": 2318,
@@ -16377,7 +16377,7 @@
     "Id": "Metadata/Items/Armours/Shields/FourShieldStrInt7",
     "ItemClass": 26,
     "Name": "Wayward Crest Shield",
-    "DropLevel": 46
+    "DropLevel": 45
   },
   {
     "_index": 2340,
@@ -16468,7 +16468,7 @@
     "Id": "Metadata/Items/Armours/Shields/FourShieldDex9",
     "ItemClass": 92,
     "Name": "Laminate Buckler",
-    "DropLevel": 46
+    "DropLevel": 45
   },
   {
     "_index": 2353,
@@ -16559,7 +16559,7 @@
     "Id": "Metadata/Items/Armours/Focii/FourFocus9",
     "ItemClass": 79,
     "Name": "Runed Focus",
-    "DropLevel": 46
+    "DropLevel": 45
   },
   {
     "_index": 2366,
