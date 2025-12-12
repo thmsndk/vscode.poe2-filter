@@ -4,6 +4,11 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+patchedDependencies:
+  pathofexile-dat@14.0.0:
+    hash: rk5lsdxiwndgphsddbsob4a37e
+    path: patches/pathofexile-dat@14.0.0.patch
+
 importers:
 
   .:
@@ -43,7 +48,7 @@ importers:
         version: 4.1.5
       pathofexile-dat:
         specifier: ^14.0.0
-        version: 14.0.0
+        version: 14.0.0(patch_hash=rk5lsdxiwndgphsddbsob4a37e)
       ts-node:
         specifier: ^10.9.2
         version: 10.9.2(@types/node@20.17.10)(typescript@5.7.2)
@@ -3927,7 +3932,7 @@ snapshots:
 
   pathofexile-dat-schema@8.0.0: {}
 
-  pathofexile-dat@14.0.0:
+  pathofexile-dat@14.0.0(patch_hash=rk5lsdxiwndgphsddbsob4a37e):
     dependencies:
       ooz-wasm: 2.0.0
       pathofexile-dat-schema: 8.0.0
