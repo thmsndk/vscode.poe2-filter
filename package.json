@@ -113,5 +113,10 @@
     "ts-node": "^10.9.2",
     "typescript": "^5.7.2"
   },
-  "packageManager": "pnpm@9.5.0+sha1.8c155dc114e1689d18937974f6571e0ceee66f1d"
+  "packageManager": "pnpm@9.5.0+sha1.8c155dc114e1689d18937974f6571e0ceee66f1d",
+  "pnpm": {
+    "patchedDependencies": {
+      "pathofexile-dat@14.0.0": "patches/pathofexile-dat@14.0.0.patch"
+    }
+  }
 }

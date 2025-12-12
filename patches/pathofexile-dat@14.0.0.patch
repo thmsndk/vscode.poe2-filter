@@ -1,0 +1,31 @@
+diff --git a/dist/cli/export-tables.js b/dist/cli/export-tables.js
+index 431d75205b7cc6f8cba16ae4be88830a12cd860f..0eb8fcb5aa084f54b648b53f8d9fbeead3ce1733 100644
+--- a/dist/cli/export-tables.js
++++ b/dist/cli/export-tables.js
+@@ -5,16 +5,16 @@ import { readColumn } from '../dat/reader.js';
+ import * as fs from 'fs/promises';
+ import * as path from 'path';
+ const TRANSLATIONS = [
+-    { name: 'English', path: 'Data' },
+-    { name: 'French', path: 'Data/French' },
+-    { name: 'German', path: 'Data/German' },
+-    { name: 'Japanese', path: 'Data/Japanese' },
+-    { name: 'Korean', path: 'Data/Korean' },
+-    { name: 'Portuguese', path: 'Data/Portuguese' },
+-    { name: 'Russian', path: 'Data/Russian' },
+-    { name: 'Spanish', path: 'Data/Spanish' },
+-    { name: 'Thai', path: 'Data/Thai' },
+-    { name: 'Traditional Chinese', path: 'Data/Traditional Chinese' }
++    { name: 'English', path: 'Data/balance' },
++    { name: 'French', path: 'Data/French/balance' },
++    { name: 'German', path: 'Data/German/balance' },
++    { name: 'Japanese', path: 'Data/Japanese/balance' },
++    { name: 'Korean', path: 'Data/Korean/balance' },
++    { name: 'Portuguese', path: 'Data/Portuguese/balance' },
++    { name: 'Russian', path: 'Data/Russian/balance' },
++    { name: 'Spanish', path: 'Data/Spanish/balance' },
++    { name: 'Thai', path: 'Data/Thai/balance' },
++    { name: 'Traditional Chinese', path: 'Data/Traditional Chinese/balance' }
+ ];
+ const TRANSLATIONS_NONE = TRANSLATIONS[0];
+ export async function exportTables(config, outDir, loader) {
