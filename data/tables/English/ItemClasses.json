@@ -522,7 +522,7 @@
   {
     "_index": 104,
     "Id": "SoulCore",
-    "Name": "Socketable"
+    "Name": "Augment"
   },
   {
     "_index": 105,
@@ -558,5 +558,15 @@
     "_index": 111,
     "Id": "UncutReservationGemStackable",
     "Name": "Uncut Spirit Gems"
+  },
+  {
+    "_index": 112,
+    "Id": "IncursionArm",
+    "Name": "Transcendent Arm"
+  },
+  {
+    "_index": 113,
+    "Id": "IncursionLeg",
+    "Name": "Transcendent Leg"
   }
 ]
