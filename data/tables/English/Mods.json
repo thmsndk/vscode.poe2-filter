@@ -72566,7 +72566,7 @@
   },
   {
     "_index": 14513,
-    "Id": "UniqueMutatedVaalLocalFireDamage",
+    "Id": "UniqueMutatedVaalLocalPhysicalDamage1",
     "Name": ""
   },
   {
@@ -73131,12 +73131,12 @@
   },
   {
     "_index": 14626,
-    "Id": "UniqueMutatedVaalDamageAsExtraRandomElement",
+    "Id": "UniqueMutatedVaalDamageAsExtraFire",
     "Name": ""
   },
   {
     "_index": 14627,
-    "Id": "UniqueMutatedVaalLocalChaosDamage",
+    "Id": "UniqueMutatedVaalLocalPhysicalDamage",
     "Name": ""
   },
   {
@@ -73147,6 +73147,36 @@
   {
     "_index": 14629,
     "Id": "UniqueMutatedVaalSpellChanceToFireTwoAdditionalProjectiles1",
+    "Name": ""
+  },
+  {
+    "_index": 14630,
+    "Id": "UniqueMutatedVaalLocalPhysicalDamagePercent",
+    "Name": ""
+  },
+  {
+    "_index": 14631,
+    "Id": "UniqueMutatedVaalFireExposureOnHit",
+    "Name": ""
+  },
+  {
+    "_index": 14632,
+    "Id": "UniqueMutatedVaalCullingStrikeLocalVsBleeding",
+    "Name": ""
+  },
+  {
+    "_index": 14633,
+    "Id": "UniqueMutatedVaalLocalIncreasedEvasionAndEnergyShield",
+    "Name": ""
+  },
+  {
+    "_index": 14634,
+    "Id": "UniqueMutatedVaalLocalEnergyShield3",
+    "Name": ""
+  },
+  {
+    "_index": 14635,
+    "Id": "UniqueMutatedVaalPhysicalDamagePercent",
     "Name": ""
   }
 ]
