@@ -2,6 +2,16 @@
 
 All notable changes to the "poe2-filter" extension will be documented in this file.
 
+## [0.0.24](https://github.com/thmsndk/vscode.poe2-filter/compare/v0.0.23...v0.0.24) (2025-12-19)
+
+
+### ### Added
+
+* update PoE2 data to version 4.4.0.1.5 ([#72](https://github.com/thmsndk/vscode.poe2-filter/issues/72)) ([e07f4fd](https://github.com/thmsndk/vscode.poe2-filter/commit/e07f4fd2ad309964c0b600ec689499098fabfb2e))
+* update PoE2 data to version 4.4.0.2.2 ([#74](https://github.com/thmsndk/vscode.poe2-filter/issues/74)) ([1f0865b](https://github.com/thmsndk/vscode.poe2-filter/commit/1f0865b3ddd3514ab5cba9a6576e7d24281f2241))
+* update PoE2 data to version 4.4.0.2.4 ([#75](https://github.com/thmsndk/vscode.poe2-filter/issues/75)) ([f6bdfcd](https://github.com/thmsndk/vscode.poe2-filter/commit/f6bdfcdc3721cb4fd02e8acba47559593eb58747))
+* update PoE2 data to version 4.4.0.3.3 ([#76](https://github.com/thmsndk/vscode.poe2-filter/issues/76)) ([1b47b88](https://github.com/thmsndk/vscode.poe2-filter/commit/1b47b886b3e4d83fad3107fec63335e2b9971c71))
+
 ## [0.0.23](https://github.com/thmsndk/vscode.poe2-filter/compare/v0.0.22...v0.0.23) (2025-12-12)
 
 
