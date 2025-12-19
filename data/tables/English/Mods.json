@@ -69831,3352 +69831,4372 @@
   },
   {
     "_index": 13966,
-    "Id": "MonsterAbyssLeechAura",
+    "Id": "PlayerMonsterAbyssLightlessFaction1",
     "Name": "Abyssal"
   },
   {
     "_index": 13967,
-    "Id": "MonsterAbyssApparitionMirage1",
+    "Id": "MonsterAbyssLeechAura",
     "Name": "Abyssal"
   },
   {
     "_index": 13968,
+    "Id": "MonsterAbyssApparitionMirage1",
+    "Name": "Abyssal"
+  },
+  {
+    "_index": 13969,
     "Id": "ValakosLuckUnique__1",
     "Name": ""
   },
   {
-    "_index": 13969,
+    "_index": 13970,
     "Id": "MapAzmeriInfiniteFuel",
     "Name": ""
   },
   {
-    "_index": 13970,
+    "_index": 13971,
     "Id": "AttackAdditionalProjectilesUnique__1",
     "Name": ""
   },
   {
-    "_index": 13971,
+    "_index": 13972,
     "Id": "FireDamageArmourPenetrationUnique__1",
     "Name": ""
   },
   {
-    "_index": 13972,
+    "_index": 13973,
     "Id": "FireDamagePercentPerArmourBreakUnique__1",
     "Name": ""
   },
   {
-    "_index": 13973,
+    "_index": 13974,
     "Id": "MonsterInUnionOfSoulsWithBoss",
     "Name": ""
   },
   {
-    "_index": 13974,
+    "_index": 13975,
     "Id": "UnionOfSoulsAteRareDisplayMod",
     "Name": "Rare Monster Souls"
   },
   {
-    "_index": 13975,
+    "_index": 13976,
     "Id": "ThunderfistUnique__1",
     "Name": ""
   },
   {
-    "_index": 13976,
+    "_index": 13977,
     "Id": "ForesightUnique__1",
     "Name": ""
   },
   {
-    "_index": 13977,
+    "_index": 13978,
     "Id": "RunicTemperingUnique__1",
     "Name": ""
   },
   {
-    "_index": 13978,
+    "_index": 13979,
     "Id": "HistoricAbyssJewelAttributesGrantExtraTribute",
     "Name": ""
   },
   {
-    "_index": 13979,
+    "_index": 13980,
     "Id": "HistoricAbyssJewelAttributesGrantExtraStrength",
     "Name": ""
   },
   {
-    "_index": 13980,
+    "_index": 13981,
     "Id": "HistoricAbyssJewelAttributesGrantExtraDexterity",
     "Name": ""
   },
   {
-    "_index": 13981,
+    "_index": 13982,
     "Id": "HistoricAbyssJewelAttributesGrantExtraIntelligence",
     "Name": ""
   },
   {
-    "_index": 13982,
+    "_index": 13983,
     "Id": "HistoricAbyssJewelAttributesGrantExtraAllAttributes",
     "Name": ""
   },
   {
-    "_index": 13983,
+    "_index": 13984,
     "Id": "HistoricAbyssJewelSmallGrantEvasionRatingIncrease",
     "Name": ""
   },
   {
-    "_index": 13984,
+    "_index": 13985,
     "Id": "HistoricAbyssJewelSmallGrantArmourIncrease",
     "Name": ""
   },
   {
-    "_index": 13985,
+    "_index": 13986,
     "Id": "HistoricAbyssJewelSmallGrantEnergyShieldIncrease",
     "Name": ""
   },
   {
-    "_index": 13986,
+    "_index": 13987,
     "Id": "HistoricAbyssJewelSmallGrantManaRegenerationRateIncrease",
     "Name": ""
   },
   {
-    "_index": 13987,
+    "_index": 13988,
     "Id": "HistoricAbyssJewelSmallGrantLifeRegenerationRateIncrease",
     "Name": ""
   },
   {
-    "_index": 13988,
+    "_index": 13989,
     "Id": "HistoricAbyssJewelSmallGrantSpellDamageIncrease",
     "Name": ""
   },
   {
-    "_index": 13989,
+    "_index": 13990,
     "Id": "HistoricAbyssJewelSmallGrantAttackDamageIncrease",
     "Name": ""
   },
   {
-    "_index": 13990,
+    "_index": 13991,
     "Id": "HistoricAbyssJewelSmallGrantElementalDamageIncrease",
     "Name": ""
   },
   {
-    "_index": 13991,
+    "_index": 13992,
     "Id": "HistoricAbyssJewelSmallGrantPhysicalDamageIncrease",
     "Name": ""
   },
   {
-    "_index": 13992,
+    "_index": 13993,
     "Id": "HistoricAbyssJewelSmallGrantChaosDamageIncrease",
     "Name": ""
   },
   {
-    "_index": 13993,
+    "_index": 13994,
     "Id": "HistoricAbyssJewelSmallGrantMinionDamageIncrease",
     "Name": ""
   },
   {
-    "_index": 13994,
+    "_index": 13995,
     "Id": "HistoricAbyssJewelSmallGrantStunThresholdIncrease",
     "Name": ""
   },
   {
-    "_index": 13995,
+    "_index": 13996,
     "Id": "HistoricAbyssJewelSmallGrantElementalAilmentThresholdIncrease",
     "Name": ""
   },
   {
-    "_index": 13996,
+    "_index": 13997,
     "Id": "HistoricAbyssJewelNotableOverride1",
     "Name": ""
   },
   {
-    "_index": 13997,
+    "_index": 13998,
     "Id": "HistoricAbyssJewelNotableOverride2",
     "Name": ""
   },
   {
-    "_index": 13998,
+    "_index": 13999,
     "Id": "HistoricAbyssJewelVeiledPrefix1",
     "Name": ""
   },
   {
-    "_index": 13999,
+    "_index": 14000,
     "Id": "HistoricAbyssJewelVeiledPrefix2",
     "Name": ""
   },
   {
-    "_index": 14000,
+    "_index": 14001,
     "Id": "HistoricAbyssJewelVeiledSuffix1",
     "Name": ""
   },
   {
-    "_index": 14001,
+    "_index": 14002,
     "Id": "HistoricAbyssJewelVeiledSuffix2",
     "Name": ""
   },
   {
-    "_index": 14002,
+    "_index": 14003,
     "Id": "UniqueTwoHandedWeaponLightningStunMultiplier1",
     "Name": ""
   },
   {
-    "_index": 14003,
+    "_index": 14004,
     "Id": "UniqueHeartJewelVeiledPrefix1",
     "Name": ""
   },
   {
-    "_index": 14004,
+    "_index": 14005,
     "Id": "UniqueHeartJewelVeiledPrefix2",
     "Name": ""
   },
   {
-    "_index": 14005,
+    "_index": 14006,
     "Id": "UniqueHeartJewelVeiledSuffix1",
     "Name": ""
   },
   {
-    "_index": 14006,
+    "_index": 14007,
     "Id": "UniqueHeartJewelVeiledSuffix2",
     "Name": ""
   },
   {
-    "_index": 14007,
+    "_index": 14008,
     "Id": "UniqueHeartPrefixDamageGainedAsFire",
     "Name": ""
   },
   {
-    "_index": 14008,
+    "_index": 14009,
     "Id": "UniqueHeartPrefixDamageGainedAsCold",
     "Name": ""
   },
   {
-    "_index": 14009,
+    "_index": 14010,
     "Id": "UniqueHeartPrefixDamageGainedAsLightning",
     "Name": ""
   },
   {
-    "_index": 14010,
+    "_index": 14011,
     "Id": "UniqueHeartPrefixDamageGainedAsChaos",
     "Name": ""
   },
   {
-    "_index": 14011,
+    "_index": 14012,
     "Id": "UniqueHeartPrefixMinionReviveSpeed",
     "Name": ""
   },
   {
-    "_index": 14012,
+    "_index": 14013,
     "Id": "UniqueHeartPrefixIncreasedSkillSpeed",
     "Name": ""
   },
   {
-    "_index": 14013,
+    "_index": 14014,
     "Id": "UniqueHeartPrefixManaCostEfficiency",
     "Name": ""
   },
   {
-    "_index": 14014,
+    "_index": 14015,
     "Id": "UniqueHeartPrefixGlobalCooldownRecovery",
     "Name": ""
   },
   {
-    "_index": 14015,
+    "_index": 14016,
     "Id": "UniqueHeartPrefixChanceToPierce",
     "Name": ""
   },
   {
-    "_index": 14016,
+    "_index": 14017,
     "Id": "UniqueHeartPrefixSkillEffectDuration",
     "Name": ""
   },
   {
-    "_index": 14017,
+    "_index": 14018,
     "Id": "UniqueHeartPrefixMinionLifeGainAsEnergyShield",
     "Name": ""
   },
   {
-    "_index": 14018,
+    "_index": 14019,
     "Id": "UniqueHeartPrefixMinionLifeRegeneration",
     "Name": ""
   },
   {
-    "_index": 14019,
+    "_index": 14020,
     "Id": "UniqueHeartPrefixDamageWhileInPresenceOfCompanion",
     "Name": ""
   },
   {
-    "_index": 14020,
+    "_index": 14021,
     "Id": "UniqueHeartPrefixAggravateBleedOnAttackHitChance",
     "Name": ""
   },
   {
-    "_index": 14021,
+    "_index": 14022,
     "Id": "UniqueHeartPrefixLuckyLightningDamageChancePercent",
     "Name": ""
   },
   {
-    "_index": 14022,
+    "_index": 14023,
     "Id": "UniqueHeartPrefixRecoverLifeOnKillingPoisonedEnemy",
     "Name": ""
   },
   {
-    "_index": 14023,
+    "_index": 14024,
     "Id": "UniqueHeartPrefixPercentOfLeechIsInstant",
     "Name": ""
   },
   {
-    "_index": 14024,
+    "_index": 14025,
     "Id": "UniqueHeartPrefixEvasionRatingFromBodyArmour",
     "Name": ""
   },
   {
-    "_index": 14025,
+    "_index": 14026,
     "Id": "UniqueHeartPrefixBodyArmourFromBodyArmour",
     "Name": ""
   },
   {
-    "_index": 14026,
+    "_index": 14027,
     "Id": "UniqueHeartPrefixMaximumEnergyShieldFromBodyArmour",
     "Name": ""
   },
   {
-    "_index": 14027,
+    "_index": 14028,
     "Id": "UniqueHeartPrefixTriggersRefundEnergySpent",
     "Name": ""
   },
   {
-    "_index": 14028,
+    "_index": 14029,
     "Id": "UniqueHeartPrefixManaRegenerationRateWhileMoving",
     "Name": ""
   },
   {
-    "_index": 14029,
+    "_index": 14030,
     "Id": "UniqueHeartPrefixCullingStrikeThreshold",
     "Name": ""
   },
   {
-    "_index": 14030,
+    "_index": 14031,
     "Id": "UniqueHeartPrefixPhysicalDamagePreventedRecoup",
     "Name": ""
   },
   {
-    "_index": 14031,
+    "_index": 14032,
     "Id": "UniqueHeartPrefixMaximumElementalResistance",
     "Name": ""
   },
   {
-    "_index": 14032,
+    "_index": 14033,
     "Id": "UniqueHeartPrefixIceCrystalMaximumLife",
     "Name": ""
   },
   {
-    "_index": 14033,
+    "_index": 14034,
     "Id": "UniqueHeartPrefixRecoupSpeed",
     "Name": ""
   },
   {
-    "_index": 14034,
+    "_index": 14035,
     "Id": "UniqueHeartPrefixFlaskLifeRegenForXSeconds",
     "Name": ""
   },
   {
-    "_index": 14035,
+    "_index": 14036,
     "Id": "UniqueHeartPrefixCharmRecoverManaOnUse",
     "Name": ""
   },
   {
-    "_index": 14036,
+    "_index": 14037,
     "Id": "UniqueHeartPrefixCharmChanceToUseOtherCharm",
     "Name": ""
   },
   {
-    "_index": 14037,
+    "_index": 14038,
     "Id": "UniqueHeartPrefixCharmEffect",
     "Name": ""
   },
   {
-    "_index": 14038,
+    "_index": 14039,
     "Id": "UniqueHeartPrefixThornsCriticalStrikeChance",
     "Name": ""
   },
   {
-    "_index": 14039,
+    "_index": 14040,
     "Id": "UniqueHeartPrefixThornsFromPercentBodyArmour",
     "Name": ""
   },
   {
-    "_index": 14040,
+    "_index": 14041,
     "Id": "UniqueHeartPrefixAttackSpeedPercentIfRareOrUniqueEnemyNearby",
     "Name": ""
   },
   {
-    "_index": 14041,
+    "_index": 14042,
     "Id": "UniqueHeartPrefixElementalExposureEffect",
     "Name": ""
   },
   {
-    "_index": 14042,
+    "_index": 14043,
     "Id": "UniqueHeartSuffixMaximumFireResist",
     "Name": ""
   },
   {
-    "_index": 14043,
+    "_index": 14044,
     "Id": "UniqueHeartSuffixMaximumColdResist",
     "Name": ""
   },
   {
-    "_index": 14044,
+    "_index": 14045,
     "Id": "UniqueHeartSuffixMaximumLightningResist",
     "Name": ""
   },
   {
-    "_index": 14045,
+    "_index": 14046,
     "Id": "UniqueHeartSuffixSkillEffectDuration",
     "Name": ""
   },
   {
-    "_index": 14046,
+    "_index": 14047,
     "Id": "UniqueHeartSuffixLifeRegenerationRate",
     "Name": ""
   },
   {
-    "_index": 14047,
+    "_index": 14048,
     "Id": "UniqueHeartSuffixStunDamageIncrease",
     "Name": ""
   },
   {
-    "_index": 14048,
+    "_index": 14049,
     "Id": "UniqueHeartSuffixIncreasedStunThreshold",
     "Name": ""
   },
   {
-    "_index": 14049,
+    "_index": 14050,
     "Id": "UniqueHeartSuffixRageOnHit",
     "Name": ""
   },
   {
-    "_index": 14050,
+    "_index": 14051,
     "Id": "UniqueHeartSuffixGainRageWhenHit",
     "Name": ""
   },
   {
-    "_index": 14051,
+    "_index": 14052,
     "Id": "UniqueHeartSuffixLifeCost",
     "Name": ""
   },
   {
-    "_index": 14052,
+    "_index": 14053,
     "Id": "UniqueHeartSuffixAilmentChance",
     "Name": ""
   },
   {
-    "_index": 14053,
+    "_index": 14054,
     "Id": "UniqueHeartSuffixIncreasedAilmentThreshold",
     "Name": ""
   },
   {
-    "_index": 14054,
+    "_index": 14055,
     "Id": "UniqueHeartSuffixIncreasedAttackSpeed",
     "Name": ""
   },
   {
-    "_index": 14055,
+    "_index": 14056,
     "Id": "UniqueHeartSuffixGlobalCooldownRecovery",
     "Name": ""
   },
   {
-    "_index": 14056,
+    "_index": 14057,
     "Id": "UniqueHeartSuffixDebuffTimePassed",
     "Name": ""
   },
   {
-    "_index": 14057,
+    "_index": 14058,
     "Id": "UniqueHeartSuffixFasterAilmentDamageForJewel",
     "Name": ""
   },
   {
-    "_index": 14058,
+    "_index": 14059,
     "Id": "UniqueHeartSuffixMovementVelocity",
     "Name": ""
   },
   {
-    "_index": 14059,
+    "_index": 14060,
     "Id": "UniqueHeartSuffixSlowPotency",
     "Name": ""
   },
   {
-    "_index": 14060,
+    "_index": 14061,
     "Id": "UniqueHeartSuffixIncreasedFlaskChargesGained",
     "Name": ""
   },
   {
-    "_index": 14061,
+    "_index": 14062,
     "Id": "UniqueHeartSuffixFlaskDuration",
     "Name": ""
   },
   {
-    "_index": 14062,
+    "_index": 14063,
     "Id": "UniqueHeartSuffixBaseChanceToPoison",
     "Name": ""
   },
   {
-    "_index": 14063,
+    "_index": 14064,
     "Id": "UniqueHeartSuffixBaseChanceToBleed",
     "Name": ""
   },
   {
-    "_index": 14064,
+    "_index": 14065,
     "Id": "UniqueHeartSuffixIncreasedCastSpeedForJewel",
     "Name": ""
   },
   {
-    "_index": 14065,
+    "_index": 14066,
     "Id": "UniqueHeartSuffixCritChanceForJewel",
     "Name": ""
   },
   {
-    "_index": 14066,
+    "_index": 14067,
     "Id": "UniqueHeartSuffixCritMultiplierForJewel",
     "Name": ""
   },
   {
-    "_index": 14067,
+    "_index": 14068,
     "Id": "UniqueHeartSuffixSpellCritMultiplierForJewel",
     "Name": ""
   },
   {
-    "_index": 14068,
+    "_index": 14069,
     "Id": "UniqueHeartSuffixSpellCriticalStrikeChance",
     "Name": ""
   },
   {
-    "_index": 14069,
+    "_index": 14070,
     "Id": "UniqueHeartSuffixDamageRemovedFromManaBeforeLife",
     "Name": ""
   },
   {
-    "_index": 14070,
+    "_index": 14071,
     "Id": "UniqueHeartSuffixMaximumLifeOnKillPercent",
     "Name": ""
   },
   {
-    "_index": 14071,
+    "_index": 14072,
     "Id": "UniqueHeartSuffixManaGainedOnKillPercentage",
     "Name": ""
   },
   {
-    "_index": 14072,
+    "_index": 14073,
     "Id": "UniqueHeartSuffixLifeRecoupForJewel",
     "Name": ""
   },
   {
-    "_index": 14073,
+    "_index": 14074,
     "Id": "UniqueHeartSuffixManaRegeneration",
     "Name": ""
   },
   {
-    "_index": 14074,
+    "_index": 14075,
     "Id": "UniqueHeartSuffixMinionPhysicalDamageReduction",
     "Name": ""
   },
   {
-    "_index": 14075,
+    "_index": 14076,
     "Id": "UniqueHeartSuffixMinionAttackSpeedAndCastSpeed",
     "Name": ""
   },
   {
-    "_index": 14076,
+    "_index": 14077,
     "Id": "UniqueHeartSuffixMinionCriticalStrikeChanceIncrease",
     "Name": ""
   },
   {
-    "_index": 14077,
+    "_index": 14078,
     "Id": "UniqueHeartSuffixMinionElementalResistance",
     "Name": ""
   },
   {
-    "_index": 14078,
+    "_index": 14079,
     "Id": "UniqueHeartSuffixStunThresholdfromEnergyShield",
     "Name": ""
   },
   {
-    "_index": 14079,
+    "_index": 14080,
     "Id": "UniqueHeartSuffixAilmentThresholdfromEnergyShield",
     "Name": ""
   },
   {
-    "_index": 14080,
+    "_index": 14081,
     "Id": "AbyssModRadiusJewelPrefixDamageTakenRecoupLife",
     "Name": "Lightless"
   },
   {
-    "_index": 14081,
+    "_index": 14082,
     "Id": "AbyssModRadiusJewelPrefixDamageTakenRecoupMana",
     "Name": "Lightless"
   },
   {
-    "_index": 14082,
+    "_index": 14083,
     "Id": "AbyssModRadiusJewelPrefixPercentMaximumMana",
     "Name": "Lightless"
   },
   {
-    "_index": 14083,
+    "_index": 14084,
     "Id": "AbyssModRadiusJewelPrefixPercentMaximumLife",
     "Name": "Lightless"
   },
   {
-    "_index": 14084,
+    "_index": 14085,
     "Id": "AbyssModRadiusJewelPrefixGlobalDefences",
     "Name": "Lightless"
   },
   {
-    "_index": 14085,
+    "_index": 14086,
     "Id": "AbyssModRadiusJewelPrefixDamageTakenFromManaBeforeLife",
     "Name": "Lightless"
   },
   {
-    "_index": 14086,
+    "_index": 14087,
     "Id": "AbyssModRadiusJewelPrefixRegeneratePercentLifePerSecond",
     "Name": "Lightless"
   },
   {
-    "_index": 14087,
+    "_index": 14088,
     "Id": "AbyssModRadiusJewelPrefixManaCostEfficiency",
     "Name": "Lightless"
   },
   {
-    "_index": 14088,
+    "_index": 14089,
     "Id": "AbyssModRadiusJewelPrefixReducedCriticalHitChanceAgainstYou",
     "Name": "Lightless"
   },
   {
-    "_index": 14089,
+    "_index": 14090,
     "Id": "AbyssModRadiusJewelPrefixManaFlaskChargesPerSecond",
     "Name": "Lightless"
   },
   {
-    "_index": 14090,
+    "_index": 14091,
     "Id": "AbyssModRadiusJewelPrefixLifeFlaskChargesPerSecond",
     "Name": "Lightless"
   },
   {
-    "_index": 14091,
+    "_index": 14092,
     "Id": "AbyssModRadiusJewelPrefixCharmChargesPerSecond",
     "Name": "Lightless"
   },
   {
-    "_index": 14092,
+    "_index": 14093,
     "Id": "AbyssModJewelPrefixSpellDamageArmour",
     "Name": "Lightless"
   },
   {
-    "_index": 14093,
+    "_index": 14094,
     "Id": "AbyssModJewelPrefixSpellDamageEvasion",
     "Name": "Lightless"
   },
   {
-    "_index": 14094,
+    "_index": 14095,
     "Id": "AbyssModJewelPrefixSpellDamageEnergyShield",
     "Name": "Lightless"
   },
   {
-    "_index": 14095,
+    "_index": 14096,
     "Id": "AbyssModJewelPrefixAttackDamageArmour",
     "Name": "Lightless"
   },
   {
-    "_index": 14096,
+    "_index": 14097,
     "Id": "AbyssModJewelPrefixAttackDamageEvasion",
     "Name": "Lightless"
   },
   {
-    "_index": 14097,
+    "_index": 14098,
     "Id": "AbyssModJewelPrefixAttackDamageEnergyShield",
     "Name": "Lightless"
   },
   {
-    "_index": 14098,
+    "_index": 14099,
     "Id": "AbyssModJewelPrefixMinionDamageArmour",
     "Name": "Lightless"
   },
   {
-    "_index": 14099,
+    "_index": 14100,
     "Id": "AbyssModJewelPrefixMinionDamageEvasion",
     "Name": "Lightless"
   },
   {
-    "_index": 14100,
+    "_index": 14101,
     "Id": "AbyssModJewelPrefixMinionDamageEnergyShield",
     "Name": "Lightless"
   },
   {
-    "_index": 14101,
+    "_index": 14102,
     "Id": "AbyssModJewelPrefixThornsDamageArmour",
     "Name": "Lightless"
   },
   {
-    "_index": 14102,
+    "_index": 14103,
     "Id": "AbyssModJewelPrefixThornsDamageEvasion",
     "Name": "Lightless"
   },
   {
-    "_index": 14103,
+    "_index": 14104,
     "Id": "AbyssModJewelPrefixThornsDamageEnergyShield",
     "Name": "Lightless"
   },
   {
-    "_index": 14104,
+    "_index": 14105,
     "Id": "AbyssModJewelPrefixTotemDamageArmour",
     "Name": "Lightless"
   },
   {
-    "_index": 14105,
+    "_index": 14106,
     "Id": "AbyssModJewelPrefixTotemDamageEvasion",
     "Name": "Lightless"
   },
   {
-    "_index": 14106,
+    "_index": 14107,
     "Id": "AbyssModJewelPrefixTotemDamageEnergyShield",
     "Name": "Lightless"
   },
   {
-    "_index": 14107,
+    "_index": 14108,
     "Id": "AbyssModJewelPrefixFireDamageAndPen",
     "Name": "Lightless"
   },
   {
-    "_index": 14108,
+    "_index": 14109,
     "Id": "AbyssModJewelPrefixLightningDamageAndPen",
     "Name": "Lightless"
   },
   {
-    "_index": 14109,
+    "_index": 14110,
     "Id": "AbyssModJewelPrefixColdDamageAndPen",
     "Name": "Lightless"
   },
   {
-    "_index": 14110,
+    "_index": 14111,
     "Id": "AbyssModJewelPrefixBleedChanceAndMagnitude",
     "Name": "Lightless"
   },
   {
-    "_index": 14111,
+    "_index": 14112,
     "Id": "AbyssModJewelPrefixPoisonChanceAndMagnitude",
     "Name": "Lightless"
   },
   {
-    "_index": 14112,
+    "_index": 14113,
     "Id": "AbyssModJewelPrefixWarcryBuffEffectAndDamage",
     "Name": "Lightless"
   },
   {
-    "_index": 14113,
+    "_index": 14114,
     "Id": "AbyssModJewelPrefixCompanionLifeAndDamage",
     "Name": "Lightless"
   },
   {
-    "_index": 14114,
+    "_index": 14115,
     "Id": "AbyssModJewelPrefixGlobalPhysicalDamageArmourBreak",
     "Name": "Lightless"
   },
   {
-    "_index": 14115,
+    "_index": 14116,
     "Id": "AbyssModJewelPrefixElementalDamageAilmentMagnitude",
     "Name": "Lightless"
   },
   {
-    "_index": 14116,
+    "_index": 14117,
     "Id": "AbyssModJewelPrefixChaosDamageWitherEffect",
     "Name": "Lightless"
   },
   {
-    "_index": 14117,
+    "_index": 14118,
     "Id": "AbyssModJewelPrefixMinionAreaAndLife",
     "Name": "Lightless"
   },
   {
-    "_index": 14118,
+    "_index": 14119,
     "Id": "AbyssModJewelPrefixAuraSkillEffectPresenceAreaOfEffect",
     "Name": "Lightless"
   },
   {
-    "_index": 14119,
+    "_index": 14120,
     "Id": "AbyssModJewelPrefixElementalExposureEffect",
     "Name": "Lightless"
   },
   {
-    "_index": 14120,
+    "_index": 14121,
     "Id": "AbyssModJewelPrefixAbyssalWastingEffect",
     "Name": "Lightless"
   },
   {
-    "_index": 14121,
+    "_index": 14122,
     "Id": "AbyssModJewelSuffixIncreasedStrength",
     "Name": "of the Abyss"
   },
   {
-    "_index": 14122,
+    "_index": 14123,
     "Id": "AbyssModJewelSuffixIncreasedDexterity",
     "Name": "of the Abyss"
   },
   {
-    "_index": 14123,
+    "_index": 14124,
     "Id": "AbyssModJewelSuffixIncreasedIntelligence",
     "Name": "of the Abyss"
   },
   {
-    "_index": 14124,
+    "_index": 14125,
     "Id": "AbyssModArmourJewelleryUlamanSuffixLightningChaosResistance",
     "Name": "of Ulaman"
   },
   {
-    "_index": 14125,
+    "_index": 14126,
     "Id": "AbyssModArmourJewelleryUlamanSuffixStrengthAndDexterity",
     "Name": "of Ulaman"
   },
   {
-    "_index": 14126,
+    "_index": 14127,
     "Id": "AbyssModArmourJewelleryAmanamuSuffixFireChaosResistance",
     "Name": "of Amanamu"
   },
   {
-    "_index": 14127,
+    "_index": 14128,
     "Id": "AbyssModArmourJewelleryAmanamuSuffixStrengthAndIntelligence",
     "Name": "of Amanamu"
   },
   {
-    "_index": 14128,
+    "_index": 14129,
     "Id": "AbyssModArmourJewelleryKurgalSuffixColdChaosResistance",
     "Name": "of Kurgal"
   },
   {
-    "_index": 14129,
+    "_index": 14130,
     "Id": "AbyssModArmourJewelleryKurgalSuffixDexterityAndIntelligence",
     "Name": "of Kurgal"
   },
   {
-    "_index": 14130,
+    "_index": 14131,
     "Id": "AbyssModFourCatKurgalSuffixManaCostEfficiency",
     "Name": "of Kurgal"
   },
   {
-    "_index": 14131,
+    "_index": 14132,
     "Id": "AbyssModHelmUlamanSuffixMarkedEnemyTakeIncreasedDamage",
     "Name": "of Ulaman"
   },
   {
-    "_index": 14132,
+    "_index": 14133,
     "Id": "AbyssModHelmUlamanSuffixCriticalHitDamage",
     "Name": "of Ulaman"
   },
   {
-    "_index": 14133,
+    "_index": 14134,
     "Id": "AbyssModHelmUlamanSuffixLifeCostEfficiency",
     "Name": "of Ulaman"
   },
   {
-    "_index": 14134,
+    "_index": 14135,
     "Id": "AbyssModHelmAmanamuSuffixSpiritReservationEfficiency",
     "Name": "of Amanamu"
   },
   {
-    "_index": 14135,
+    "_index": 14136,
     "Id": "AbyssModHelmAmanamuSuffixGloryGeneration",
     "Name": "of Amanamu"
   },
   {
-    "_index": 14136,
+    "_index": 14137,
     "Id": "AbyssModHelmAmanamuSuffixPresenceAreaOfEffect",
     "Name": "of Amanamu"
   },
   {
-    "_index": 14137,
+    "_index": 14138,
     "Id": "AbyssModHelmKurgalSuffixArcaneSurgeEffect",
     "Name": "of Kurgal"
   },
   {
-    "_index": 14138,
+    "_index": 14139,
     "Id": "AbyssModGlovesUlamanSuffixAilmentMagnitude",
     "Name": "of Ulaman"
   },
   {
-    "_index": 14139,
+    "_index": 14140,
     "Id": "AbyssModGlovesUlamanSuffixPoisonChance",
     "Name": "of Ulaman"
   },
   {
-    "_index": 14140,
+    "_index": 14141,
     "Id": "AbyssModGlovesUlamanSuffixBleedChance",
     "Name": "of Ulaman"
   },
   {
-    "_index": 14141,
+    "_index": 14142,
     "Id": "AbyssModGlovesUlamanSuffixIncisionChance",
     "Name": "of Ulaman"
   },
   {
-    "_index": 14142,
+    "_index": 14143,
     "Id": "AbyssModGlovesUlamanSuffixFrenzyChargeConsumedSkillSpeed",
     "Name": "of Ulaman"
   },
   {
-    "_index": 14143,
+    "_index": 14144,
     "Id": "AbyssModGlovesAmanamuSuffixCurseAreaOfEffect",
     "Name": "of Amanamu"
   },
   {
-    "_index": 14144,
+    "_index": 14145,
     "Id": "AbyssModGlovesAmanamuSuffixDazeChance",
     "Name": "of Amanamu"
   },
   {
-    "_index": 14145,
+    "_index": 14146,
     "Id": "AbyssModGlovesAmanamuSuffixPercentOfLifeLeechInstant",
     "Name": "of Amanamu"
   },
   {
-    "_index": 14146,
+    "_index": 14147,
     "Id": "AbyssModGlovesAmanamuSuffixImmobilisationBuildUp",
     "Name": "of Amanamu"
   },
   {
-    "_index": 14147,
+    "_index": 14148,
     "Id": "AbyssModGlovesKurgalSuffixArcaneSurgeOnCriticalHit",
     "Name": "of Kurgal"
   },
   {
-    "_index": 14148,
+    "_index": 14149,
     "Id": "AbyssModGlovesKurgalSuffixCastSpeedWhileOnFullMana",
     "Name": "of Kurgal"
   },
   {
-    "_index": 14149,
+    "_index": 14150,
     "Id": "AbyssModBootsAndBeltUlamanSuffixReducedPoisonDurationSelf",
     "Name": "of Ulaman"
   },
   {
-    "_index": 14150,
+    "_index": 14151,
     "Id": "AbyssModBootsAndBeltAmanamuSuffixReducedIgniteDuration",
     "Name": "of Amanamu"
   },
   {
-    "_index": 14151,
+    "_index": 14152,
     "Id": "AbyssModBootsAndBeltKurgalSuffixReducedBleedDurationSelf",
     "Name": "of Kurgal"
   },
   {
-    "_index": 14152,
+    "_index": 14153,
     "Id": "AbyssModBootsUlamanSuffixCorruptedBloodImmunity",
     "Name": "of Ulaman"
   },
   {
-    "_index": 14153,
+    "_index": 14154,
     "Id": "AbyssModBootsUlamanSuffixReducedMovementPenaltyWhileSkilling",
     "Name": "of Ulaman"
   },
   {
-    "_index": 14154,
+    "_index": 14155,
     "Id": "AbyssModBootsAmanamuSuffixReducedPotencyOfSlows",
     "Name": "of Amanamu"
   },
   {
-    "_index": 14155,
+    "_index": 14156,
     "Id": "AbyssModBootsAmanamuSuffixDodgeRollDistance",
     "Name": "of Amanamu"
   },
   {
-    "_index": 14156,
+    "_index": 14157,
     "Id": "AbyssModBootsKurgalSuffixManaCostEfficiencyDodgeRolledRecently",
     "Name": "of Kurgal"
   },
   {
-    "_index": 14157,
+    "_index": 14158,
     "Id": "AbyssModBootsKurgalSuffixManaRegenerationStationary",
     "Name": "of Kurgal"
   },
   {
-    "_index": 14158,
+    "_index": 14159,
     "Id": "AbyssModBeltUlamanPrefixLifeFlasksGainChargesPerSecond",
     "Name": "Ulaman's"
   },
   {
-    "_index": 14159,
+    "_index": 14160,
     "Id": "AbyssModBeltUlamanPrefixChanceToNotConsumeFlaskConsumeCharges",
     "Name": "Ulaman's"
   },
   {
-    "_index": 14160,
+    "_index": 14161,
     "Id": "AbyssModBeltUlamanPrefixLifeRegenRateDuringLifeFlaskEffect",
     "Name": "Ulaman's"
   },
   {
-    "_index": 14161,
+    "_index": 14162,
     "Id": "AbyssModBeltUlamanSuffixReducedSlowPotencySelfIfCharmedRecently",
     "Name": "of Ulaman"
   },
   {
-    "_index": 14162,
+    "_index": 14163,
     "Id": "AbyssModBeltAmanamuPrefixCharmsGainChargesPerSecond",
     "Name": "Amanamu's"
   },
   {
-    "_index": 14163,
+    "_index": 14164,
     "Id": "AbyssModBeltAmanamuPrefixGainFireThornsPer100MaximumLife",
     "Name": "Amanamu's"
   },
   {
-    "_index": 14164,
+    "_index": 14165,
     "Id": "AbyssModBeltAmanamuPrefixChanceToNotConsumeCharmCharges",
     "Name": "Amanamu's"
   },
   {
-    "_index": 14165,
+    "_index": 14166,
     "Id": "AbyssModBeltAmanamuSuffixThornsBaseCriticalStrikeChance",
     "Name": "of Amanamu"
   },
   {
-    "_index": 14166,
+    "_index": 14167,
     "Id": "AbyssModBeltKurgalPrefixManaFlasksGainChargesPerSecond",
     "Name": "Kurgal's"
   },
   {
-    "_index": 14167,
+    "_index": 14168,
     "Id": "AbyssModBeltKurgalPrefixGainArmourPercentOfMana",
     "Name": "Kurgal's"
   },
   {
-    "_index": 14168,
+    "_index": 14169,
     "Id": "AbyssModBeltKurgalPrefixChanceToNotConsumeFlaskConsumeCharges",
     "Name": "Kurgal's"
   },
   {
-    "_index": 14169,
+    "_index": 14170,
     "Id": "AbyssModBeltKurgalSuffixManaRegenerationRate",
     "Name": "of Kurgal"
   },
   {
-    "_index": 14170,
+    "_index": 14171,
     "Id": "AbyssModBodyShieldUlamanSuffixHitsAgainstYouReducedCriticalDamage",
     "Name": "of Ulaman"
   },
   {
-    "_index": 14171,
+    "_index": 14172,
     "Id": "AbyssModBodyShieldAmanamuSuffixLifeRecoup",
     "Name": "of Amanamu"
   },
   {
-    "_index": 14172,
+    "_index": 14173,
     "Id": "AbyssModBodyShieldAmanamuSuffixReducedCursedEffectSelf",
     "Name": "of Amanamu"
   },
   {
-    "_index": 14173,
+    "_index": 14174,
     "Id": "AbyssModBodyShieldKurgalSuffixManaRecoup",
     "Name": "of Kurgal"
   },
   {
-    "_index": 14174,
+    "_index": 14175,
     "Id": "AbyssModBodyShieldKurgalSuffixElementalEnergyShieldRecoup",
     "Name": "of Kurgal"
   },
   {
-    "_index": 14175,
+    "_index": 14176,
     "Id": "AbyssModBodyShieldKurgalSuffixArmourAppliesToChaosDamage",
     "Name": "of Kurgal"
   },
   {
-    "_index": 14176,
+    "_index": 14177,
     "Id": "AbyssModBodyArmourUlamanSuffixDeflectDamagePrevented",
     "Name": "of Ulaman"
   },
   {
-    "_index": 14177,
+    "_index": 14178,
     "Id": "AbyssModBodyArmourUlamanSuffixCompanionReservationEfficiency",
     "Name": "of Ulaman"
   },
   {
-    "_index": 14178,
+    "_index": 14179,
     "Id": "AbyssModBodyArmourAmanamuSuffixSpiritReservationEfficiency",
     "Name": "of Amanamu"
   },
   {
-    "_index": 14179,
+    "_index": 14180,
     "Id": "AbyssModBodyArmourKurgalSuffixDamageTakenFromManaBeforeLife",
     "Name": "of Kurgal"
   },
   {
-    "_index": 14180,
+    "_index": 14181,
     "Id": "AbyssModShieldUlamanSuffixMaximumBlockChance",
     "Name": "of Ulaman"
   },
   {
-    "_index": 14181,
+    "_index": 14182,
     "Id": "AbyssModShieldUlamanSuffixParryDebuffMagnitude",
     "Name": "of Ulaman"
   },
   {
-    "_index": 14182,
+    "_index": 14183,
     "Id": "AbyssModShieldUlamanSuffixParryDebuffDuration",
     "Name": "of Ulaman"
   },
   {
-    "_index": 14183,
+    "_index": 14184,
     "Id": "AbyssModShieldUlamanSuffixLightningTakenAsPhysAndGlancingWhileActiveBlocking",
     "Name": "of Ulaman"
   },
   {
-    "_index": 14184,
+    "_index": 14185,
     "Id": "AbyssModShieldAmanamuSuffixShieldSkillsFullyBreakArmourOnHeavyStun",
     "Name": "of Amanamu"
   },
   {
-    "_index": 14185,
+    "_index": 14186,
     "Id": "AbyssModShieldAmanamuSuffixHeavyStunDecaySelf",
     "Name": "of Amanamu"
   },
   {
-    "_index": 14186,
+    "_index": 14187,
     "Id": "AbyssModShieldAmanamuSuffixAllMaximumResistances",
     "Name": "of Amanamu"
   },
   {
-    "_index": 14187,
+    "_index": 14188,
     "Id": "AbyssModShieldKurgalSuffixFlatManaGainedOnBlock",
     "Name": "of Kurgal"
   },
   {
-    "_index": 14188,
+    "_index": 14189,
     "Id": "AbyssModShieldKurgalSuffixEnergyShieldRechargeRateBlockedRecently",
     "Name": "of Kurgal"
   },
   {
-    "_index": 14189,
+    "_index": 14190,
     "Id": "AbyssModFocusUlamanPrefixMaximumSpellTotems",
     "Name": "Ulaman's"
   },
   {
-    "_index": 14190,
+    "_index": 14191,
     "Id": "AbyssModFocusUlamanPrefixSpellDamageWhileWieldingMeleeWeapon",
     "Name": "Ulaman's"
   },
   {
-    "_index": 14191,
+    "_index": 14192,
     "Id": "AbyssModFocusUlamanSuffixSpellManaCostConvertedToLifeCost",
     "Name": "of Ulaman"
   },
   {
-    "_index": 14192,
+    "_index": 14193,
     "Id": "AbyssModFocusUlamanSuffixChanceForTwoAdditionalSpellProjectiles",
     "Name": "of Ulaman"
   },
   {
-    "_index": 14193,
+    "_index": 14194,
     "Id": "AbyssModFocusAmanamuPrefixCurseMagnitude",
     "Name": "Amanamu's"
   },
   {
-    "_index": 14194,
+    "_index": 14195,
     "Id": "AbyssModFocusAmanamuPrefixOfferingBuffEffect",
     "Name": "Amanamu's"
   },
   {
-    "_index": 14195,
+    "_index": 14196,
     "Id": "AbyssModFocusAmanamuSuffixGlobalMinionSkillLevels",
     "Name": "of Amanamu"
   },
   {
-    "_index": 14196,
+    "_index": 14197,
     "Id": "AbyssModFocusAmanamuSuffixFasterCurseActivation",
     "Name": "of Amanamu"
   },
   {
-    "_index": 14197,
+    "_index": 14198,
     "Id": "AbyssModFocusKurgalPrefixInvocationSpellDamage",
     "Name": "Kurgal's"
   },
   {
-    "_index": 14198,
+    "_index": 14199,
     "Id": "AbyssModFocusKurgalPrefixSpellAreaOfEffect",
     "Name": "Kurgal's"
   },
   {
-    "_index": 14199,
+    "_index": 14200,
     "Id": "AbyssModFocusKurgalSuffixChanceForAdditionalInfusion",
     "Name": "of Kurgal"
   },
   {
-    "_index": 14200,
+    "_index": 14201,
     "Id": "AbyssModQuiverUlamanPrefixIncreasesToProjectileSpeedApplyToDamage",
     "Name": "Ulaman's"
   },
   {
-    "_index": 14201,
+    "_index": 14202,
     "Id": "AbyssModQuiverUlamanSuffixChanceForExtraProjectilesWhileMoving",
     "Name": "of Ulaman"
   },
   {
-    "_index": 14202,
+    "_index": 14203,
     "Id": "AbyssModQuiverUlamanSuffixAttackCostConvertedToLifeCost",
     "Name": "of Ulaman"
   },
   {
-    "_index": 14203,
+    "_index": 14204,
     "Id": "AbyssModQuiverAmanamuPrefixProjectileDamageCloseRange",
     "Name": "Amanamu's"
   },
   {
-    "_index": 14204,
+    "_index": 14205,
     "Id": "AbyssModQuiverAmanamuSuffixProjectileCriticalHitDamageCloseRange",
     "Name": "of Amanamu"
   },
   {
-    "_index": 14205,
+    "_index": 14206,
     "Id": "AbyssModQuiverKurgalPrefixProjectileDamageFar",
     "Name": "Kurgal's"
   },
   {
-    "_index": 14206,
+    "_index": 14207,
     "Id": "AbyssModQuiverKurgalSuffixProjectileCriticalHitChanceFar",
     "Name": "of Kurgal"
   },
   {
-    "_index": 14207,
+    "_index": 14208,
     "Id": "AbyssModRingAmuletUlamanPrefixAttackDamageWhileLowLife",
     "Name": "Ulaman's"
   },
   {
-    "_index": 14208,
+    "_index": 14209,
     "Id": "AbyssModRingAmuletUlamanSuffixSkillSpeed",
     "Name": "of Ulaman"
   },
   {
-    "_index": 14209,
+    "_index": 14210,
     "Id": "AbyssModRingAmuletUlamanSuffixRecoverPercentMaxLifeOnKill",
     "Name": "of Ulaman"
   },
   {
-    "_index": 14210,
+    "_index": 14211,
     "Id": "AbyssModRingAmuletAmanamuPrefixRemnantEffect",
     "Name": "Amanamu's"
   },
   {
-    "_index": 14211,
+    "_index": 14212,
     "Id": "AbyssModRingAmuletAmanamuPrefixMinionDamageIfYou'veHitRecently",
     "Name": "Amanamu's"
   },
   {
-    "_index": 14212,
+    "_index": 14213,
     "Id": "AbyssModRingAmuletAmanamuSuffixSkillEffectDuration",
     "Name": "of Amanamu"
   },
   {
-    "_index": 14213,
+    "_index": 14214,
     "Id": "AbyssModRingAmuletAmanamuSuffixRemnantCollectionRange",
     "Name": "of Amanamu"
   },
   {
-    "_index": 14214,
+    "_index": 14215,
     "Id": "AbyssModRingAmuletKurgalPrefixSpellDamageWhileEnergyShieldFull",
     "Name": "Kurgal's"
   },
   {
-    "_index": 14215,
+    "_index": 14216,
     "Id": "AbyssModRingAmuletKurgalSuffixExposureEffect",
     "Name": "of Kurgal"
   },
   {
-    "_index": 14216,
+    "_index": 14217,
     "Id": "AbyssModRingAmuletKurgalSuffixCooldownRecoveryRate",
     "Name": "of Kurgal"
   },
   {
-    "_index": 14217,
+    "_index": 14218,
     "Id": "AbyssModRingAmuletKurgalSuffixRecoverPercentMaxManaOnKill",
     "Name": "of Kurgal"
   },
   {
-    "_index": 14218,
+    "_index": 14219,
     "Id": "AbyssModRingUlamanPrefixShockMagnitudeIfConsumedFrenzyCharge",
     "Name": "Ulaman's"
   },
   {
-    "_index": 14219,
+    "_index": 14220,
     "Id": "AbyssModRingAmanamuPrefixIgniteMagnitudeIfConsumedEnduranceCharge",
     "Name": "Amanamu's"
   },
   {
-    "_index": 14220,
+    "_index": 14221,
     "Id": "AbyssModRingAmanamuSuffixLifeLeechAmount",
     "Name": "of Amanamu"
   },
   {
-    "_index": 14221,
+    "_index": 14222,
     "Id": "AbyssModRingKurgalPrefixFreezeBuildupIfConsumedPowerCharge",
     "Name": "Kurgal's"
   },
   {
-    "_index": 14222,
+    "_index": 14223,
     "Id": "AbyssModRingKurgalSuffixManaLeechAmount",
     "Name": "of Kurgal"
   },
   {
-    "_index": 14223,
+    "_index": 14224,
     "Id": "AbyssModAmuletUlamanPrefixEvasionRatingFromEquippedBody",
     "Name": "Ulaman's"
   },
   {
-    "_index": 14224,
+    "_index": 14225,
     "Id": "AbyssModAmuletUlamanPrefixGlobalDeflectionRating",
     "Name": "Ulaman's"
   },
   {
-    "_index": 14225,
+    "_index": 14226,
     "Id": "AbyssModAmuletUlamanPrefixChanceToNotConsumeGlory",
     "Name": "Ulaman's"
   },
   {
-    "_index": 14226,
+    "_index": 14227,
     "Id": "AbyssModAmuletUlamanSuffixHeraldReservationEfficiency",
     "Name": "of Ulaman"
   },
   {
-    "_index": 14227,
+    "_index": 14228,
     "Id": "AbyssModAmuletUlamanSuffixGlobalLevelOfSkillGems",
     "Name": "of Ulaman"
   },
   {
-    "_index": 14228,
+    "_index": 14229,
     "Id": "AbyssModAmuletAmanamuPrefixArmourFromEquippedBody",
     "Name": "Amanamu's"
   },
   {
-    "_index": 14229,
+    "_index": 14230,
     "Id": "AbyssModAmuletAmanamuPrefixGlobalDefences",
     "Name": "Amanamu's"
   },
   {
-    "_index": 14230,
+    "_index": 14231,
     "Id": "AbyssModAmuletAmanamuSuffixReducedRequirementEquipmentAndSkill",
     "Name": "of Amanamu"
   },
   {
-    "_index": 14231,
+    "_index": 14232,
     "Id": "AbyssModAmuletAmanamuSuffixAuraMagnitude",
     "Name": "of Amanamu"
   },
   {
-    "_index": 14232,
+    "_index": 14233,
     "Id": "AbyssModAmuletKurgalPrefixEnergyShieldFromEquippedBody",
     "Name": "Kurgal's"
   },
   {
-    "_index": 14233,
+    "_index": 14234,
     "Id": "AbyssModAmuletKurgalPrefixChanceInvocatedSpellsConsumeHalfEnergy",
     "Name": "Kurgal's"
   },
   {
-    "_index": 14234,
+    "_index": 14235,
     "Id": "AbyssModAmuletKurgalSuffixCooldownRecoveryRateCommandSkills",
     "Name": "of Kurgal"
   },
   {
-    "_index": 14235,
+    "_index": 14236,
     "Id": "AbyssModAmuletKurgalSuffixDamageFromManaBeforeLife",
     "Name": "of Kurgal"
   },
   {
-    "_index": 14236,
+    "_index": 14237,
     "Id": "AbyssModAmuletKurgalSuffixQualityofAllSkills",
     "Name": "of Kurgal"
   },
   {
-    "_index": 14237,
+    "_index": 14238,
     "Id": "AbyssModStaffUlamanPrefixSpellDamagePer100MaximumLife",
     "Name": "Ulaman's"
   },
   {
-    "_index": 14238,
+    "_index": 14239,
     "Id": "AbyssModStaffUlamanPrefixMagnitudeOfDamagingAilments",
     "Name": "Ulaman's"
   },
   {
-    "_index": 14239,
+    "_index": 14240,
     "Id": "AbyssModStaffUlamanSuffixCastSpeedWhileLowLife",
     "Name": "of Ulaman"
   },
   {
-    "_index": 14240,
+    "_index": 14241,
     "Id": "AbyssModStaffUlamanSuffixChanceForSpellsToFireTwoAdditionalProjectiles",
     "Name": "of Ulaman"
   },
   {
-    "_index": 14241,
+    "_index": 14242,
     "Id": "AbyssModStaffAmanamuPrefixSpellDamageWithSpellsThatCostLife",
     "Name": "Amanamu's"
   },
   {
-    "_index": 14242,
+    "_index": 14243,
     "Id": "AbyssModStaffAmanamuPrefixFlatSpirit",
     "Name": "Amanamu's"
   },
   {
-    "_index": 14243,
+    "_index": 14244,
     "Id": "AbyssModStaffAmanamuSuffixSpellManaCostConvertedToLifeCost",
     "Name": "of Amanamu"
   },
   {
-    "_index": 14244,
+    "_index": 14245,
     "Id": "AbyssModStaffAmanamuSuffixArchonDuration",
     "Name": "of Amanamu"
   },
   {
-    "_index": 14245,
+    "_index": 14246,
     "Id": "AbyssModStaffAmanamuSuffixBlockChance",
     "Name": "of Amanamu"
   },
   {
-    "_index": 14246,
+    "_index": 14247,
     "Id": "AbyssModStaffKurgalPrefixSpellDamagePer100MaximumMana",
     "Name": "Kurgal's"
   },
   {
-    "_index": 14247,
+    "_index": 14248,
     "Id": "AbyssModStaffKurgalPrefixMaximumInfusions",
     "Name": "Kurgal's"
   },
   {
-    "_index": 14248,
+    "_index": 14249,
     "Id": "AbyssModStaffKurgalSuffixArchonCooldownRecovery",
     "Name": "of Kurgal"
   },
   {
-    "_index": 14249,
+    "_index": 14250,
     "Id": "AbyssModStaffKurgalSuffixCastSpeedWhileFullMana",
     "Name": "of Kurgal"
   },
   {
-    "_index": 14250,
+    "_index": 14251,
     "Id": "AbyssModWandUlamanPrefixDamageAsExtraPhysical",
     "Name": "Ulaman's"
   },
   {
-    "_index": 14251,
+    "_index": 14252,
     "Id": "AbyssModWandUlamanPrefixBleedMagnitude",
     "Name": "Ulaman's"
   },
   {
-    "_index": 14252,
+    "_index": 14253,
     "Id": "AbyssModWandUlamanSuffixArmourBreakAmount",
     "Name": "of Ulaman"
   },
   {
-    "_index": 14253,
+    "_index": 14254,
     "Id": "AbyssModWandUlamanSuffixBreakArmourSpellCrits",
     "Name": "of Ulaman"
   },
   {
-    "_index": 14254,
+    "_index": 14255,
     "Id": "AbyssModWandUlamanSuffixHinderedEnemiesTakeIncreasedPhysical",
     "Name": "of Ulaman"
   },
   {
-    "_index": 14255,
+    "_index": 14256,
     "Id": "AbyssModWandAmanamuPrefixIncreasedElementalDamage",
     "Name": "Amanamu's"
   },
   {
-    "_index": 14256,
+    "_index": 14257,
     "Id": "AbyssModWandAmanamuPrefixHybridSpellAndMinionDamage",
     "Name": "Amanamu's"
   },
   {
-    "_index": 14257,
+    "_index": 14258,
     "Id": "AbyssModWandAmanamuPrefixSpellDamageWithSpellsThatCostLife",
     "Name": "Amanamu's"
   },
   {
-    "_index": 14258,
+    "_index": 14259,
     "Id": "AbyssModWandAmanamuSuffixSpellAreaOfEffect",
     "Name": "of Amanamu"
   },
   {
-    "_index": 14259,
+    "_index": 14260,
     "Id": "AbyssModWandAmanamuSuffixSpellManaCostConvertedToLifeSkillEfficiency",
     "Name": "of Amanamu"
   },
   {
-    "_index": 14260,
+    "_index": 14261,
     "Id": "AbyssModWandAmanamuSuffixHinderedEnemiesTakeIncreasedElemental",
     "Name": "of Amanamu"
   },
   {
-    "_index": 14261,
+    "_index": 14262,
     "Id": "AbyssModWandKurgalPrefixInvocatedSpellDamage",
     "Name": "Kurgal's"
   },
   {
-    "_index": 14262,
+    "_index": 14263,
     "Id": "AbyssModWandKurgalSuffixCastSpeedPerDifferentSpellCastRecently",
     "Name": "of Kurgal"
   },
   {
-    "_index": 14263,
+    "_index": 14264,
     "Id": "AbyssModWandKurgalSuffixHinderedEnemiesTakeIncreasedChaos",
     "Name": "of Kurgal"
   },
   {
-    "_index": 14264,
+    "_index": 14265,
     "Id": "AbyssModGenWeaponUlamanPrefixLightningPenetration",
     "Name": "Ulaman's"
   },
   {
-    "_index": 14265,
+    "_index": 14266,
     "Id": "AbyssModGenWeaponUlamanSuffixSkillCostConvertedToLife",
     "Name": "of Ulaman"
   },
   {
-    "_index": 14266,
+    "_index": 14267,
     "Id": "AbyssModGenWeaponAmanamuPrefixFirePenetration",
     "Name": "Amanamu's"
   },
   {
-    "_index": 14267,
+    "_index": 14268,
     "Id": "AbyssModGenWeaponAmanamuSuffixSpiritReservationEfficiency",
     "Name": "of Amanamu"
   },
   {
-    "_index": 14268,
+    "_index": 14269,
     "Id": "AbyssModGenWeaponKurgalPrefixColdPenetration",
     "Name": "Kurgal's"
   },
   {
-    "_index": 14269,
+    "_index": 14270,
     "Id": "AbyssModGenWeaponKurgalSuffixAttackCostEfficiency",
     "Name": "of Kurgal"
   },
   {
-    "_index": 14270,
+    "_index": 14271,
     "Id": "AbyssModAllMacesUlamanPrefixMaximumMeleeAttackTotems",
     "Name": "Ulaman's"
   },
   {
-    "_index": 14271,
+    "_index": 14272,
     "Id": "AbyssModAllMacesKurgalPrefixIncreasedPhysicalDamageReducedAttackSpeed",
     "Name": "Kurgal's"
   },
   {
-    "_index": 14272,
+    "_index": 14273,
     "Id": "AbyssModAllMacesKurgalSuffixCostEfficiencyOfAttackSkills",
     "Name": "of Kurgal"
   },
   {
-    "_index": 14273,
+    "_index": 14274,
     "Id": "AbyssMod1HMaceUlamanPrefixDamageWhileActiveTotem",
     "Name": "Ulaman's"
   },
   {
-    "_index": 14274,
+    "_index": 14275,
     "Id": "AbyssMod1HMaceUlamanSuffixTotemPlacementSpeed",
     "Name": "of Ulaman"
   },
   {
-    "_index": 14275,
+    "_index": 14276,
     "Id": "AbyssMod1HMaceAmanamuPrefixDamageAgainstFullyArmourBrokenEnemies",
     "Name": "Amanamu's"
   },
   {
-    "_index": 14276,
+    "_index": 14277,
     "Id": "AbyssMod1HMaceAmanamuSuffixBreakPercentArmourPhysicalDamage",
     "Name": "of Amanamu"
   },
   {
-    "_index": 14277,
+    "_index": 14278,
     "Id": "AbyssMod1HMaceAmanamuSuffixAdditionalFissureChance",
     "Name": "of Amanamu"
   },
   {
-    "_index": 14278,
+    "_index": 14279,
     "Id": "AbyssMod1HMaceAmanamuSuffixChanceSlamSkillsCauseAftershocks",
     "Name": "of Amanamu"
   },
   {
-    "_index": 14279,
+    "_index": 14280,
     "Id": "AbyssMod1HMaceKurgalPrefixEmpoweredAttackDamage",
     "Name": "Kurgal's"
   },
   {
-    "_index": 14280,
+    "_index": 14281,
     "Id": "AbyssMod1HMaceKurgalSuffixWarcryCooldownRecoveryRate",
     "Name": "of Kurgal"
   },
   {
-    "_index": 14281,
+    "_index": 14282,
     "Id": "AbyssMod2HMaceUlamanPrefixDamageWhileActiveTotem",
     "Name": "Ulaman's"
   },
   {
-    "_index": 14282,
+    "_index": 14283,
     "Id": "AbyssMod2HMaceUlamanSuffixTotemPlacementSpeed",
     "Name": "of Ulaman"
   },
   {
-    "_index": 14283,
+    "_index": 14284,
     "Id": "AbyssMod2HMaceAmanamuPrefixDamageAgainstFullyArmourBrokenEnemies",
     "Name": "Amanamu's"
   },
   {
-    "_index": 14284,
+    "_index": 14285,
     "Id": "AbyssMod2HMaceAmanamuSuffixBreakPercentArmourPhysicalDamage",
     "Name": "of Amanamu"
   },
   {
-    "_index": 14285,
+    "_index": 14286,
     "Id": "AbyssMod2HMaceAmanamuSuffixAdditionalFissureChance",
     "Name": "of Amanamu"
   },
   {
-    "_index": 14286,
+    "_index": 14287,
     "Id": "AbyssMod2HMaceAmanamuSuffixChanceSlamSkillsCauseAftershocks",
     "Name": "of Amanamu"
   },
   {
-    "_index": 14287,
+    "_index": 14288,
     "Id": "AbyssMod2HMaceKurgalPrefixEmpoweredAttackDamage",
     "Name": "Kurgal's"
   },
   {
-    "_index": 14288,
+    "_index": 14289,
     "Id": "AbyssMod2HMaceKurgalSuffixWarcryCooldownRecoveryRate",
     "Name": "of Kurgal"
   },
   {
-    "_index": 14289,
+    "_index": 14290,
     "Id": "AbyssModQuarterstaffUlamanPrefixLightningDamageShockMagnitude",
     "Name": "Ulaman's"
   },
   {
-    "_index": 14290,
+    "_index": 14291,
     "Id": "AbyssModQuarterstaffUlamanSuffixRecoverLifeWhenExpendingTenCombo",
     "Name": "of Ulaman"
   },
   {
-    "_index": 14291,
+    "_index": 14292,
     "Id": "AbyssModQuarterstaffAmanamuPrefixFireDamageIgniteMagnitude",
     "Name": "Amanamu's"
   },
   {
-    "_index": 14292,
+    "_index": 14293,
     "Id": "AbyssModQuarterstaffAmanamuSuffixChanceToGenerateAdditionalCombo",
     "Name": "of Amanamu"
   },
   {
-    "_index": 14293,
+    "_index": 14294,
     "Id": "AbyssModQuarterstaffKurgalPrefixColdDamageFreezeBuildup",
     "Name": "Kurgal's"
   },
   {
-    "_index": 14294,
+    "_index": 14295,
     "Id": "AbyssModQuarterstaffKurgalSuffixRecoverManaWhenExpendingTenCombo",
     "Name": "of Kurgal"
   },
   {
-    "_index": 14295,
+    "_index": 14296,
     "Id": "AbyssModCrossbowUlamanPrefixMaximumRangedAttackTotems",
     "Name": "Ulaman's"
   },
   {
-    "_index": 14296,
+    "_index": 14297,
     "Id": "AbyssModCrossbowUlamanSuffixAttacksChainAdditionalTime",
     "Name": "of Ulaman"
   },
   {
-    "_index": 14297,
+    "_index": 14298,
     "Id": "AbyssModCrossbowUlamanSuffixProjectileCriticalHitDamageCloseRange",
     "Name": "of Ulaman"
   },
   {
-    "_index": 14298,
+    "_index": 14299,
     "Id": "AbyssModCrossbowAmanamuPrefixGrenadeAdditionalCooldown",
     "Name": "Amanamu's"
   },
   {
-    "_index": 14299,
+    "_index": 14300,
     "Id": "AbyssModCrossbowAmanamuPrefixGrenadeDamageAndDuration",
     "Name": "Amanamu's"
   },
   {
-    "_index": 14300,
+    "_index": 14301,
     "Id": "AbyssModCrossbowAmanamuSuffixAdditionalGrenadeTriggerChance",
     "Name": "of Amanamu"
   },
   {
-    "_index": 14301,
+    "_index": 14302,
     "Id": "AbyssModCrossbowKurgalPrefixProjectileDamageCloseRange",
     "Name": "Kurgal's"
   },
   {
-    "_index": 14302,
+    "_index": 14303,
     "Id": "AbyssModCrossbowKurgalSuffixReloadSpeed",
     "Name": "of Kurgal"
   },
   {
-    "_index": 14303,
+    "_index": 14304,
     "Id": "AbyssModCrossbowKurgalSuffixChanceForInstantReload",
     "Name": "of Kurgal"
   },
   {
-    "_index": 14304,
+    "_index": 14305,
     "Id": "AbyssModBowSpearUlamanPrefixProjectileDamageFar",
     "Name": "Ulaman's"
   },
   {
-    "_index": 14305,
+    "_index": 14306,
     "Id": "AbyssModBowSpearUlamanSuffixChanceForExtraProjectilesWhileMoving",
     "Name": "of Ulaman"
   },
   {
-    "_index": 14306,
+    "_index": 14307,
     "Id": "AbyssModBowSpearUlamanSuffixAttackSpeedLocalAndWithCompanion",
     "Name": "of Ulaman"
   },
   {
-    "_index": 14307,
+    "_index": 14308,
     "Id": "AbyssModBowSpearAmanamuPrefixCompanionDamageAndDamageWithCompanion",
     "Name": "Amanamu's"
   },
   {
-    "_index": 14308,
+    "_index": 14309,
     "Id": "AbyssModBowSpearAmanamuPrefixAttackSkillAreaOfEffect",
     "Name": "Amanamu's"
   },
   {
-    "_index": 14309,
+    "_index": 14310,
     "Id": "AbyssModBowSpearAmanamuSuffixCompanionAndLocalAttackSpeed",
     "Name": "of Amanamu"
   },
   {
-    "_index": 14310,
+    "_index": 14311,
     "Id": "AbyssModBowSpearAmanamuSuffixChancePierceAdditionalTime",
     "Name": "of Amanamu"
   },
   {
-    "_index": 14311,
+    "_index": 14312,
     "Id": "AbyssModBowSpearKurgalPrefixChanceChainFromTerrain",
     "Name": "Kurgal's"
   },
   {
-    "_index": 14312,
+    "_index": 14313,
     "Id": "AbyssModBowSpearKurgalSuffixProjectileCriticalHitChanceFar",
     "Name": "of Kurgal"
   },
   {
-    "_index": 14313,
+    "_index": 14314,
     "Id": "AbyssModBowSpearKurgalSuffixImmobilisationBuildup",
     "Name": "of Kurgal"
   },
   {
-    "_index": 14314,
+    "_index": 14315,
     "Id": "AbyssModBowKurgalPrefixIncreasedQuiverStats",
     "Name": "Kurgal's"
   },
   {
-    "_index": 14315,
+    "_index": 14316,
     "Id": "AbyssModSpearKurgalPrefixMeleeDamageIfProjectileAttackHitEightSeconds",
     "Name": "Kurgal's"
   },
   {
-    "_index": 14316,
+    "_index": 14317,
+    "Id": "AbyssModTalismanUlamanSuffixGainXRageOnMeleeHit",
+    "Name": "of Ulaman"
+  },
+  {
+    "_index": 14318,
     "Id": "AbyssModTalismanAmanamuPrefixMinionsDealIncreasedDamageIfYouHitRecently",
     "Name": "Amanamu's"
   },
   {
-    "_index": 14317,
+    "_index": 14319,
     "Id": "AbyssModTalismanKurgalPrefixWarcriesEmpowerXAdditionalAttacks",
     "Name": "Kurgal's"
   },
   {
-    "_index": 14318,
+    "_index": 14320,
     "Id": "AbyssModTalismanKurgalSuffixCriticalHitChanceAgainstMarkedTargets",
     "Name": "of Kurgal"
   },
   {
-    "_index": 14319,
+    "_index": 14321,
     "Id": "UniqueWatcherVeiledSuffix1",
     "Name": ""
   },
   {
-    "_index": 14320,
+    "_index": 14322,
     "Id": "UniqueWatcherVeiledSpiritReservationEfficiency",
     "Name": ""
   },
   {
-    "_index": 14321,
+    "_index": 14323,
     "Id": "UniqueWatcherVeiledManaCostEfficiency",
     "Name": ""
   },
   {
-    "_index": 14322,
+    "_index": 14324,
     "Id": "UniqueWatcherVeiledCurseAreaOfEffect",
     "Name": ""
   },
   {
-    "_index": 14323,
+    "_index": 14325,
     "Id": "UniqueWatcherVeiledEffectOfCurses",
     "Name": ""
   },
   {
-    "_index": 14324,
+    "_index": 14326,
     "Id": "UniqueWatcherVeiledMinionLife",
     "Name": ""
   },
   {
-    "_index": 14325,
+    "_index": 14327,
     "Id": "UniqueWatcherVeiledPresenceAreaOfEffect",
     "Name": ""
   },
   {
-    "_index": 14326,
+    "_index": 14328,
     "Id": "UniqueWatcherVeiledManaRegeneration",
     "Name": ""
   },
   {
-    "_index": 14327,
+    "_index": 14329,
     "Id": "UniqueWatcherVeiledAlliesInPresenceCastSpeed",
     "Name": ""
   },
   {
-    "_index": 14328,
+    "_index": 14330,
     "Id": "UniqueWatcherVeiledAlliesInPresenceAllElementalResistance",
     "Name": ""
   },
   {
-    "_index": 14329,
+    "_index": 14331,
     "Id": "UniqueWatcherVeiledAlliesInPresenceFlatLifeRegen",
     "Name": ""
   },
   {
-    "_index": 14330,
+    "_index": 14332,
     "Id": "UniqueWatcherVeiledAlliesInPresenceCriticalHitChance",
     "Name": ""
   },
   {
-    "_index": 14331,
+    "_index": 14333,
     "Id": "UniqueKulemakVeiledGrantedSkill1",
     "Name": ""
   },
   {
-    "_index": 14332,
+    "_index": 14334,
     "Id": "UniqueKulemakVeiledPrefix1",
     "Name": ""
   },
   {
-    "_index": 14333,
+    "_index": 14335,
     "Id": "UniqueKulemakHisWinnowingFlame_1",
     "Name": ""
   },
   {
-    "_index": 14334,
+    "_index": 14336,
     "Id": "UniqueKulemakHisFoulEmergence_1",
     "Name": ""
   },
   {
-    "_index": 14335,
+    "_index": 14337,
     "Id": "UniqueKulemakHisDarkHorizon_1",
     "Name": ""
   },
   {
-    "_index": 14336,
+    "_index": 14338,
     "Id": "UniqueKulemakHisVileIntrusion_1",
     "Name": ""
   },
   {
-    "_index": 14337,
+    "_index": 14339,
     "Id": "UniqueKulemakHisScatteringCalamity_1",
     "Name": ""
   },
   {
-    "_index": 14338,
+    "_index": 14340,
     "Id": "UniqueKulemakHisGraveCommand_1",
     "Name": ""
   },
   {
-    "_index": 14339,
+    "_index": 14341,
     "Id": "UniqueKulemakUnholyMightAndMagnitude_1",
     "Name": ""
   },
   {
-    "_index": 14340,
+    "_index": 14342,
     "Id": "UniqueKulemakChaosDamageAndExplosion_1",
     "Name": ""
   },
   {
-    "_index": 14341,
+    "_index": 14343,
     "Id": "UniqueKulemakSpellPhysicalDamageBleedChance_1",
     "Name": ""
   },
   {
-    "_index": 14342,
+    "_index": 14344,
     "Id": "UniqueKulemakChaosDamageCurseLowersChaosRes_1",
     "Name": ""
   },
   {
-    "_index": 14343,
+    "_index": 14345,
     "Id": "UniqueKulemakSpiritAndSpiritReservationEfficiency_1",
     "Name": ""
   },
   {
-    "_index": 14344,
+    "_index": 14346,
     "Id": "UniqueKulemakElementalDamageEleAilmentDuration_1",
     "Name": ""
   },
   {
-    "_index": 14345,
+    "_index": 14347,
     "Id": "UniquePackleaderCompanion_1",
     "Name": ""
   },
   {
-    "_index": 14346,
+    "_index": 14348,
     "Id": "LocalAlwaysHeavyStunOnFullLifeUnique__1",
     "Name": ""
   },
   {
-    "_index": 14347,
+    "_index": 14349,
     "Id": "LocalDisableRareModOnHitUnique__1",
     "Name": ""
   },
   {
-    "_index": 14348,
+    "_index": 14350,
     "Id": "DisabledMod",
     "Name": "[DNT-UNUSED] [Disabled]"
   },
   {
-    "_index": 14349,
+    "_index": 14351,
     "Id": "MonsterAbyssImmuneAura1",
     "Name": "Abyssal"
   },
   {
-    "_index": 14350,
+    "_index": 14352,
     "Id": "PlayerMonsterAbyssImmuneAura1",
     "Name": "Abyssal"
   },
   {
-    "_index": 14351,
+    "_index": 14353,
     "Id": "TheFlawedEdictUnique__1",
     "Name": ""
   },
   {
-    "_index": 14352,
+    "_index": 14354,
     "Id": "MonsterAbyssFactionRunes",
     "Name": "Abyssal"
   },
   {
-    "_index": 14353,
-    "Id": "MonsterAbyssMeteor",
-    "Name": "Abyssal"
-  },
-  {
-    "_index": 14354,
-    "Id": "MonsterAbyssApparitionBeamcaster",
-    "Name": "Abyssal"
-  },
-  {
     "_index": 14355,
-    "Id": "MonsterAbyssPitSplitting",
+    "Id": "PlayerMonsterAbyssFactionRunes",
     "Name": "Abyssal"
   },
   {
     "_index": 14356,
-    "Id": "UniqueDesecratedModEffect1",
-    "Name": ""
+    "Id": "MonsterAbyssMeteor",
+    "Name": "Abyssal"
   },
   {
     "_index": 14357,
-    "Id": "MapInfiniteRevives",
-    "Name": ""
+    "Id": "PlayerMonsterAbyssMeteor",
+    "Name": "Abyssal"
   },
   {
     "_index": 14358,
-    "Id": "AbyssalDepthsAbyssalModifiers",
-    "Name": ""
+    "Id": "MonsterAbyssApparitionBeamcaster",
+    "Name": "Abyssal"
   },
   {
     "_index": 14359,
-    "Id": "Stance2FastAndImmortal",
-    "Name": ""
+    "Id": "PlayerMonsterAbyssApparitionBeamcaster",
+    "Name": "Abyssal"
   },
   {
     "_index": 14360,
-    "Id": "MonsterAbyssPustuleGround1",
+    "Id": "MonsterAbyssPitSplitting",
     "Name": "Abyssal"
   },
   {
     "_index": 14361,
-    "Id": "MonsterDontDropEssences",
-    "Name": ""
+    "Id": "PlayerMonsterAbyssPitSplitting",
+    "Name": "Abyssal"
   },
   {
     "_index": 14362,
-    "Id": "MonsterAbyssGeyserWalls1",
-    "Name": "Abyssal"
+    "Id": "UniqueDesecratedModEffect1",
+    "Name": ""
   },
   {
     "_index": 14363,
-    "Id": "MonsterAbyssShadeWalker1",
-    "Name": "Abyssal"
+    "Id": "MapInfiniteRevives",
+    "Name": ""
   },
   {
     "_index": 14364,
-    "Id": "MonsterAbyssSoulcano1",
-    "Name": "Abyssal"
+    "Id": "AbyssalDepthsAbyssalModifiers",
+    "Name": ""
   },
   {
     "_index": 14365,
-    "Id": "GemlingBossRageWhenHit",
+    "Id": "Stance2FastAndImmortal",
     "Name": ""
   },
   {
     "_index": 14366,
-    "Id": "GemlingBossLifeLeechAgainstBleedingEnemies",
-    "Name": ""
+    "Id": "MonsterAbyssPustuleGround1",
+    "Name": "Abyssal"
   },
   {
     "_index": 14367,
-    "Id": "IncursionLeague",
-    "Name": ""
+    "Id": "PlayerMonsterAbyssPustuleGround1",
+    "Name": "Abyssal"
   },
   {
     "_index": 14368,
-    "Id": "IncursionLeagueCrafted",
+    "Id": "MonsterDontDropEssences",
     "Name": ""
   },
   {
     "_index": 14369,
-    "Id": "IncursionLimb",
-    "Name": ""
+    "Id": "MonsterAbyssGeyserWalls1",
+    "Name": "Abyssal"
   },
   {
     "_index": 14370,
-    "Id": "IncursionLeg1",
-    "Name": ""
+    "Id": "PlayerMonsterAbyssGeyserWalls1",
+    "Name": "Abyssal"
   },
   {
     "_index": 14371,
-    "Id": "IncursionLeg2",
-    "Name": ""
+    "Id": "MonsterAbyssShadeWalker1",
+    "Name": "Abyssal"
   },
   {
     "_index": 14372,
-    "Id": "IncursionLeg3",
-    "Name": ""
+    "Id": "PlayerMonsterAbyssShadeWalker1",
+    "Name": "Abyssal"
   },
   {
     "_index": 14373,
-    "Id": "IncursionLeg4",
-    "Name": ""
+    "Id": "MonsterAbyssSoulcano1",
+    "Name": "Abyssal"
   },
   {
     "_index": 14374,
-    "Id": "IncursionLeg5",
-    "Name": ""
+    "Id": "PlayerMonsterAbyssSoulcano1",
+    "Name": "Abyssal"
   },
   {
     "_index": 14375,
-    "Id": "IncursionLeg6",
+    "Id": "GemlingBossRageWhenHit",
     "Name": ""
   },
   {
     "_index": 14376,
-    "Id": "IncursionArm1",
+    "Id": "GemlingBossLifeLeechAgainstBleedingEnemies",
     "Name": ""
   },
   {
     "_index": 14377,
-    "Id": "IncursionArm2",
+    "Id": "IncursionLeague",
     "Name": ""
   },
   {
     "_index": 14378,
-    "Id": "IncursionArm3",
+    "Id": "IncursionLeagueCrafted",
     "Name": ""
   },
   {
     "_index": 14379,
-    "Id": "IncursionArm4",
+    "Id": "IncursionLimb",
     "Name": ""
   },
   {
     "_index": 14380,
-    "Id": "IncursionArm5",
+    "Id": "IncursionLeg1",
     "Name": ""
   },
   {
     "_index": 14381,
-    "Id": "IncursionArm6",
+    "Id": "IncursionLeg2",
     "Name": ""
   },
   {
     "_index": 14382,
-    "Id": "IncursionChestArmouryTier1Quantity",
+    "Id": "IncursionLeg3",
     "Name": ""
   },
   {
     "_index": 14383,
-    "Id": "IncursionChestArmouryTier1Rarity",
+    "Id": "IncursionLeg4",
     "Name": ""
   },
   {
     "_index": 14384,
-    "Id": "IncursionChestArmouryTier2Quantity",
+    "Id": "IncursionLeg5",
     "Name": ""
   },
   {
     "_index": 14385,
-    "Id": "IncursionChestArmouryTier2Rarity",
+    "Id": "IncursionLeg6",
     "Name": ""
   },
   {
     "_index": 14386,
-    "Id": "IncursionChestArmouryTier3Quantity",
+    "Id": "IncursionArm1",
     "Name": ""
   },
   {
     "_index": 14387,
-    "Id": "IncursionChestArmouryTier3Rarity",
+    "Id": "IncursionArm2",
     "Name": ""
   },
   {
     "_index": 14388,
-    "Id": "MapForceHumanFormLoad",
+    "Id": "IncursionArm3",
     "Name": ""
   },
   {
     "_index": 14389,
-    "Id": "UniqueMapAbyssOverrun",
+    "Id": "IncursionArm4",
     "Name": ""
   },
   {
     "_index": 14390,
-    "Id": "TowerAbyssMonsterIncrease",
-    "Name": "of the Horde"
+    "Id": "IncursionArm5",
+    "Name": ""
   },
   {
     "_index": 14391,
-    "Id": "TowerAbyssRareMonsterIncrease",
-    "Name": "of Champions"
+    "Id": "IncursionArm6",
+    "Name": ""
   },
   {
     "_index": 14392,
-    "Id": "TowerAbyssEnhancedMonstersPerChasm",
-    "Name": "of Escalation"
+    "Id": "IncursionChestArmouryTier1Quantity",
+    "Name": ""
   },
   {
     "_index": 14393,
-    "Id": "TowerAbyssDepthsChance",
-    "Name": "of the Depths"
+    "Id": "IncursionChestArmouryTier1Rarity",
+    "Name": ""
   },
   {
     "_index": 14394,
-    "Id": "TowerAbyssAdditionalChance",
-    "Name": "of Hollows"
+    "Id": "IncursionChestArmouryTier2Quantity",
+    "Name": ""
   },
   {
     "_index": 14395,
-    "Id": "TowerAbyssIncreasedRewards",
-    "Name": "of Treasures"
+    "Id": "IncursionChestArmouryTier2Rarity",
+    "Name": ""
   },
   {
     "_index": 14396,
-    "Id": "TowerAbyss4AdditionalChance",
-    "Name": "of Schisms"
+    "Id": "IncursionChestArmouryTier3Quantity",
+    "Name": ""
   },
   {
     "_index": 14397,
-    "Id": "TowerAbyssExtraModifiers",
-    "Name": "of Dark Power"
+    "Id": "IncursionChestArmouryTier3Rarity",
+    "Name": ""
   },
   {
     "_index": 14398,
-    "Id": "TowerAbyssExtraTickets",
-    "Name": "of Ossification"
+    "Id": "MapForceHumanFormLoad",
+    "Name": ""
   },
   {
     "_index": 14399,
-    "Id": "UniqueMutatedVaalPresenceRadius",
+    "Id": "UniqueMapAbyssOverrun",
     "Name": ""
   },
   {
     "_index": 14400,
-    "Id": "IncursionChestCurrencyRarity",
-    "Name": ""
+    "Id": "TowerAbyssMonsterIncrease",
+    "Name": "of the Horde"
   },
   {
     "_index": 14401,
-    "Id": "IncursionMapNumberOfPacks",
-    "Name": ""
+    "Id": "TowerAbyssRareMonsterIncrease",
+    "Name": "of Champions"
   },
   {
     "_index": 14402,
-    "Id": "IncursionMapRareMonsterEffectiveness",
-    "Name": ""
+    "Id": "TowerAbyssEnhancedMonstersPerChasm",
+    "Name": "of Escalation"
   },
   {
     "_index": 14403,
-    "Id": "IncrusionMapHumanoidMonsterEffectiveness",
-    "Name": ""
+    "Id": "TowerAbyssDepthsChance",
+    "Name": "of the Depths"
   },
   {
     "_index": 14404,
-    "Id": "IncursionMapChestRarity",
-    "Name": ""
+    "Id": "TowerAbyssAdditionalChance",
+    "Name": "of Hollows"
   },
   {
     "_index": 14405,
-    "Id": "IncursionMapIncreasedRareMonsters",
-    "Name": ""
+    "Id": "TowerAbyssIncreasedRewards",
+    "Name": "of Treasures"
   },
   {
     "_index": 14406,
-    "Id": "IncursionMapIncreasedExperience",
-    "Name": ""
+    "Id": "TowerAbyss4AdditionalChance",
+    "Name": "of Schisms"
   },
   {
     "_index": 14407,
-    "Id": "IncursionMapUniqueMonsterEffectiveness",
-    "Name": ""
+    "Id": "TowerAbyssExtraModifiers",
+    "Name": "of Dark Power"
   },
   {
     "_index": 14408,
-    "Id": "IncursionMapIncreasedMagicMonsters",
-    "Name": ""
+    "Id": "TowerAbyssExtraTickets",
+    "Name": "of Ossification"
   },
   {
     "_index": 14409,
-    "Id": "IncursionMapItemRarityOfMonsters",
+    "Id": "UniqueMutatedVaalPresenceRadius",
     "Name": ""
   },
   {
     "_index": 14410,
-    "Id": "IncursionMapConstructMonsterEffectiveness",
+    "Id": "IncursionChestCurrencyRarity",
     "Name": ""
   },
   {
     "_index": 14411,
-    "Id": "IncursionMapRareChestAmount",
+    "Id": "IncursionMapNumberOfPacks",
     "Name": ""
   },
   {
     "_index": 14412,
-    "Id": "IncursionMapRareMonsterAdditionalModifiers",
+    "Id": "IncursionMapRareMonsterEffectiveness",
     "Name": ""
   },
   {
     "_index": 14413,
-    "Id": "IncursionChestCurrencyQuantity",
+    "Id": "IncrusionMapHumanoidMonsterEffectiveness",
     "Name": ""
   },
   {
     "_index": 14414,
-    "Id": "UniqueMutatedVaalIncreasedLifeLeechRate",
+    "Id": "IncursionMapChestRarity",
     "Name": ""
   },
   {
     "_index": 14415,
-    "Id": "UniqueMutatedVaalLifeDegenerationPercentGracePeriod",
+    "Id": "IncursionMapIncreasedRareMonsters",
     "Name": ""
   },
   {
     "_index": 14416,
-    "Id": "UniqueMutatedVaalManaCostEfficiency",
+    "Id": "IncursionMapIncreasedExperience",
     "Name": ""
   },
   {
     "_index": 14417,
-    "Id": "UniqueMutatedVaalSkillCostEfficiency",
+    "Id": "IncursionMapUniqueMonsterEffectiveness",
     "Name": ""
   },
   {
     "_index": 14418,
-    "Id": "UniqueMutatedVaalSpellLifeCostPercent",
+    "Id": "IncursionMapIncreasedMagicMonsters",
     "Name": ""
   },
   {
     "_index": 14419,
-    "Id": "UniqueMutatedVaalGlobalDeflectionRating",
+    "Id": "IncursionMapItemRarityOfMonsters",
     "Name": ""
   },
   {
     "_index": 14420,
-    "Id": "UniqueMutatedVaalSurroundedAreaOfEffect",
+    "Id": "IncursionMapConstructMonsterEffectiveness",
     "Name": ""
   },
   {
     "_index": 14421,
-    "Id": "UniqueMutatedVaalTotemDuration",
+    "Id": "IncursionMapRareChestAmount",
     "Name": ""
   },
   {
     "_index": 14422,
-    "Id": "UniqueMutatedVaalAttackAndCastSpeedOnPlacingTotem",
+    "Id": "IncursionMapRareMonsterAdditionalModifiers",
     "Name": ""
   },
   {
     "_index": 14423,
-    "Id": "UniqueMutatedVaalLifeLeechAmount",
+    "Id": "IncursionMapRarityAndGold",
     "Name": ""
   },
   {
     "_index": 14424,
-    "Id": "UniqueMutatedVaalLocalPhysicalDamageReductionRating",
+    "Id": "IncursionChestCurrencyQuantity",
     "Name": ""
   },
   {
     "_index": 14425,
-    "Id": "UniqueMutatedVaalIgniteChanceIncrease",
+    "Id": "UniqueMutatedVaalIncreasedLifeLeechRate",
     "Name": ""
   },
   {
     "_index": 14426,
-    "Id": "UniqueMutatedVaalPercentDamageGoesToMana",
+    "Id": "UniqueMutatedVaalLifeDegenerationPercentGracePeriod",
     "Name": ""
   },
   {
     "_index": 14427,
-    "Id": "UniqueMutatedVaalMaximumLifeIncreasePercent",
+    "Id": "UniqueMutatedVaalManaCostEfficiency",
     "Name": ""
   },
   {
     "_index": 14428,
-    "Id": "UniqueMutatedVaalBeltIncreasedFlaskChargesGained",
+    "Id": "UniqueMutatedVaalSkillCostEfficiency",
     "Name": ""
   },
   {
     "_index": 14429,
-    "Id": "UniqueMutatedVaalLocalEnegyShield",
+    "Id": "UniqueMutatedVaalSpellLifeCostPercent",
     "Name": ""
   },
   {
     "_index": 14430,
-    "Id": "UniqueMutatedVaalLocalEvasionRating",
+    "Id": "UniqueMutatedVaalGlobalDeflectionRating",
     "Name": ""
   },
   {
     "_index": 14431,
-    "Id": "UniqueMutatedVaalFireDamagePercentage",
+    "Id": "UniqueMutatedVaalSurroundedAreaOfEffect",
     "Name": ""
   },
   {
     "_index": 14432,
-    "Id": "UniqueMutatedVaalColdDamagePercentage",
+    "Id": "UniqueMutatedVaalTotemDuration",
     "Name": ""
   },
   {
     "_index": 14433,
-    "Id": "UniqueMutatedVaalLightningDamagePercentage",
+    "Id": "UniqueMutatedVaalAttackAndCastSpeedOnPlacingTotem",
     "Name": ""
   },
   {
     "_index": 14434,
-    "Id": "UniqueMutatedVaalChaosDamagePercentage",
+    "Id": "UniqueMutatedVaalLifeLeechAmount",
     "Name": ""
   },
   {
     "_index": 14435,
-    "Id": "UniqueMutatedVaalChaosResistance",
+    "Id": "UniqueMutatedVaalLocalPhysicalDamageReductionRating",
     "Name": ""
   },
   {
     "_index": 14436,
-    "Id": "UniqueMutatedVaalVolatilityOnCritChance",
+    "Id": "UniqueMutatedVaalIgniteChanceIncrease",
     "Name": ""
   },
   {
     "_index": 14437,
-    "Id": "UniqueMutatedVaalCastSpeedIfCriticalStrikeDealtRecently",
+    "Id": "UniqueMutatedVaalPercentDamageGoesToMana",
     "Name": ""
   },
   {
     "_index": 14438,
-    "Id": "UniqueMutatedVaalPoisonEffect",
+    "Id": "UniqueMutatedVaalMaximumLifeIncreasePercent",
     "Name": ""
   },
   {
     "_index": 14439,
-    "Id": "UniqueMutatedVaalDamageTakenGainedAsLife",
+    "Id": "UniqueMutatedVaalBeltIncreasedFlaskChargesGained",
     "Name": ""
   },
   {
     "_index": 14440,
-    "Id": "UniqueMutatedVaalIncreasedStunThreshold",
+    "Id": "UniqueMutatedVaalLocalEnegyShield",
     "Name": ""
   },
   {
     "_index": 14441,
-    "Id": "UniqueMutatedVaalLocalEnergyShield1",
+    "Id": "UniqueMutatedVaalLocalEvasionRating",
     "Name": ""
   },
   {
     "_index": 14442,
-    "Id": "UniqueMutatedVaalBeltFlaskLifeRecovery",
+    "Id": "UniqueMutatedVaalFireDamagePercentage",
     "Name": ""
   },
   {
     "_index": 14443,
-    "Id": "UniqueMutatedVaalBeltIncreasedCharmChargesGained",
+    "Id": "UniqueMutatedVaalColdDamagePercentage",
     "Name": ""
   },
   {
     "_index": 14444,
-    "Id": "UniqueMutatedVaalDamageRemovedFromManaBeforeLife",
+    "Id": "UniqueMutatedVaalLightningDamagePercentage",
     "Name": ""
   },
   {
     "_index": 14445,
-    "Id": "UniqueMutatedVaalMaximumManaOnKillPercent",
+    "Id": "UniqueMutatedVaalChaosDamagePercentage",
     "Name": ""
   },
   {
     "_index": 14446,
-    "Id": "UniqueMutatedVaalIncreasedLife",
+    "Id": "UniqueMutatedVaalChaosResistance",
     "Name": ""
   },
   {
     "_index": 14447,
-    "Id": "UniqueMutatedVaalIncreasedLife1",
+    "Id": "UniqueMutatedVaalVolatilityOnCritChance",
     "Name": ""
   },
   {
     "_index": 14448,
-    "Id": "UniqueMutatedVaalAllAttributes",
+    "Id": "UniqueMutatedVaalCastSpeedIfCriticalStrikeDealtRecently",
     "Name": ""
   },
   {
     "_index": 14449,
-    "Id": "UniqueMutatedVaalCriticalStrikeChanceIfNoCriticalStrikeDealtRecently",
+    "Id": "UniqueMutatedVaalPoisonEffect",
     "Name": ""
   },
   {
     "_index": 14450,
-    "Id": "UniqueMutatedVaalManaCostEfficiency1",
+    "Id": "UniqueMutatedVaalDamageTakenGainedAsLife",
     "Name": ""
   },
   {
     "_index": 14451,
-    "Id": "UniqueMutatedVaalRecoverLifeOnKillingPoisonedEnemyPerPoison",
+    "Id": "UniqueMutatedVaalIncreasedStunThreshold",
     "Name": ""
   },
   {
     "_index": 14452,
-    "Id": "UniqueMutatedVaalLifeRegenerationRatePercentage",
+    "Id": "UniqueMutatedVaalLocalEnergyShield1",
     "Name": ""
   },
   {
     "_index": 14453,
-    "Id": "UniqueMutatedVaalIgniteChanceIncrease1",
+    "Id": "UniqueMutatedVaalBeltFlaskLifeRecovery",
     "Name": ""
   },
   {
     "_index": 14454,
-    "Id": "UniqueMutatedVaalIgniteEffect",
+    "Id": "UniqueMutatedVaalBeltIncreasedCharmChargesGained",
     "Name": ""
   },
   {
     "_index": 14455,
-    "Id": "UniqueMutatedVaalChanceToGainAdditionalRandomCharge",
+    "Id": "UniqueMutatedVaalDamageRemovedFromManaBeforeLife",
     "Name": ""
   },
   {
     "_index": 14456,
-    "Id": "UniqueMutatedVaalChargeDuration",
+    "Id": "UniqueMutatedVaalMaximumManaOnKillPercent",
     "Name": ""
   },
   {
     "_index": 14457,
-    "Id": "UniqueMutatedVaalPoisonStackCount",
+    "Id": "UniqueMutatedVaalIncreasedLife",
     "Name": ""
   },
   {
     "_index": 14458,
-    "Id": "UniqueMutatedVaalDeflectDamageTakenRecoupedAsLife",
+    "Id": "UniqueMutatedVaalIncreasedLife1",
     "Name": ""
   },
   {
     "_index": 14459,
-    "Id": "UniqueMutatedVaalGoldFoundIncrease",
+    "Id": "UniqueMutatedVaalAllAttributes",
     "Name": ""
   },
   {
     "_index": 14460,
-    "Id": "UniqueMutatedVaalLightningResistance",
+    "Id": "UniqueMutatedVaalCriticalStrikeChanceIfNoCriticalStrikeDealtRecently",
     "Name": ""
   },
   {
     "_index": 14461,
-    "Id": "UniqueMutatedVaalLifeRegenerationWhileSurrounded",
+    "Id": "UniqueMutatedVaalManaCostEfficiency1",
     "Name": ""
   },
   {
     "_index": 14462,
-    "Id": "UniqueMutatedVaalLocalPhysicalDamageReductionRating1",
+    "Id": "UniqueMutatedVaalRecoverLifeOnKillingPoisonedEnemyPerPoison",
     "Name": ""
   },
   {
     "_index": 14463,
-    "Id": "UniqueMutatedVaalPercentageStrength",
+    "Id": "UniqueMutatedVaalLifeRegenerationRatePercentage",
     "Name": ""
   },
   {
     "_index": 14464,
-    "Id": "UniqueMutatedVaalAreaOfEffectIfKilledRecently",
+    "Id": "UniqueMutatedVaalIgniteChanceIncrease1",
     "Name": ""
   },
   {
     "_index": 14465,
-    "Id": "UniqueMutatedVaalSpellChanceToFireTwoAdditionalProjectiles",
+    "Id": "UniqueMutatedVaalIgniteEffect",
     "Name": ""
   },
   {
     "_index": 14466,
-    "Id": "UniqueMutatedVaalEnergyGeneration",
+    "Id": "UniqueMutatedVaalChanceToGainAdditionalRandomCharge",
     "Name": ""
   },
   {
     "_index": 14467,
-    "Id": "UniqueMutatedVaalAilmentChance",
+    "Id": "UniqueMutatedVaalChargeDuration",
     "Name": ""
   },
   {
     "_index": 14468,
-    "Id": "UniqueMutatedVaalManaCostEfficiency2",
+    "Id": "UniqueMutatedVaalPoisonStackCount",
     "Name": ""
   },
   {
     "_index": 14469,
-    "Id": "UniqueMutatedVaalLocalSoulCoreAlsoGainBenefitsFromHelmet",
+    "Id": "UniqueMutatedVaalDeflectDamageTakenRecoupedAsLife",
     "Name": ""
   },
   {
     "_index": 14470,
-    "Id": "UniqueMutatedVaalLocalSoulCoreAlsoGainBenefitsFromGloves",
+    "Id": "UniqueMutatedVaalGoldFoundIncrease",
     "Name": ""
   },
   {
     "_index": 14471,
-    "Id": "UniqueMutatedVaalLocalSoulCoreAlsoGainBenefitsFromBoots",
+    "Id": "UniqueMutatedVaalLightningResistance",
     "Name": ""
   },
   {
     "_index": 14472,
-    "Id": "UniqueMutatedVaalEnergyShieldDelay1",
+    "Id": "UniqueMutatedVaalLifeRegenerationWhileSurrounded",
     "Name": ""
   },
   {
     "_index": 14473,
-    "Id": "UniqueMutatedVaalSkillCostEfficiency1",
+    "Id": "UniqueMutatedVaalLocalPhysicalDamageReductionRating1",
     "Name": ""
   },
   {
     "_index": 14474,
-    "Id": "UniqueMutatedVaalPresenceRadius1",
+    "Id": "UniqueMutatedVaalPercentageStrength",
     "Name": ""
   },
   {
     "_index": 14475,
-    "Id": "UniqueMutatedVaalLifeCostEfficiency",
+    "Id": "UniqueMutatedVaalAreaOfEffectIfKilledRecently",
     "Name": ""
   },
   {
     "_index": 14476,
-    "Id": "UniqueMutatedVaalEvasionRatingPercentWhileSprinting",
+    "Id": "UniqueMutatedVaalSpellChanceToFireTwoAdditionalProjectiles",
     "Name": ""
   },
   {
     "_index": 14477,
-    "Id": "UniqueMutatedVaalProjectileSpeed",
+    "Id": "UniqueMutatedVaalEnergyGeneration",
     "Name": ""
   },
   {
     "_index": 14478,
-    "Id": "IncursionChestArchitectPresentSecondaryQuantity",
+    "Id": "UniqueMutatedVaalAilmentChance",
     "Name": ""
   },
   {
     "_index": 14479,
-    "Id": "IncursionChestArchitectPresentSecondaryRarity",
+    "Id": "UniqueMutatedVaalManaCostEfficiency2",
     "Name": ""
   },
   {
     "_index": 14480,
-    "Id": "IncursionChestArchitectPresentPrimaryQuantity",
+    "Id": "UniqueMutatedVaalLocalSoulCoreAlsoGainBenefitsFromHelmet",
     "Name": ""
   },
   {
     "_index": 14481,
-    "Id": "IncursionChestArchitectPresentPrimaryRarity",
+    "Id": "UniqueMutatedVaalLocalSoulCoreAlsoGainBenefitsFromGloves",
     "Name": ""
   },
   {
     "_index": 14482,
-    "Id": "IncursionChestAtziriSecondaryQuantity",
+    "Id": "UniqueMutatedVaalLocalSoulCoreAlsoGainBenefitsFromBoots",
     "Name": ""
   },
   {
     "_index": 14483,
-    "Id": "IncursionChestAtziriSecondaryRarity",
+    "Id": "UniqueMutatedVaalEnergyShieldDelay1",
     "Name": ""
   },
   {
     "_index": 14484,
-    "Id": "IncursionChestAtziriPrimaryQuantity",
+    "Id": "UniqueMutatedVaalSkillCostEfficiency1",
     "Name": ""
   },
   {
     "_index": 14485,
-    "Id": "IncursionChestAtziriPrimaryRarity",
+    "Id": "UniqueMutatedVaalPresenceRadius1",
     "Name": ""
   },
   {
     "_index": 14486,
-    "Id": "IncursionChestAtziriPrimaryItemLevel",
+    "Id": "UniqueMutatedVaalLifeCostEfficiency",
     "Name": ""
   },
   {
     "_index": 14487,
-    "Id": "IncursionChestVaultTier1Quantity",
+    "Id": "UniqueMutatedVaalEvasionRatingPercentWhileSprinting",
     "Name": ""
   },
   {
     "_index": 14488,
-    "Id": "IncursionChestVaultTier1Rarity",
+    "Id": "UniqueMutatedVaalProjectileSpeed",
     "Name": ""
   },
   {
     "_index": 14489,
-    "Id": "IncursionChestVaultTier2Quantity",
+    "Id": "IncursionChestArchitectPresentSecondaryQuantity",
     "Name": ""
   },
   {
     "_index": 14490,
-    "Id": "IncursionChestVaultTier2Rarity",
+    "Id": "IncursionChestArchitectPresentSecondaryRarity",
     "Name": ""
   },
   {
     "_index": 14491,
-    "Id": "IncursionChestVaultTier3Quantity",
+    "Id": "IncursionChestArchitectPresentPrimaryQuantity",
     "Name": ""
   },
   {
     "_index": 14492,
-    "Id": "IncursionChestVaultTier3Rarity",
+    "Id": "IncursionChestArchitectPresentPrimaryRarity",
     "Name": ""
   },
   {
     "_index": 14493,
-    "Id": "CampaignAbyssHiddenGuaranteeDepths",
+    "Id": "IncursionChestAtziriSecondaryQuantity",
     "Name": ""
   },
   {
     "_index": 14494,
-    "Id": "IncursionChestGeneralRarirty",
+    "Id": "IncursionChestAtziriSecondaryRarity",
     "Name": ""
   },
   {
     "_index": 14495,
-    "Id": "IncursionChestVaultCorruption",
+    "Id": "IncursionChestAtziriPrimaryQuantity",
     "Name": ""
   },
   {
     "_index": 14496,
-    "Id": "IncursionMapHiddenChestIncrease",
+    "Id": "IncursionChestAtziriPrimaryRarity",
     "Name": ""
   },
   {
     "_index": 14497,
-    "Id": "UniqueMutatedVaalGainSoulEaterStackOnHit",
+    "Id": "IncursionChestAtziriPrimaryItemLevel",
     "Name": ""
   },
   {
     "_index": 14498,
-    "Id": "UniqueMutatedVaalPowerFrenzyOrEnduranceChargeOnKill",
+    "Id": "IncursionChestVaultTier1Quantity",
     "Name": ""
   },
   {
     "_index": 14499,
-    "Id": "UniqueMutatedVaalLocalEnergyShield",
+    "Id": "IncursionChestVaultTier1Rarity",
     "Name": ""
   },
   {
     "_index": 14500,
-    "Id": "UniqueMutatedVaalMaximumRagePerGlorySkillUsed",
+    "Id": "IncursionChestVaultTier2Quantity",
     "Name": ""
   },
   {
     "_index": 14501,
-    "Id": "UniqueMutatedVaalMaxRageFromRageOnHitChance",
+    "Id": "IncursionChestVaultTier2Rarity",
     "Name": ""
   },
   {
     "_index": 14502,
-    "Id": "UniqueMutatedVaalIncreasedAttackSpeed",
+    "Id": "IncursionChestVaultTier3Quantity",
     "Name": ""
   },
   {
     "_index": 14503,
-    "Id": "UniqueMutatedVaalArmourAppliesToElementalDamage",
+    "Id": "IncursionChestVaultTier3Rarity",
     "Name": ""
   },
   {
     "_index": 14504,
-    "Id": "UniqueMutatedVaalCharmChargeGeneration",
+    "Id": "CampaignAbyssHiddenGuaranteeDepths",
     "Name": ""
   },
   {
     "_index": 14505,
-    "Id": "UniqueMutatedVaalRemoveBleedOnLifeFlaskUse",
+    "Id": "IncursionChestGeneralRarirty",
     "Name": ""
   },
   {
     "_index": 14506,
-    "Id": "UniqueMutatedVaalChanceToNotConsumeInfusion",
+    "Id": "IncursionChestVaultCorruption",
     "Name": ""
   },
   {
     "_index": 14507,
-    "Id": "UniqueMutatedVaalSpellSkillProjectileSpeed",
+    "Id": "IncursionMapHiddenChestIncrease",
     "Name": ""
   },
   {
     "_index": 14508,
-    "Id": "UniqueMutatedVaalSpellsFire8AdditionalProjectileChance",
+    "Id": "UniqueMutatedVaalGainSoulEaterStackOnHit",
     "Name": ""
   },
   {
     "_index": 14509,
-    "Id": "UniqueMutatedVaalGlobalSkillGemLevel",
+    "Id": "UniqueMutatedVaalPowerFrenzyOrEnduranceChargeOnKill",
     "Name": ""
   },
   {
     "_index": 14510,
-    "Id": "UniqueMutatedVaalGlobalSkillGemQuality",
+    "Id": "UniqueMutatedVaalLocalEnergyShield",
     "Name": ""
   },
   {
     "_index": 14511,
-    "Id": "UniqueMutatedVaalBaseSpirit",
+    "Id": "UniqueMutatedVaalMaximumRagePerGlorySkillUsed",
     "Name": ""
   },
   {
     "_index": 14512,
-    "Id": "UniqueMutatedVaalPercentageAllAttributes",
+    "Id": "UniqueMutatedVaalMaxRageFromRageOnHitChance",
     "Name": ""
   },
   {
     "_index": 14513,
-    "Id": "UniqueMutatedVaalLocalPhysicalDamage1",
+    "Id": "UniqueMutatedVaalIncreasedAttackSpeed",
     "Name": ""
   },
   {
     "_index": 14514,
-    "Id": "UniqueMutatedVaalAftershockChance",
+    "Id": "UniqueMutatedVaalArmourAppliesToElementalDamage",
     "Name": ""
   },
   {
     "_index": 14515,
-    "Id": "UniqueMutatedVaalManaCostEfficiency3",
+    "Id": "UniqueMutatedVaalCharmChargeGeneration",
     "Name": ""
   },
   {
     "_index": 14516,
-    "Id": "UniqueMutatedVaalLifeCostEfficiency1",
+    "Id": "UniqueMutatedVaalRemoveBleedOnLifeFlaskUse",
     "Name": ""
   },
   {
     "_index": 14517,
-    "Id": "UniqueMutatedVaalMaximumLifeIncreasePercent1",
+    "Id": "UniqueMutatedVaalChanceToNotConsumeInfusion",
     "Name": ""
   },
   {
     "_index": 14518,
-    "Id": "UniqueMutatedVaalLifeRegenerationRatePercentage1",
+    "Id": "UniqueMutatedVaalSpellSkillProjectileSpeed",
     "Name": ""
   },
   {
     "_index": 14519,
-    "Id": "UniqueMutatedVaalLifeLeechFromThorns",
+    "Id": "UniqueMutatedVaalSpellsFire8AdditionalProjectileChance",
     "Name": ""
   },
   {
     "_index": 14520,
-    "Id": "UniqueMutatedVaalGlobalFlaskLifeRecovery",
+    "Id": "UniqueMutatedVaalGlobalSkillGemLevel",
     "Name": ""
   },
   {
     "_index": 14521,
-    "Id": "UniqueMutatedVaalLocalPhysicalDamageReductionRating2",
+    "Id": "UniqueMutatedVaalGlobalSkillGemQuality",
     "Name": ""
   },
   {
     "_index": 14522,
-    "Id": "UniqueMutatedVaalLifeFlaskChargePercentGeneration",
+    "Id": "UniqueMutatedVaalBaseSpirit",
     "Name": ""
   },
   {
     "_index": 14523,
-    "Id": "UniqueMutatedVaalLocalArmourAndEnergyShield",
+    "Id": "UniqueMutatedVaalPercentageAllAttributes",
     "Name": ""
   },
   {
     "_index": 14524,
-    "Id": "UniqueMutatedVaalGoldFoundIncrease1",
+    "Id": "UniqueMutatedVaalLocalPhysicalDamage1",
     "Name": ""
   },
   {
     "_index": 14525,
-    "Id": "UniqueMutatedVaalLightRadiusModifiersApplyToAreaOfEffect",
+    "Id": "UniqueMutatedVaalAftershockChance",
     "Name": ""
   },
   {
     "_index": 14526,
-    "Id": "UniqueMutatedVaalProjectileForkChanceIfMeleeRecently",
+    "Id": "UniqueMutatedVaalManaCostEfficiency3",
     "Name": ""
   },
   {
     "_index": 14527,
-    "Id": "UniqueMutatedVaalIncreasedWeaponElementalDamagePercent",
+    "Id": "UniqueMutatedVaalLifeCostEfficiency1",
     "Name": ""
   },
   {
     "_index": 14528,
-    "Id": "UniqueMutatedVaalLocalBaseCriticalStrikeChance",
+    "Id": "UniqueMutatedVaalMaximumLifeIncreasePercent1",
     "Name": ""
   },
   {
     "_index": 14529,
-    "Id": "UniqueMutatedVaalTreatResistsAsInvertedChance",
+    "Id": "UniqueMutatedVaalLifeRegenerationRatePercentage1",
     "Name": ""
   },
   {
     "_index": 14530,
-    "Id": "UniqueMutatedVaalAtziriSplendourArmour1",
+    "Id": "UniqueMutatedVaalLifeLeechFromThorns",
     "Name": ""
   },
   {
     "_index": 14531,
-    "Id": "UniqueMutatedVaalAtziriSplendourEvasion1",
+    "Id": "UniqueMutatedVaalGlobalFlaskLifeRecovery",
     "Name": ""
   },
   {
     "_index": 14532,
-    "Id": "UniqueMutatedVaalAtziriSplendourEnergyShield1",
+    "Id": "UniqueMutatedVaalLocalPhysicalDamageReductionRating2",
     "Name": ""
   },
   {
     "_index": 14533,
-    "Id": "UniqueMutatedVaalLocalSoulCoreEffect",
+    "Id": "UniqueMutatedVaalLifeFlaskChargePercentGeneration",
     "Name": ""
   },
   {
     "_index": 14534,
-    "Id": "UniqueMutatedVaalSkillCostEfficiency2",
+    "Id": "UniqueMutatedVaalLocalArmourAndEnergyShield",
     "Name": ""
   },
   {
     "_index": 14535,
-    "Id": "UniqueMutatedVaalIgniteEffect1",
+    "Id": "UniqueMutatedVaalGoldFoundIncrease1",
     "Name": ""
   },
   {
     "_index": 14536,
-    "Id": "UniqueMutatedVaalChillEffect",
+    "Id": "UniqueMutatedVaalLightRadiusModifiersApplyToAreaOfEffect",
     "Name": ""
   },
   {
     "_index": 14537,
-    "Id": "UniqueMutatedVaalFreezeDuration",
+    "Id": "UniqueMutatedVaalProjectileForkChanceIfMeleeRecently",
     "Name": ""
   },
   {
     "_index": 14538,
-    "Id": "UniqueMutatedVaalShockEffect",
+    "Id": "UniqueMutatedVaalIncreasedWeaponElementalDamagePercent",
     "Name": ""
   },
   {
     "_index": 14539,
-    "Id": "UniqueMutatedVaalCurseEffectiveness",
+    "Id": "UniqueMutatedVaalLocalBaseCriticalStrikeChance",
     "Name": ""
   },
   {
     "_index": 14540,
-    "Id": "UniqueMutatedVaalReflectElementalAilmentsToSelf",
+    "Id": "UniqueMutatedVaalTreatResistsAsInvertedChance",
     "Name": ""
   },
   {
     "_index": 14541,
-    "Id": "UniqueMutatedVaalZealotsOath",
+    "Id": "UniqueMutatedVaalAtziriSplendourArmour1",
     "Name": ""
   },
   {
     "_index": 14542,
-    "Id": "UniqueMutatedVaalEnergyShieldRecoveryRate",
+    "Id": "UniqueMutatedVaalAtziriSplendourEvasion1",
     "Name": ""
   },
   {
     "_index": 14543,
-    "Id": "UniqueMutatedVaalMaximumManaIncreasePercent",
+    "Id": "UniqueMutatedVaalAtziriSplendourEnergyShield1",
     "Name": ""
   },
   {
     "_index": 14544,
-    "Id": "UniqueMutatedVaalManaLeechPermyriad",
+    "Id": "UniqueMutatedVaalLocalSoulCoreEffect",
     "Name": ""
   },
   {
     "_index": 14545,
-    "Id": "UniqueMutatedVaalEnergyOnFullMana",
+    "Id": "UniqueMutatedVaalSkillCostEfficiency2",
     "Name": ""
   },
   {
     "_index": 14546,
-    "Id": "UniqueMutatedVaalGainPowerChargesNotLostRecently",
+    "Id": "UniqueMutatedVaalIgniteEffect1",
     "Name": ""
   },
   {
     "_index": 14547,
-    "Id": "UniqueMutatedVaalReducedShockEffectOnSelf",
+    "Id": "UniqueMutatedVaalChillEffect",
     "Name": ""
   },
   {
     "_index": 14548,
-    "Id": "UniqueMutatedVaalManaGainedOnPowerChargeConsumption",
+    "Id": "UniqueMutatedVaalFreezeDuration",
     "Name": ""
   },
   {
     "_index": 14549,
-    "Id": "UniqueMutatedVaalArcaneSurgeEffect",
+    "Id": "UniqueMutatedVaalShockEffect",
     "Name": ""
   },
   {
     "_index": 14550,
-    "Id": "UniqueMutatedVaalMaximumLifeConvertedToEnergyShield",
+    "Id": "UniqueMutatedVaalCurseEffectiveness",
     "Name": ""
   },
   {
     "_index": 14551,
-    "Id": "UniqueMutatedVaalLocalEvasionRating1",
+    "Id": "UniqueMutatedVaalReflectElementalAilmentsToSelf",
     "Name": ""
   },
   {
     "_index": 14552,
-    "Id": "UniqueMutatedVaalIncreasedAttackSpeed1",
+    "Id": "UniqueMutatedVaalZealotsOath",
     "Name": ""
   },
   {
     "_index": 14553,
-    "Id": "UniqueMutatedVaalTotemDamagePerCurseOnSelf",
+    "Id": "UniqueMutatedVaalEnergyShieldRecoveryRate",
     "Name": ""
   },
   {
     "_index": 14554,
-    "Id": "UniqueMutatedVaalBaseSpirit1",
+    "Id": "UniqueMutatedVaalMaximumManaIncreasePercent",
     "Name": ""
   },
   {
     "_index": 14555,
-    "Id": "UniqueMutatedVaalPresenceRadius2",
+    "Id": "UniqueMutatedVaalManaLeechPermyriad",
     "Name": ""
   },
   {
     "_index": 14556,
-    "Id": "UniqueMutatedVaalGlobalIncreaseMinionSpellSkillGemLevel",
+    "Id": "UniqueMutatedVaalEnergyOnFullMana",
     "Name": ""
   },
   {
     "_index": 14557,
-    "Id": "UniqueMutatedVaalBurningEnemiesExplodeChance",
+    "Id": "UniqueMutatedVaalGainPowerChargesNotLostRecently",
     "Name": ""
   },
   {
     "_index": 14558,
-    "Id": "UniqueMutatedVaalGlobalFireGemLevel",
+    "Id": "UniqueMutatedVaalReducedShockEffectOnSelf",
     "Name": ""
   },
   {
     "_index": 14559,
-    "Id": "UniqueMutatedVaalLifeRegenerationRatePercentageWhileIgnited",
+    "Id": "UniqueMutatedVaalManaGainedOnPowerChargeConsumption",
     "Name": ""
   },
   {
     "_index": 14560,
-    "Id": "UniqueMutatedVaalEvasionOnLowLife",
+    "Id": "UniqueMutatedVaalArcaneSurgeEffect",
     "Name": ""
   },
   {
     "_index": 14561,
-    "Id": "UniqueMutatedVaalLifeRegenerationOnLowLife",
+    "Id": "UniqueMutatedVaalMaximumLifeConvertedToEnergyShield",
     "Name": ""
   },
   {
     "_index": 14562,
-    "Id": "UniqueMutatedVaalGlobalChanceToBlindOnHit",
+    "Id": "UniqueMutatedVaalLocalEvasionRating1",
     "Name": ""
   },
   {
     "_index": 14563,
-    "Id": "UniqueMutatedVaalPoisonEffectOnNonPoisoned",
+    "Id": "UniqueMutatedVaalIncreasedAttackSpeed1",
     "Name": ""
   },
   {
     "_index": 14564,
-    "Id": "UniqueMutatedVaalGlobalChaosGemLevel",
+    "Id": "UniqueMutatedVaalTotemDamagePerCurseOnSelf",
     "Name": ""
   },
   {
     "_index": 14565,
-    "Id": "UniqueMutatedVaalMaximumLifeIncreasePercent2",
+    "Id": "UniqueMutatedVaalBaseSpirit1",
     "Name": ""
   },
   {
     "_index": 14566,
-    "Id": "UniqueMutatedVaalDamageRemovedFromManaBeforeLifeWhileNotLowMana",
+    "Id": "UniqueMutatedVaalPresenceRadius2",
     "Name": ""
   },
   {
     "_index": 14567,
-    "Id": "UniqueMutatedVaalDamageTakenGoesToLifeManaESPercent",
+    "Id": "UniqueMutatedVaalGlobalIncreaseMinionSpellSkillGemLevel",
     "Name": ""
   },
   {
     "_index": 14568,
-    "Id": "UniqueMutatedVaalVolatilityDamageTakenAsColdPercent",
+    "Id": "UniqueMutatedVaalBurningEnemiesExplodeChance",
     "Name": ""
   },
   {
     "_index": 14569,
-    "Id": "UniqueMutatedVaalIceCrystalMaximumLife",
+    "Id": "UniqueMutatedVaalGlobalFireGemLevel",
     "Name": ""
   },
   {
     "_index": 14570,
-    "Id": "UniqueMutatedVaalEnergyShieldRechargeRatePer4Strength",
+    "Id": "UniqueMutatedVaalLifeRegenerationRatePercentageWhileIgnited",
     "Name": ""
   },
   {
     "_index": 14571,
-    "Id": "UniqueMutatedVaalMaximumLifeConvertedToEnergyShield1",
+    "Id": "UniqueMutatedVaalEvasionOnLowLife",
     "Name": ""
   },
   {
     "_index": 14572,
-    "Id": "UniqueMutatedVaalLocalEnergyShield2",
+    "Id": "UniqueMutatedVaalLifeRegenerationOnLowLife",
     "Name": ""
   },
   {
     "_index": 14573,
-    "Id": "UniqueMutatedVaalPercentOfLeechIsInstant",
+    "Id": "UniqueMutatedVaalGlobalChanceToBlindOnHit",
     "Name": ""
   },
   {
     "_index": 14574,
-    "Id": "UniqueMutatedVaalPoisonDurationIfConsumedFrenzyChargeRecently",
+    "Id": "UniqueMutatedVaalPoisonEffectOnNonPoisoned",
     "Name": ""
   },
   {
     "_index": 14575,
-    "Id": "UniqueMutatedVaalReducedPoisonDuration",
+    "Id": "UniqueMutatedVaalGlobalChaosGemLevel",
     "Name": ""
   },
   {
     "_index": 14576,
-    "Id": "UniqueMutatedVaalChanceToGainAdditionalPowerCharge",
+    "Id": "UniqueMutatedVaalMaximumLifeIncreasePercent2",
     "Name": ""
   },
   {
     "_index": 14577,
-    "Id": "UniqueMutatedVaalCriticalStrikeMultiplierIfConsumedPowerChargeRecently",
+    "Id": "UniqueMutatedVaalDamageRemovedFromManaBeforeLifeWhileNotLowMana",
     "Name": ""
   },
   {
     "_index": 14578,
-    "Id": "UniqueMutatedVaalIncreasedPowerChargeDuration",
+    "Id": "UniqueMutatedVaalDamageTakenGoesToLifeManaESPercent",
     "Name": ""
   },
   {
     "_index": 14579,
-    "Id": "UniqueMutatedVaalPoisonEffectWhilePoisoned",
+    "Id": "UniqueMutatedVaalVolatilityDamageTakenAsColdPercent",
     "Name": ""
   },
   {
     "_index": 14580,
-    "Id": "UniqueMutatedVaalChaosResistance1",
+    "Id": "UniqueMutatedVaalIceCrystalMaximumLife",
     "Name": ""
   },
   {
     "_index": 14581,
-    "Id": "UniqueMutatedVaalGlobalFireGemLevel1",
+    "Id": "UniqueMutatedVaalEnergyShieldRechargeRatePer4Strength",
     "Name": ""
   },
   {
     "_index": 14582,
-    "Id": "UniqueMutatedVaalElementalExposureEffectOnHitWithMagnitude",
+    "Id": "UniqueMutatedVaalMaximumLifeConvertedToEnergyShield1",
     "Name": ""
   },
   {
     "_index": 14583,
-    "Id": "UniqueMutatedVaalChargeChanceToNotConsume",
+    "Id": "UniqueMutatedVaalLocalEnergyShield2",
     "Name": ""
   },
   {
     "_index": 14584,
-    "Id": "UniqueMutatedVaalIncreasedChaosDamage",
+    "Id": "UniqueMutatedVaalPercentOfLeechIsInstant",
     "Name": ""
   },
   {
     "_index": 14585,
-    "Id": "UniqueMutatedVaalDeflectDamageTaken",
+    "Id": "UniqueMutatedVaalPoisonDurationIfConsumedFrenzyChargeRecently",
     "Name": ""
   },
   {
     "_index": 14586,
-    "Id": "UniqueMutatedVaalAttackDamageWhileSurrounded",
+    "Id": "UniqueMutatedVaalReducedPoisonDuration",
     "Name": ""
   },
   {
     "_index": 14587,
-    "Id": "UniqueMutatedVaalElementalPenetrationBelowZero",
+    "Id": "UniqueMutatedVaalChanceToGainAdditionalPowerCharge",
     "Name": ""
   },
   {
     "_index": 14588,
-    "Id": "UniqueMutatedVaalLocalPhysicalDamageReductionRating3",
+    "Id": "UniqueMutatedVaalCriticalStrikeMultiplierIfConsumedPowerChargeRecently",
     "Name": ""
   },
   {
     "_index": 14589,
-    "Id": "UniqueMutatedVaalLightningResistancePenetration",
+    "Id": "UniqueMutatedVaalIncreasedPowerChargeDuration",
     "Name": ""
   },
   {
     "_index": 14590,
-    "Id": "UniqueMutatedVaalSurroundedAreaOfEffect1",
+    "Id": "UniqueMutatedVaalPoisonEffectWhilePoisoned",
     "Name": ""
   },
   {
     "_index": 14591,
-    "Id": "UniqueMutatedVaalCorruptedRareJewelModEffect",
+    "Id": "UniqueMutatedVaalChaosResistance1",
     "Name": ""
   },
   {
     "_index": 14592,
-    "Id": "UniqueMutatedVaalIncreasedArmourForJewel",
+    "Id": "UniqueMutatedVaalGlobalFireGemLevel1",
     "Name": ""
   },
   {
     "_index": 14593,
-    "Id": "UniqueMutatedVaalIncreasedEvasionForJewel",
+    "Id": "UniqueMutatedVaalElementalExposureEffectOnHitWithMagnitude",
     "Name": ""
   },
   {
     "_index": 14594,
-    "Id": "UniqueMutatedVaalIncreasedEnergyShieldForJewel",
+    "Id": "UniqueMutatedVaalChargeChanceToNotConsume",
     "Name": ""
   },
   {
     "_index": 14595,
-    "Id": "UniqueMutatedVaalFireDamagePercentage1",
+    "Id": "UniqueMutatedVaalIncreasedChaosDamage",
     "Name": ""
   },
   {
     "_index": 14596,
-    "Id": "UniqueMutatedVaalColdDamagePercentage1",
+    "Id": "UniqueMutatedVaalDeflectDamageTaken",
     "Name": ""
   },
   {
     "_index": 14597,
-    "Id": "UniqueMutatedVaalLightningDamagePercentage1",
+    "Id": "UniqueMutatedVaalAttackDamageWhileSurrounded",
     "Name": ""
   },
   {
     "_index": 14598,
-    "Id": "UniqueMutatedVaalIncreasedChaosDamage1",
+    "Id": "UniqueMutatedVaalElementalPenetrationBelowZero",
     "Name": ""
   },
   {
     "_index": 14599,
-    "Id": "UniqueMutatedVaalMinionDamage",
+    "Id": "UniqueMutatedVaalLocalPhysicalDamageReductionRating3",
     "Name": ""
   },
   {
     "_index": 14600,
-    "Id": "UniqueMutatedVaalHiddenNonStat",
+    "Id": "UniqueMutatedVaalLightningResistancePenetration",
     "Name": ""
   },
   {
     "_index": 14601,
-    "Id": "UniqueMutatedVaalHiddenNonStat1",
+    "Id": "UniqueMutatedVaalSurroundedAreaOfEffect1",
     "Name": ""
   },
   {
     "_index": 14602,
-    "Id": "UniqueMutatedVaalSpellAilmentEffectPerLife",
+    "Id": "UniqueMutatedVaalCorruptedRareJewelModEffect",
     "Name": ""
   },
   {
     "_index": 14603,
-    "Id": "UniqueMutatedVaalSpellCriticalChancePerMana",
+    "Id": "UniqueMutatedVaalIncreasedArmourForJewel",
     "Name": ""
   },
   {
     "_index": 14604,
-    "Id": "UniqueMutatedVaalSpellDamagePerMana",
+    "Id": "UniqueMutatedVaalIncreasedEvasionForJewel",
     "Name": ""
   },
   {
     "_index": 14605,
-    "Id": "UniqueMutatedVaalAdditionalArrowPierce",
+    "Id": "UniqueMutatedVaalIncreasedEnergyShieldForJewel",
     "Name": ""
   },
   {
     "_index": 14606,
-    "Id": "UniqueMutatedVaalLifeCostEfficiency2",
+    "Id": "UniqueMutatedVaalFireDamagePercentage1",
     "Name": ""
   },
   {
     "_index": 14607,
-    "Id": "UniqueMutatedVaalMaximumLifeConvertedToEnergyShield2",
+    "Id": "UniqueMutatedVaalColdDamagePercentage1",
     "Name": ""
   },
   {
     "_index": 14608,
-    "Id": "UniqueMutatedVaalSpellDamageLifeLeech",
+    "Id": "UniqueMutatedVaalLightningDamagePercentage1",
     "Name": ""
   },
   {
     "_index": 14609,
-    "Id": "UniqueMutatedVaalGlancingBlows",
+    "Id": "UniqueMutatedVaalIncreasedChaosDamage1",
     "Name": ""
   },
   {
     "_index": 14610,
-    "Id": "UniqueMutatedVaalGlobalDeflectionRatingWhileMoving",
+    "Id": "UniqueMutatedVaalMinionDamage",
     "Name": ""
   },
   {
     "_index": 14611,
-    "Id": "UniqueMutatedVaalLocalEvasionRating2",
+    "Id": "UniqueMutatedVaalHiddenNonStat",
     "Name": ""
   },
   {
     "_index": 14612,
-    "Id": "UniqueMutatedVaalRandomKeystoneFromTable",
+    "Id": "UniqueMutatedVaalHiddenNonStat1",
     "Name": ""
   },
   {
     "_index": 14613,
-    "Id": "UniqueMutatedVaalVivisectionPriceLife",
+    "Id": "UniqueMutatedVaalSpellAilmentEffectPerLife",
     "Name": ""
   },
   {
     "_index": 14614,
-    "Id": "UniqueMutatedVaalVivisectionPriceMana",
+    "Id": "UniqueMutatedVaalSpellCriticalChancePerMana",
     "Name": ""
   },
   {
     "_index": 14615,
-    "Id": "UniqueMutatedVaalVivisectionPriceDefences",
+    "Id": "UniqueMutatedVaalSpellDamagePerMana",
     "Name": ""
   },
   {
     "_index": 14616,
-    "Id": "UniqueMutatedVaalVivisectionPriceSpirit",
+    "Id": "UniqueMutatedVaalAdditionalArrowPierce",
     "Name": ""
   },
   {
     "_index": 14617,
-    "Id": "UniqueMutatedVaalVivisectionPriceMovementSpeed",
+    "Id": "UniqueMutatedVaalLifeCostEfficiency2",
     "Name": ""
   },
   {
     "_index": 14618,
-    "Id": "UniqueMutatedVaalVivisectionPriceDamage",
+    "Id": "UniqueMutatedVaalMaximumLifeConvertedToEnergyShield2",
     "Name": ""
   },
   {
     "_index": 14619,
-    "Id": "JewelRadiusShapeshiftSpeed",
-    "Name": "of the Wild"
+    "Id": "UniqueMutatedVaalSpellDamageLifeLeech",
+    "Name": ""
   },
   {
     "_index": 14620,
-    "Id": "JewelRadiusShapeshiftDamage",
-    "Name": "Bestial"
+    "Id": "UniqueMutatedVaalGlancingBlows",
+    "Name": ""
   },
   {
     "_index": 14621,
-    "Id": "JewelRadiusPlantDamage",
-    "Name": "Overgrown"
+    "Id": "UniqueMutatedVaalGlobalDeflectionRatingWhileMoving",
+    "Name": ""
   },
   {
     "_index": 14622,
-    "Id": "JewelShapeshiftSpeed",
-    "Name": "of the Wild"
+    "Id": "UniqueMutatedVaalLocalEvasionRating2",
+    "Name": ""
   },
   {
     "_index": 14623,
-    "Id": "JewelShapeshiftDamage",
-    "Name": "Bestial"
+    "Id": "UniqueMutatedVaalRandomKeystoneFromTable",
+    "Name": ""
   },
   {
     "_index": 14624,
-    "Id": "JewelPlantDamage",
-    "Name": "Overgrown"
+    "Id": "UniqueMutatedVaalVivisectionPriceLife",
+    "Name": ""
   },
   {
     "_index": 14625,
-    "Id": "AbyssModBootsUlamanSuffixLifeRegenMoving",
-    "Name": "of Ulaman"
+    "Id": "UniqueMutatedVaalVivisectionPriceMana",
+    "Name": ""
   },
   {
     "_index": 14626,
-    "Id": "UniqueMutatedVaalDamageAsExtraFire",
+    "Id": "UniqueMutatedVaalVivisectionPriceDefences",
     "Name": ""
   },
   {
     "_index": 14627,
-    "Id": "UniqueMutatedVaalLocalPhysicalDamage",
+    "Id": "UniqueMutatedVaalVivisectionPriceSpirit",
     "Name": ""
   },
   {
     "_index": 14628,
-    "Id": "UniqueMutatedVaalLocalCriticalStrikeChance",
+    "Id": "UniqueMutatedVaalVivisectionPriceMovementSpeed",
     "Name": ""
   },
   {
     "_index": 14629,
-    "Id": "UniqueMutatedVaalSpellChanceToFireTwoAdditionalProjectiles1",
+    "Id": "UniqueMutatedVaalVivisectionPriceDamage",
     "Name": ""
   },
   {
     "_index": 14630,
+    "Id": "JewelRadiusShapeshiftSpeed",
+    "Name": "of the Wild"
+  },
+  {
+    "_index": 14631,
+    "Id": "JewelRadiusShapeshiftDamage",
+    "Name": "Bestial"
+  },
+  {
+    "_index": 14632,
+    "Id": "JewelRadiusPlantDamage",
+    "Name": "Overgrown"
+  },
+  {
+    "_index": 14633,
+    "Id": "JewelShapeshiftSpeed",
+    "Name": "of the Wild"
+  },
+  {
+    "_index": 14634,
+    "Id": "JewelShapeshiftDamage",
+    "Name": "Bestial"
+  },
+  {
+    "_index": 14635,
+    "Id": "JewelPlantDamage",
+    "Name": "Overgrown"
+  },
+  {
+    "_index": 14636,
+    "Id": "AbyssModBootsUlamanSuffixLifeRegenMoving",
+    "Name": "of Ulaman"
+  },
+  {
+    "_index": 14637,
+    "Id": "UniqueMutatedVaalDamageAsExtraFire",
+    "Name": ""
+  },
+  {
+    "_index": 14638,
+    "Id": "UniqueMutatedVaalLocalPhysicalDamage",
+    "Name": ""
+  },
+  {
+    "_index": 14639,
+    "Id": "UniqueMutatedVaalLocalCriticalStrikeChance",
+    "Name": ""
+  },
+  {
+    "_index": 14640,
+    "Id": "UniqueMutatedVaalSpellChanceToFireTwoAdditionalProjectiles1",
+    "Name": ""
+  },
+  {
+    "_index": 14641,
     "Id": "UniqueMutatedVaalLocalPhysicalDamagePercent",
     "Name": ""
   },
   {
-    "_index": 14631,
+    "_index": 14642,
     "Id": "UniqueMutatedVaalFireExposureOnHit",
     "Name": ""
   },
   {
-    "_index": 14632,
+    "_index": 14643,
     "Id": "UniqueMutatedVaalCullingStrikeLocalVsBleeding",
     "Name": ""
   },
   {
-    "_index": 14633,
+    "_index": 14644,
     "Id": "UniqueMutatedVaalLocalIncreasedEvasionAndEnergyShield",
     "Name": ""
   },
   {
-    "_index": 14634,
+    "_index": 14645,
     "Id": "UniqueMutatedVaalLocalEnergyShield3",
     "Name": ""
   },
   {
-    "_index": 14635,
+    "_index": 14646,
     "Id": "UniqueMutatedVaalPhysicalDamagePercent",
+    "Name": ""
+  },
+  {
+    "_index": 14647,
+    "Id": "IncursionMapSpymasterIncreasedEffectOfRooms",
+    "Name": ""
+  },
+  {
+    "_index": 14648,
+    "Id": "IncursionMapGolemworksIncreasedEffectOfRooms",
+    "Name": ""
+  },
+  {
+    "_index": 14649,
+    "Id": "IncursionMapThaumaturgeIncreasedEffectOfRooms",
+    "Name": ""
+  },
+  {
+    "_index": 14650,
+    "Id": "CorruptionUpgradeLocalIncreasedPhysicalDamageReductionRatingPercent1",
+    "Name": ""
+  },
+  {
+    "_index": 14651,
+    "Id": "CorruptionUpgradeLocalIncreasedEvasionRatingPercent1",
+    "Name": ""
+  },
+  {
+    "_index": 14652,
+    "Id": "CorruptionUpgradeLocalIncreasedEnergyShieldPercent1",
+    "Name": ""
+  },
+  {
+    "_index": 14653,
+    "Id": "CorruptionUpgradeLocalIncreasedArmourAndEvasion1",
+    "Name": ""
+  },
+  {
+    "_index": 14654,
+    "Id": "CorruptionUpgradeLocalIncreasedArmourAndEnergyShield1",
+    "Name": ""
+  },
+  {
+    "_index": 14655,
+    "Id": "CorruptionUpgradeLocalIncreasedEvasionAndEnergyShield1",
+    "Name": ""
+  },
+  {
+    "_index": 14656,
+    "Id": "CorruptionUpgradeReducedLocalAttributeRequirements1",
+    "Name": ""
+  },
+  {
+    "_index": 14657,
+    "Id": "CorruptionUpgradeAdditionalPhysicalDamageReduction1",
+    "Name": ""
+  },
+  {
+    "_index": 14658,
+    "Id": "CorruptionUpgradeDamageTakenGainedAsLife1",
+    "Name": ""
+  },
+  {
+    "_index": 14659,
+    "Id": "CorruptionUpgradeDamageTakenGainedAsMana1",
+    "Name": ""
+  },
+  {
+    "_index": 14660,
+    "Id": "CorruptionUpgradeLifeLeech1",
+    "Name": ""
+  },
+  {
+    "_index": 14661,
+    "Id": "CorruptionUpgradeManaLeech1",
+    "Name": ""
+  },
+  {
+    "_index": 14662,
+    "Id": "CorruptionUpgradeMaximumElementalResistance1",
+    "Name": ""
+  },
+  {
+    "_index": 14663,
+    "Id": "CorruptionUpgradeIncreasedLife1",
+    "Name": ""
+  },
+  {
+    "_index": 14664,
+    "Id": "CorruptionUpgradeIncreasedMana1",
+    "Name": ""
+  },
+  {
+    "_index": 14665,
+    "Id": "CorruptionUpgradeIncreasedPhysicalDamageReductionRatingPercent1",
+    "Name": ""
+  },
+  {
+    "_index": 14666,
+    "Id": "CorruptionUpgradeIncreasedEvasionRatingPercent1",
+    "Name": ""
+  },
+  {
+    "_index": 14667,
+    "Id": "CorruptionUpgradeIncreasedEnergyShieldPercent1",
+    "Name": ""
+  },
+  {
+    "_index": 14668,
+    "Id": "CorruptionUpgradeThornsDamageIncrease1",
+    "Name": ""
+  },
+  {
+    "_index": 14669,
+    "Id": "CorruptionUpgradeChaosResistance1",
+    "Name": ""
+  },
+  {
+    "_index": 14670,
+    "Id": "CorruptionUpgradeFireResistance1",
+    "Name": ""
+  },
+  {
+    "_index": 14671,
+    "Id": "CorruptionUpgradeColdResistance1",
+    "Name": ""
+  },
+  {
+    "_index": 14672,
+    "Id": "CorruptionUpgradeLightningResistance1",
+    "Name": ""
+  },
+  {
+    "_index": 14673,
+    "Id": "CorruptionUpgradeMaximumFireResistance1",
+    "Name": ""
+  },
+  {
+    "_index": 14674,
+    "Id": "CorruptionUpgradeMaximumColdResistance1",
+    "Name": ""
+  },
+  {
+    "_index": 14675,
+    "Id": "CorruptionUpgradeMaximumLightningResistance1",
+    "Name": ""
+  },
+  {
+    "_index": 14676,
+    "Id": "CorruptionUpgradeIncreasedSpirit1",
+    "Name": ""
+  },
+  {
+    "_index": 14677,
+    "Id": "CorruptionUpgradeFirePenetration1",
+    "Name": ""
+  },
+  {
+    "_index": 14678,
+    "Id": "CorruptionUpgradeColdPenetration1",
+    "Name": ""
+  },
+  {
+    "_index": 14679,
+    "Id": "CorruptionUpgradeLightningPenetration1",
+    "Name": ""
+  },
+  {
+    "_index": 14680,
+    "Id": "CorruptionUpgradeArmourBreak1",
+    "Name": ""
+  },
+  {
+    "_index": 14681,
+    "Id": "CorruptionUpgradeGoldFoundIncrease1",
+    "Name": ""
+  },
+  {
+    "_index": 14682,
+    "Id": "CorruptionUpgradeMaximumEnduranceCharges1",
+    "Name": ""
+  },
+  {
+    "_index": 14683,
+    "Id": "CorruptionUpgradeMaximumFrenzyCharges1",
+    "Name": ""
+  },
+  {
+    "_index": 14684,
+    "Id": "CorruptionUpgradeMaximumPowerCharges1",
+    "Name": ""
+  },
+  {
+    "_index": 14685,
+    "Id": "CorruptionUpgradeIncreasedAccuracy1",
+    "Name": ""
+  },
+  {
+    "_index": 14686,
+    "Id": "CorruptionUpgradeMovementVelocity1",
+    "Name": ""
+  },
+  {
+    "_index": 14687,
+    "Id": "CorruptionUpgradeIncreasedStunThreshold1",
+    "Name": ""
+  },
+  {
+    "_index": 14688,
+    "Id": "CorruptionUpgradeIncreasedFreezeThreshold1",
+    "Name": ""
+  },
+  {
+    "_index": 14689,
+    "Id": "CorruptionUpgradeSlowPotency1",
+    "Name": ""
+  },
+  {
+    "_index": 14690,
+    "Id": "CorruptionUpgradeLifeRegenerationRate1",
+    "Name": ""
+  },
+  {
+    "_index": 14691,
+    "Id": "CorruptionUpgradeManaRegeneration1",
+    "Name": ""
+  },
+  {
+    "_index": 14692,
+    "Id": "CorruptionUpgradeLocalBlockChance1",
+    "Name": ""
+  },
+  {
+    "_index": 14693,
+    "Id": "CorruptionUpgradeMaximumBlockChance1",
+    "Name": ""
+  },
+  {
+    "_index": 14694,
+    "Id": "CorruptionUpgradeGainLifeOnBlock1",
+    "Name": ""
+  },
+  {
+    "_index": 14695,
+    "Id": "CorruptionUpgradeGainManaOnBlock1",
+    "Name": ""
+  },
+  {
+    "_index": 14696,
+    "Id": "CorruptionUpgradeAllResistances1",
+    "Name": ""
+  },
+  {
+    "_index": 14697,
+    "Id": "CorruptionUpgradeGlobalFireSpellGemsLevel1",
+    "Name": ""
+  },
+  {
+    "_index": 14698,
+    "Id": "CorruptionUpgradeGlobalColdSpellGemsLevel1",
+    "Name": ""
+  },
+  {
+    "_index": 14699,
+    "Id": "CorruptionUpgradeGlobalLightningSpellGemsLevel1",
+    "Name": ""
+  },
+  {
+    "_index": 14700,
+    "Id": "CorruptionUpgradeGlobalChaosSpellGemsLevel1",
+    "Name": ""
+  },
+  {
+    "_index": 14701,
+    "Id": "CorruptionUpgradeGlobalPhysicalSpellGemsLevel1",
+    "Name": ""
+  },
+  {
+    "_index": 14702,
+    "Id": "CorruptionUpgradeGlobalMinionSkillGemsLevel1",
+    "Name": ""
+  },
+  {
+    "_index": 14703,
+    "Id": "CorruptionUpgradeGlobalMeleeSkillGemsLevel1",
+    "Name": ""
+  },
+  {
+    "_index": 14704,
+    "Id": "CorruptionUpgradeItemFoundRarityIncrease1",
+    "Name": ""
+  },
+  {
+    "_index": 14705,
+    "Id": "CorruptionUpgradeAllDamage1",
+    "Name": ""
+  },
+  {
+    "_index": 14706,
+    "Id": "CorruptionUpgradeIncreasedSkillSpeed1",
+    "Name": ""
+  },
+  {
+    "_index": 14707,
+    "Id": "CorruptionUpgradeCriticalStrikeMultiplier1",
+    "Name": ""
+  },
+  {
+    "_index": 14708,
+    "Id": "CorruptionUpgradeGlobalSkillGemLevel1",
+    "Name": ""
+  },
+  {
+    "_index": 14709,
+    "Id": "CorruptionUpgradeStrength1",
+    "Name": ""
+  },
+  {
+    "_index": 14710,
+    "Id": "CorruptionUpgradeDexterity1",
+    "Name": ""
+  },
+  {
+    "_index": 14711,
+    "Id": "CorruptionUpgradeIntelligence1",
+    "Name": ""
+  },
+  {
+    "_index": 14712,
+    "Id": "CorruptionUpgradeLifeFlaskChargeGeneration1",
+    "Name": ""
+  },
+  {
+    "_index": 14713,
+    "Id": "CorruptionUpgradeManaFlaskChargeGeneration1",
+    "Name": ""
+  },
+  {
+    "_index": 14714,
+    "Id": "CorruptionUpgradeCharmChargeGeneration1",
+    "Name": ""
+  },
+  {
+    "_index": 14715,
+    "Id": "CorruptionUpgradeLocalIncreasedPhysicalDamagePercent1",
+    "Name": ""
+  },
+  {
+    "_index": 14716,
+    "Id": "CorruptionUpgradeSpellDamageOnWeapon1",
+    "Name": ""
+  },
+  {
+    "_index": 14717,
+    "Id": "CorruptionUpgradeSpellDamageOnTwoHandWeapon1",
+    "Name": ""
+  },
+  {
+    "_index": 14718,
+    "Id": "CorruptionUpgradeLocalIncreasedSpiritPercent1",
+    "Name": ""
+  },
+  {
+    "_index": 14719,
+    "Id": "CorruptionUpgradeLocalAddedFireDamage1",
+    "Name": ""
+  },
+  {
+    "_index": 14720,
+    "Id": "CorruptionUpgradeLocalAddedFireDamageTwoHand1",
+    "Name": ""
+  },
+  {
+    "_index": 14721,
+    "Id": "CorruptionUpgradeLocalAddedColdDamage1",
+    "Name": ""
+  },
+  {
+    "_index": 14722,
+    "Id": "CorruptionUpgradeLocalAddedColdDamageTwoHand1",
+    "Name": ""
+  },
+  {
+    "_index": 14723,
+    "Id": "CorruptionUpgradeLocalAddedLightningDamage1",
+    "Name": ""
+  },
+  {
+    "_index": 14724,
+    "Id": "CorruptionUpgradeLocalAddedLightningDamageTwoHand1",
+    "Name": ""
+  },
+  {
+    "_index": 14725,
+    "Id": "CorruptionUpgradeLocalAddedChaosDamage1",
+    "Name": ""
+  },
+  {
+    "_index": 14726,
+    "Id": "CorruptionUpgradeLocalAddedChaosDamageTwoHand1",
+    "Name": ""
+  },
+  {
+    "_index": 14727,
+    "Id": "CorruptionUpgradeLocalIncreasedAttackSpeed1",
+    "Name": ""
+  },
+  {
+    "_index": 14728,
+    "Id": "CorruptionUpgradeLocalCriticalStrikeMultiplier1",
+    "Name": ""
+  },
+  {
+    "_index": 14729,
+    "Id": "CorruptionUpgradeLocalStunDamageIncrease1",
+    "Name": ""
+  },
+  {
+    "_index": 14730,
+    "Id": "CorruptionUpgradeLocalWeaponRangeIncrease1",
+    "Name": ""
+  },
+  {
+    "_index": 14731,
+    "Id": "CorruptionUpgradeLocalChanceToBleed1",
+    "Name": ""
+  },
+  {
+    "_index": 14732,
+    "Id": "CorruptionUpgradeLocalChanceToPoison1",
+    "Name": ""
+  },
+  {
+    "_index": 14733,
+    "Id": "CorruptionUpgradeLocalRageOnHit1",
+    "Name": ""
+  },
+  {
+    "_index": 14734,
+    "Id": "CorruptionUpgradeLocalChanceToMaim1",
+    "Name": ""
+  },
+  {
+    "_index": 14735,
+    "Id": "CorruptionUpgradeLocalChanceToBlind1",
+    "Name": ""
+  },
+  {
+    "_index": 14736,
+    "Id": "CorruptionUpgradeWeaponElementalDamage1",
+    "Name": ""
+  },
+  {
+    "_index": 14737,
+    "Id": "CorruptionUpgradeWeaponElementalDamageTwoHand1",
+    "Name": ""
+  },
+  {
+    "_index": 14738,
+    "Id": "CorruptionUpgradeAdditionalArrows1",
+    "Name": ""
+  },
+  {
+    "_index": 14739,
+    "Id": "CorruptionUpgradeAdditionalAmmo1",
+    "Name": ""
+  },
+  {
+    "_index": 14740,
+    "Id": "CorruptionUpgradeIgniteChanceIncrease1",
+    "Name": ""
+  },
+  {
+    "_index": 14741,
+    "Id": "CorruptionUpgradeFreezeDamageIncrease1",
+    "Name": ""
+  },
+  {
+    "_index": 14742,
+    "Id": "CorruptionUpgradeShockChanceIncrease1",
+    "Name": ""
+  },
+  {
+    "_index": 14743,
+    "Id": "CorruptionUpgradeSpellCriticalStrikeChance1",
+    "Name": ""
+  },
+  {
+    "_index": 14744,
+    "Id": "CorruptionUpgradeLifeGainedFromEnemyDeath1",
+    "Name": ""
+  },
+  {
+    "_index": 14745,
+    "Id": "CorruptionUpgradeManaGainedFromEnemyDeath1",
+    "Name": ""
+  },
+  {
+    "_index": 14746,
+    "Id": "CorruptionUpgradeIncreasedCastSpeed1",
+    "Name": ""
+  },
+  {
+    "_index": 14747,
+    "Id": "CorruptionUpgradeEnergyShieldDelay1",
+    "Name": ""
+  },
+  {
+    "_index": 14748,
+    "Id": "CorruptionUpgradeAlliesInPresenceAllDamage1",
+    "Name": ""
+  },
+  {
+    "_index": 14749,
+    "Id": "CorruptionUpgradeAlliesInPresenceIncreasedAttackSpeed1",
+    "Name": ""
+  },
+  {
+    "_index": 14750,
+    "Id": "CorruptionUpgradeAlliesInPresenceIncreasedCastSpeed1",
+    "Name": ""
+  },
+  {
+    "_index": 14751,
+    "Id": "CorruptionUpgradeAlliesInPresenceCriticalStrikeMultiplier1",
+    "Name": ""
+  },
+  {
+    "_index": 14752,
+    "Id": "CorruptionUpgradeChanceToPierce1",
+    "Name": ""
+  },
+  {
+    "_index": 14753,
+    "Id": "CorruptionUpgradeChainFromTerrain1",
+    "Name": ""
+  },
+  {
+    "_index": 14754,
+    "Id": "CorruptionUpgradeJewelStrength1",
+    "Name": ""
+  },
+  {
+    "_index": 14755,
+    "Id": "CorruptionUpgradeJewelDexterity1",
+    "Name": ""
+  },
+  {
+    "_index": 14756,
+    "Id": "CorruptionUpgradeJewelIntelligence1",
+    "Name": ""
+  },
+  {
+    "_index": 14757,
+    "Id": "CorruptionUpgradeJewelFireResist1",
+    "Name": ""
+  },
+  {
+    "_index": 14758,
+    "Id": "CorruptionUpgradeJewelColdResist1",
+    "Name": ""
+  },
+  {
+    "_index": 14759,
+    "Id": "CorruptionUpgradeJewelLightningResist1",
+    "Name": ""
+  },
+  {
+    "_index": 14760,
+    "Id": "CorruptionUpgradeJewelChaosResist1",
+    "Name": ""
+  },
+  {
+    "_index": 14761,
+    "Id": "CorruptionUpgradeArmourAppliesToElementalDamage",
+    "Name": ""
+  },
+  {
+    "_index": 14762,
+    "Id": "CorruptionUpgradeEvasionAppliesToDeflection",
+    "Name": ""
+  },
+  {
+    "_index": 14763,
+    "Id": "CorruptionUpgradeGlobalDeflectionRating",
+    "Name": ""
+  },
+  {
+    "_index": 14764,
+    "Id": "CorruptionUpgradeDeflectDamageTaken",
+    "Name": ""
+  },
+  {
+    "_index": 14765,
+    "Id": "CorruptionUpgradeMaximumLifeConvertedToEnergyShield",
+    "Name": ""
+  },
+  {
+    "_index": 14766,
+    "Id": "CorruptionUpgradeGlobalItemAttributeRequirements",
+    "Name": ""
+  },
+  {
+    "_index": 14767,
+    "Id": "CorruptionUpgradePercentageAllAttributes",
+    "Name": ""
+  },
+  {
+    "_index": 14768,
+    "Id": "CorruptionUpgradeDeflectDamageTakenRecoupedAsLife",
+    "Name": ""
+  },
+  {
+    "_index": 14769,
+    "Id": "CorruptionUpgradeDamageTakenGoesToLifeManaESPercent",
+    "Name": ""
+  },
+  {
+    "_index": 14770,
+    "Id": "CorruptionUpgradeDamageRemovedFromManaBeforeLife",
+    "Name": ""
+  },
+  {
+    "_index": 14771,
+    "Id": "CorruptionUpgradeManaRecoveryRate",
+    "Name": ""
+  },
+  {
+    "_index": 14772,
+    "Id": "CorruptionUpgradeLifeRecoveryRate",
+    "Name": ""
+  },
+  {
+    "_index": 14773,
+    "Id": "CorruptionUpgradePercentOfLeechIsInstant",
+    "Name": ""
+  },
+  {
+    "_index": 14774,
+    "Id": "CorruptionUpgradePhysicalDamageTakenAsRandomElement",
+    "Name": ""
+  },
+  {
+    "_index": 14775,
+    "Id": "CorruptionUpgradeDamageTakenGainedAsLife",
+    "Name": ""
+  },
+  {
+    "_index": 14776,
+    "Id": "CorruptionUpgradePercentDamageGoesToMana",
+    "Name": ""
+  },
+  {
+    "_index": 14777,
+    "Id": "CorruptionUpgradeThornsCriticalStrikeChance",
+    "Name": ""
+  },
+  {
+    "_index": 14778,
+    "Id": "CorruptionUpgradeThornsFromPercentBodyArmour",
+    "Name": ""
+  },
+  {
+    "_index": 14779,
+    "Id": "CorruptionUpgradeThornsDamageIncreaseIfBlockedRecently",
+    "Name": ""
+  },
+  {
+    "_index": 14780,
+    "Id": "CorruptionUpgradePhysicalDamageTakenAsChaos",
+    "Name": ""
+  },
+  {
+    "_index": 14781,
+    "Id": "CorruptionUpgradePhysicalDamageTakenAsFirePercent",
+    "Name": ""
+  },
+  {
+    "_index": 14782,
+    "Id": "CorruptionUpgradePhysicalDamageTakenAsCold",
+    "Name": ""
+  },
+  {
+    "_index": 14783,
+    "Id": "CorruptionUpgradePhysicalDamageTakenAsLightningPercent",
+    "Name": ""
+  },
+  {
+    "_index": 14784,
+    "Id": "CorruptionUpgradeMaximumChaosResistance",
+    "Name": ""
+  },
+  {
+    "_index": 14785,
+    "Id": "CorruptionUpgradeHeraldReservationEfficiency",
+    "Name": ""
+  },
+  {
+    "_index": 14786,
+    "Id": "CorruptionUpgradeMinionReservationEfficiency",
+    "Name": ""
+  },
+  {
+    "_index": 14787,
+    "Id": "CorruptionUpgradeMetaReservationEfficiency",
+    "Name": ""
+  },
+  {
+    "_index": 14788,
+    "Id": "CorruptionUpgradeColdExposureOnHit",
+    "Name": ""
+  },
+  {
+    "_index": 14789,
+    "Id": "CorruptionUpgradeGlobalIncreaseFireSpellSkillGemLevel",
+    "Name": ""
+  },
+  {
+    "_index": 14790,
+    "Id": "CorruptionUpgradeGlobalIncreaseColdSpellSkillGemLevel",
+    "Name": ""
+  },
+  {
+    "_index": 14791,
+    "Id": "CorruptionUpgradeGlobalIncreaseLightningSpellSkillGemLevel",
+    "Name": ""
+  },
+  {
+    "_index": 14792,
+    "Id": "CorruptionUpgradeGlobalIncreasePhysicalSpellSkillGemLevel",
+    "Name": ""
+  },
+  {
+    "_index": 14793,
+    "Id": "CorruptionUpgradeOneHandDamageGainedAsFire",
+    "Name": ""
+  },
+  {
+    "_index": 14794,
+    "Id": "CorruptionUpgradeOneHandDamageGainedAsCold",
+    "Name": ""
+  },
+  {
+    "_index": 14795,
+    "Id": "CorruptionUpgradeOneHandDamageGainedAsLightning",
+    "Name": ""
+  },
+  {
+    "_index": 14796,
+    "Id": "CorruptionUpgradeOneHandDamageGainedAsPhysical",
+    "Name": ""
+  },
+  {
+    "_index": 14797,
+    "Id": "CorruptionUpgradeOneHandDamageGainedAsChaos",
+    "Name": ""
+  },
+  {
+    "_index": 14798,
+    "Id": "CorruptionUpgradeTwoHandDamageGainedAsFire",
+    "Name": ""
+  },
+  {
+    "_index": 14799,
+    "Id": "CorruptionUpgradeTwoHandDamageGainedAsCold",
+    "Name": ""
+  },
+  {
+    "_index": 14800,
+    "Id": "CorruptionUpgradeTwoHandDamageGainedAsLightning",
+    "Name": ""
+  },
+  {
+    "_index": 14801,
+    "Id": "CorruptionUpgradeTwoHandDamageGainedAsPhysical",
+    "Name": ""
+  },
+  {
+    "_index": 14802,
+    "Id": "CorruptionUpgradeTwoHandDamageGainedAsChaos",
+    "Name": ""
+  },
+  {
+    "_index": 14803,
+    "Id": "CorruptionUpgradeGlobalSkillGemQuality",
+    "Name": ""
+  },
+  {
+    "_index": 14804,
+    "Id": "CorruptionUpgradeTemporaryMinionLimit",
+    "Name": ""
+  },
+  {
+    "_index": 14805,
+    "Id": "CorruptionUpgradeMeleeSplash",
+    "Name": ""
+  },
+  {
+    "_index": 14806,
+    "Id": "CorruptionUpgradePercentageStrength",
+    "Name": ""
+  },
+  {
+    "_index": 14807,
+    "Id": "CorruptionUpgradePercentageDexterity",
+    "Name": ""
+  },
+  {
+    "_index": 14808,
+    "Id": "CorruptionUpgradePercentageIntelligence",
+    "Name": ""
+  },
+  {
+    "_index": 14809,
+    "Id": "CorruptionUpgradePercentageAllAttributesCopy",
+    "Name": ""
+  },
+  {
+    "_index": 14810,
+    "Id": "CorruptionUpgradeGlobalFlaskLifeRecovery",
+    "Name": ""
+  },
+  {
+    "_index": 14811,
+    "Id": "CorruptionUpgradeFlaskManaRecovery",
+    "Name": ""
+  },
+  {
+    "_index": 14812,
+    "Id": "CorruptionUpgradeCharmIncreasedDuration",
+    "Name": ""
+  },
+  {
+    "_index": 14813,
+    "Id": "CorruptionUpgradeCharmChargesGained",
+    "Name": ""
+  },
+  {
+    "_index": 14814,
+    "Id": "CorruptionUpgradeOneHandGlobalIncreaseSpellSkillGemLevel",
+    "Name": ""
+  },
+  {
+    "_index": 14815,
+    "Id": "CorruptionUpgradeTwoHandGlobalIncreaseSpellSkillGemLevel",
+    "Name": ""
+  },
+  {
+    "_index": 14816,
+    "Id": "CorruptionUpgradeBleedDotMultiplier",
+    "Name": ""
+  },
+  {
+    "_index": 14817,
+    "Id": "CorruptionUpgradePoisonEffect",
+    "Name": ""
+  },
+  {
+    "_index": 14818,
+    "Id": "CorruptionUpgradeMaximumRage",
+    "Name": ""
+  },
+  {
+    "_index": 14819,
+    "Id": "CorruptionUpgradeSlowPotency",
+    "Name": ""
+  },
+  {
+    "_index": 14820,
+    "Id": "CorruptionUpgradeBlindEffect",
+    "Name": ""
+  },
+  {
+    "_index": 14821,
+    "Id": "CorruptionUpgradeGlobalElementalGemLevel",
+    "Name": ""
+  },
+  {
+    "_index": 14822,
+    "Id": "CorruptionUpgradeChanceForNoBolt",
+    "Name": ""
+  },
+  {
+    "_index": 14823,
+    "Id": "CorruptionUpgradeIgniteEffect",
+    "Name": ""
+  },
+  {
+    "_index": 14824,
+    "Id": "CorruptionUpgradeFreezeDuration",
+    "Name": ""
+  },
+  {
+    "_index": 14825,
+    "Id": "CorruptionUpgradeShockEffect",
+    "Name": ""
+  },
+  {
+    "_index": 14826,
+    "Id": "CorruptionUpgradeSpellCriticalStrikeMultiplier",
+    "Name": ""
+  },
+  {
+    "_index": 14827,
+    "Id": "CorruptionUpgradeSpellChanceToFireTwoAdditionalProjectiles",
+    "Name": ""
+  },
+  {
+    "_index": 14828,
+    "Id": "CorruptionUpgradeMinionDuration",
+    "Name": ""
+  },
+  {
+    "_index": 14829,
+    "Id": "CorruptionUpgradePresenceRadius",
+    "Name": ""
+  },
+  {
+    "_index": 14830,
+    "Id": "CorruptionUpgradeProjectileSpeed",
+    "Name": ""
+  },
+  {
+    "_index": 14831,
+    "Id": "CorruptionUpgradeAdditionalChainChance",
+    "Name": ""
+  },
+  {
+    "_index": 14832,
+    "Id": "CorruptionUpgradeReducedIgniteEffectOnSelf",
+    "Name": ""
+  },
+  {
+    "_index": 14833,
+    "Id": "CorruptionUpgradeReducedChillDurationOnSelf",
+    "Name": ""
+  },
+  {
+    "_index": 14834,
+    "Id": "CorruptionUpgradeReducedShockEffectOnSelf",
+    "Name": ""
+  },
+  {
+    "_index": 14835,
+    "Id": "CorruptionUpgradeGlobalMaimOnHit",
+    "Name": ""
+  },
+  {
+    "_index": 14836,
+    "Id": "CorruptionUpgradeSpellsHinderOnHitChance",
+    "Name": ""
+  },
+  {
+    "_index": 14837,
+    "Id": "CorruptionUpgradePhysicalDamageOverTimeTaken",
+    "Name": ""
+  },
+  {
+    "_index": 14838,
+    "Id": "CorruptionUpgradeGlobalChanceToBlindOnHit",
+    "Name": ""
+  },
+  {
+    "_index": 14839,
+    "Id": "CorruptionUpgradeAdditionalFissureChance",
     "Name": ""
   }
 ]
