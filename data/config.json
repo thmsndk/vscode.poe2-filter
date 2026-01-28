@@ -1,5 +1,5 @@
 {
-  "patch": "4.4.0.5",
+  "patch": "4.4.0.5.2",
   "tables": [
     {
       "name": "BaseItemTypes",
