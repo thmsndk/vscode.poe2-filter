@@ -2,6 +2,24 @@
 
 All notable changes to the "poe2-filter" extension will be documented in this file.
 
+## [0.0.25](https://github.com/thmsndk/vscode.poe2-filter/compare/v0.0.24...v0.0.25) (2026-02-10)
+
+
+### ### Added
+
+* update PoE2 data to version 4.4.0.3.10 ([#81](https://github.com/thmsndk/vscode.poe2-filter/issues/81)) ([c737e36](https://github.com/thmsndk/vscode.poe2-filter/commit/c737e367fcae251c681ac7a517e728a0e0a06352))
+* update PoE2 data to version 4.4.0.3.13 ([#84](https://github.com/thmsndk/vscode.poe2-filter/issues/84)) ([28c7e95](https://github.com/thmsndk/vscode.poe2-filter/commit/28c7e95da1e7a1af79c1af49eb8503c98ab78c4a))
+* update PoE2 data to version 4.4.0.3.14 ([#85](https://github.com/thmsndk/vscode.poe2-filter/issues/85)) ([e186555](https://github.com/thmsndk/vscode.poe2-filter/commit/e1865554f69ce6378d42991f497d595277e63760))
+* update PoE2 data to version 4.4.0.3.15 ([#86](https://github.com/thmsndk/vscode.poe2-filter/issues/86)) ([b92fc2b](https://github.com/thmsndk/vscode.poe2-filter/commit/b92fc2b3cbc4227383e51b618ba604b1f18e0a60))
+* update PoE2 data to version 4.4.0.3.16 ([#87](https://github.com/thmsndk/vscode.poe2-filter/issues/87)) ([7d31184](https://github.com/thmsndk/vscode.poe2-filter/commit/7d31184299cf51e0b608a501d3680fb90377f1dc))
+* update PoE2 data to version 4.4.0.3.17 ([#88](https://github.com/thmsndk/vscode.poe2-filter/issues/88)) ([c4eeecc](https://github.com/thmsndk/vscode.poe2-filter/commit/c4eeecc5fd70e468efaf25fb27d01f36b77e5954))
+* update PoE2 data to version 4.4.0.3.9 ([#79](https://github.com/thmsndk/vscode.poe2-filter/issues/79)) ([3f73d2b](https://github.com/thmsndk/vscode.poe2-filter/commit/3f73d2bdcdcedcd3e86061ae8d3031412a863b00))
+* update PoE2 data to version 4.4.0.4.3 ([#89](https://github.com/thmsndk/vscode.poe2-filter/issues/89)) ([8b36546](https://github.com/thmsndk/vscode.poe2-filter/commit/8b365465497a2955c6ed98604bf1aaee649ebf72))
+* update PoE2 data to version 4.4.0.5 ([#90](https://github.com/thmsndk/vscode.poe2-filter/issues/90)) ([7060191](https://github.com/thmsndk/vscode.poe2-filter/commit/7060191675b430de66627b0111aea1648786c4a7))
+* update PoE2 data to version 4.4.0.5.2 ([#91](https://github.com/thmsndk/vscode.poe2-filter/issues/91)) ([cd241e1](https://github.com/thmsndk/vscode.poe2-filter/commit/cd241e1b5695900d27d5f0a14cfdfa952d8e4ff9))
+* update PoE2 data to version 4.4.0.5.5 ([#92](https://github.com/thmsndk/vscode.poe2-filter/issues/92)) ([8a774c4](https://github.com/thmsndk/vscode.poe2-filter/commit/8a774c47aa023d95cb96c32315fa646b92ed1fda))
+* update PoE2 data to version 4.4.0.6.6 ([#93](https://github.com/thmsndk/vscode.poe2-filter/issues/93)) ([c1baacf](https://github.com/thmsndk/vscode.poe2-filter/commit/c1baacfa7e5b1b74f7915491b7683d2f2c97ebb1))
+
 ## [0.0.24](https://github.com/thmsndk/vscode.poe2-filter/compare/v0.0.23...v0.0.24) (2025-12-19)
 
 
