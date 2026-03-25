@@ -74198,5 +74198,10 @@
     "_index": 14839,
     "Id": "CorruptionUpgradeAdditionalFissureChance",
     "Name": ""
+  },
+  {
+    "_index": 14840,
+    "Id": "LeagueIsRace",
+    "Name": ""
   }
 ]
