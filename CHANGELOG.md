@@ -2,6 +2,20 @@
 
 All notable changes to the "poe2-filter" extension will be documented in this file.
 
+## [0.0.26](https://github.com/thmsndk/vscode.poe2-filter/compare/v0.0.25...v0.0.26) (2026-06-12)
+
+
+### ### Added
+
+* update PoE2 data to version 4.5.0.1.4 ([#105](https://github.com/thmsndk/vscode.poe2-filter/issues/105)) ([6ff6c28](https://github.com/thmsndk/vscode.poe2-filter/commit/6ff6c28ebe7b695f2ac18d82b4636b1033139d77))
+* update PoE2 data to version 4.5.0.2.2 ([#107](https://github.com/thmsndk/vscode.poe2-filter/issues/107)) ([1110fd2](https://github.com/thmsndk/vscode.poe2-filter/commit/1110fd2927dc0b7df0b4125a02f3cfab401a40ec))
+* update PoE2 data to version 4.5.0.3 ([#108](https://github.com/thmsndk/vscode.poe2-filter/issues/108)) ([b289ab3](https://github.com/thmsndk/vscode.poe2-filter/commit/b289ab322daa3579b35891a6aacc882a3f27a876))
+* update PoE2 data to version 4.5.0.3.3 ([#109](https://github.com/thmsndk/vscode.poe2-filter/issues/109)) ([3b3fff4](https://github.com/thmsndk/vscode.poe2-filter/commit/3b3fff40b2c42984ec05c13c8b5d3f64e692da73))
+* update PoE2 data to version 4.5.1.1.3 ([#112](https://github.com/thmsndk/vscode.poe2-filter/issues/112)) ([55d8e88](https://github.com/thmsndk/vscode.poe2-filter/commit/55d8e88c0a425af17480fc0a5992a3c684f5d98d))
+* update PoE2 data to version 4.5.1.1.4 ([#113](https://github.com/thmsndk/vscode.poe2-filter/issues/113)) ([4b79728](https://github.com/thmsndk/vscode.poe2-filter/commit/4b79728954f1fc7ff40dfa00b58ac7b983478db4))
+* update PoE2 data to version 4.5.1.1.6 ([#114](https://github.com/thmsndk/vscode.poe2-filter/issues/114)) ([a72ecb2](https://github.com/thmsndk/vscode.poe2-filter/commit/a72ecb2c8551b40d84de6bce781de6c468ab834c))
+* update PoE2 data to version 4.5.2.1.2 ([#115](https://github.com/thmsndk/vscode.poe2-filter/issues/115)) ([a6643a1](https://github.com/thmsndk/vscode.poe2-filter/commit/a6643a1123ecf407ec3405986b5d4d910f3b80d8))
+
 ## [0.0.25](https://github.com/thmsndk/vscode.poe2-filter/compare/v0.0.24...v0.0.25) (2026-05-29)
 
 
