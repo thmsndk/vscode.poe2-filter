@@ -77127,12 +77127,12 @@
   {
     "_index": 15425,
     "Id": "ExpeditionMonsterModRunePrismatic",
-    "Name": "<<ExpedRunePrismatic>><rgb(219,217,206)>{Prismatic Rune}\r\n<font:'fontin'>{<italic>{<rgb(110,87,66)>{Monsters gain:}}}\r\n<rgb(135,134,253)>{Always Shock}\r\n<rgb(135,134,253)>{All Damage can Shock}\r\n<rgb(135,134,253)>{All Damage can Chill}\r\n<rgb(135,134,253)>{All Elemental Resistance}\r\n<rgb(135,134,253)>{Damage gained as a Random Element}"
+    "Name": "<<ExpedRunePrismatic>><rgb(219,217,206)>{Prismatic Rune}\r\n<rgb(135,134,253)>{All Damage can Shock}\r\n<rgb(135,134,253)>{All Damage can Chill}\r\n<rgb(135,134,253)>{All Damage can Ignite}\r\n<rgb(135,134,253)>{All Elemental Resistance}\r\n"
   },
   {
     "_index": 15426,
     "Id": "ExpeditionMonsterModRunePrismaticPower",
-    "Name": "<<ExpedRunePrismatic>><rgb(219,217,206)>{Prismatic Rune}\r\n<font:'fontin'>{<italic>{<rgb(110,87,66)>{Monsters gain:}}}\r\n<rgb(135,134,253)>{Always Shock}\r\n<rgb(135,134,253)>{All Damage can Shock}\r\n<rgb(135,134,253)>{All Damage can Chill}\r\n<rgb(135,134,253)>{All Elemental Resistance}\r\n<rgb(135,134,253)>{Damage gained as a Random Element}"
+    "Name": "<<ExpedRunePrismatic>><rgb(219,217,206)>{Prismatic Rune}\r\n<rgb(135,134,253)>{All Damage can Shock}\r\n<rgb(135,134,253)>{All Damage can Chill}\r\n<rgb(135,134,253)>{All Damage can Ignite}\r\n<rgb(135,134,253)>{All Elemental Resistance}\r\n<rgb(135,134,253)>{Damage gained as a Random Element}"
   },
   {
     "_index": 15427,
@@ -77237,12 +77237,12 @@
   {
     "_index": 15447,
     "Id": "ExpeditionMonsterModRuneBond",
-    "Name": "<<ExpedRuneBond>><rgb(219,217,206)>{Bond Rune}\r\n<font:'fontin'>{<italic>{<rgb(110,87,66)>{Monsters gain:}}}\r\n<rgb(135,134,253)>{Rare Monsters may transfer a Mod on death}"
+    "Name": "<<ExpedRuneBond>><rgb(219,217,206)>{Bond Rune}\r\n<font:'fontin'>{<italic>{<rgb(110,87,66)>{Monsters gain:}}}\r\n<rgb(135,134,253)>{Rare Monsters may transfer a Mod on death}\r\n<font:'fontin'>{<italic>{<rgb(110,87,66)>{Remnant gains:}}}\r\n<rgb(135,134,253)>{Increased chance to spawn Rare Monsters}\r\n<rgb(135,134,253)>{Rare Monsters have more [MonsterModifiers|Monster Modifiers]}"
   },
   {
     "_index": 15448,
     "Id": "ExpeditionMonsterModRuneBondPower",
-    "Name": "<<ExpedRuneBond>><rgb(219,217,206)>{Bond Rune}\r\n<font:'fontin'>{<italic>{<rgb(110,87,66)>{Monsters gain:}}}\r\n<rgb(135,134,253)>{Rare Monsters may transfer a Mod on death}"
+    "Name": "<<ExpedRuneBond>><rgb(219,217,206)>{Bond Rune}\r\n<font:'fontin'>{<italic>{<rgb(110,87,66)>{Monsters gain:}}}\r\n<rgb(135,134,253)>{Rare Monsters may transfer a Mod on death}\r\n<font:'fontin'>{<italic>{<rgb(110,87,66)>{Remnant gains:}}}\r\n<rgb(135,134,253)>{Increased chance to spawn Rare Monsters}\r\n<rgb(135,134,253)>{Rare Monsters have more [MonsterModifiers|Monster Modifiers]}"
   },
   {
     "_index": 15449,
