@@ -735,10 +735,16 @@ export class FilterPreviewEditor
                 .map((v) => parseInt(v as string));
               break;
             case "PlayEffect":
-              styles.beam = {
-                color: action.values[0] as string,
-                temporary: action.values[1] === "Temp",
-              };
+              // "None" disables the beam (and clears any beam from an
+              // earlier matching rule via Continue).
+              if (action.values[0] === "None") {
+                styles.beam = undefined;
+              } else {
+                styles.beam = {
+                  color: action.values[0] as string,
+                  temporary: action.values[1] === "Temp",
+                };
+              }
               break;
           }
         }

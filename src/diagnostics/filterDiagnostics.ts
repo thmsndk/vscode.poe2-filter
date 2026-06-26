@@ -212,7 +212,7 @@ function extractCommandsFromGrammar(): Record<string, CommandDefinition> {
     }
 
     // Process each section
-    ["blocks", "controlFlow", "conditions", "actions"].forEach((section) => {
+    ["blocks", "controlFlow", "imports", "conditions", "actions"].forEach((section) => {
       (grammar.repository[section].patterns as CommandPattern[]).forEach(
         (pattern) => {
           const { commands: commandNames, paramSets } =
@@ -585,14 +585,19 @@ export function validateDocument(
       command === "CustomAlertSound" ||
       command === "CustomAlertSoundOptional"
     ) {
-      if (parts[1]) {
-        validateSoundFile(
-          parts[1],
-          line,
-          document,
-          problems,
-          command === "CustomAlertSoundOptional"
-        );
+      // "None" disables the sound. Multiple files may be given as
+      // semicolon-separated quoted paths, in which case a random one plays.
+      if (parts[1] && parts[1] !== "None") {
+        const soundFiles = parts[1].split(";").filter((f) => f.length > 0);
+        for (const soundFile of soundFiles) {
+          validateSoundFile(
+            soundFile,
+            line,
+            document,
+            problems,
+            command === "CustomAlertSoundOptional"
+          );
+        }
       }
       continue;
     }

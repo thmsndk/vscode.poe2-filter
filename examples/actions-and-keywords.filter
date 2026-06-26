@@ -1,0 +1,47 @@
+# PoE2 Actions & Keywords Coverage Test Filter
+# Demonstrates the actions/keywords added to the extension, taken from the
+# official filter docs (https://www.pathofexile.com/item-filter/about).
+#
+# What to check:
+#   - No line below is flagged as "Unknown command" or an invalid value.
+#   - Import / Optional, None, -1 and the IfAlertSound variants highlight.
+#   - In game: confirm disabled values actually disable (no icon/beam/sound)
+#     and that Import pulls in the referenced file.
+
+#--------------------------------
+# Import another filter (top-level, before any block).
+# "Optional" skips the file if it does not exist.
+#--------------------------------
+Import "MyCustomRules.filter"
+Import "MyOptionalRules.filter" Optional
+
+#--------------------------------
+# Multiple custom sounds (semicolon-separated -> a random one plays),
+# with an optional volume after the last file.
+#--------------------------------
+Show
+    BaseType "Mirror of Kalandra"
+    CustomAlertSound "a.mp3";"b.mp3" 300
+    SetTextColor 255 0 0 255
+
+#--------------------------------
+# Disabled / "None" values.
+#--------------------------------
+Show
+    Class "Currency"
+    PlayAlertSound None
+    CustomAlertSound None
+    MinimapIcon -1
+    PlayEffect None
+    SetTextColor 200 200 200 255
+
+#--------------------------------
+# Drop-sound flags, including the IfAlertSound variants.
+#--------------------------------
+Show
+    Class "Waystones"
+    DisableDropSoundIfAlertSound
+    CustomAlertSound "map.mp3"
+Show
+    BaseType "Gold"
+    EnableDropSoundIfAlertSound
