@@ -291,6 +291,10 @@ const BOOLEAN_CONDITIONS = new Set([
   "SynthesisedItem",
   "AnyEnchantment",
   "Identified",
+  "HasVaalUniqueMod",
+  "IsVaalUnique",
+  "TwiceCorrupted",
+  "AlwaysShow",
 ]);
 
 // TODO: detect nested blocks
@@ -561,6 +565,44 @@ function validateBooleanCondition(
   problems.push(diagnostic);
 }
 
+/**
+ * HasExplicitMod has a bespoke syntax (confirmed in-game, issue #11):
+ *   HasExplicitMod [<op><count> | True] <mod> [<mod> ...]
+ * The operator/count is optional but, when present, must be glued to the
+ * number ("HasExplicitMod >=6 ..."); the game rejects a space
+ * ("HasExplicitMod >= 6 ..."). Mod names are matched partially and may be
+ * unquoted, so the list itself isn't validated - we only flag the spacing.
+ */
+function validateHasExplicitMod(
+  parts: string[],
+  line: vscode.TextLine,
+  problems: vscode.Diagnostic[]
+) {
+  const operator = parts[1];
+  const number = parts[2];
+  const isSpacedOperator =
+    /^(==|>=|<=|<|>)$/.test(operator ?? "") && /^\d+$/.test(number ?? "");
+  if (!isSpacedOperator) {
+    return;
+  }
+
+  const commandEnd =
+    line.text.indexOf("HasExplicitMod") + "HasExplicitMod".length;
+  const operatorIndex = line.text.indexOf(operator, commandEnd);
+  const numberIndex = line.text.indexOf(number, operatorIndex + operator.length);
+
+  problems.push(
+    createDiagnostic(
+      new vscode.Range(
+        line.range.start.translate(0, operatorIndex),
+        line.range.start.translate(0, numberIndex + number.length)
+      ),
+      `HasExplicitMod requires no space between the operator and number. Use "${operator}${number}".`,
+      vscode.DiagnosticSeverity.Error
+    )
+  );
+}
+
 export function validateDocument(
   document: vscode.TextDocument,
   gameData: GameDataService
@@ -648,6 +690,14 @@ export function validateDocument(
     // Warn when a non-Optional Import points at a missing file
     if (command === "Import") {
       validateImport(line, document, problems);
+      continue;
+    }
+
+    // HasExplicitMod uses a bespoke "count + mod-name list" form that does not
+    // fit the generic parameter validator. We only flag the one guaranteed
+    // client error (a space between the operator and number).
+    if (command === "HasExplicitMod") {
+      validateHasExplicitMod(parts, line, problems);
       continue;
     }
 

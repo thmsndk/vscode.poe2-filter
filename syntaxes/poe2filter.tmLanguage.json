@@ -123,7 +123,7 @@
           ]
         },
         {
-          "begin": "\\b(ItemLevel|DropLevel|Quality|AreaLevel|GemLevel|Sockets|MapTier|WaystoneTier|StackSize|Height|Width|BaseArmour|BaseEnergyShield|BaseEvasion)\\b",
+          "begin": "\\b(ItemLevel|DropLevel|Quality|AreaLevel|GemLevel|Sockets|MapTier|WaystoneTier|StackSize|Height|Width|BaseArmour|BaseEnergyShield|BaseEvasion|UnidentifiedItemTier)\\b",
           "beginCaptures": {
             "1": { "name": "support.function.poe2filter" }
           },
@@ -145,7 +145,7 @@
           ]
         },
         {
-          "begin": "\\b(FracturedItem|Mirrored|Corrupted|SynthesisedItem|AnyEnchantment|Identified)\\b",
+          "begin": "\\b(FracturedItem|Mirrored|Corrupted|SynthesisedItem|AnyEnchantment|Identified|HasVaalUniqueMod|IsVaalUnique|TwiceCorrupted|AlwaysShow)\\b",
           "beginCaptures": {
             "1": { "name": "support.function.poe2filter" }
           },
@@ -162,6 +162,34 @@
               "match": "\\b(True|False)\\b",
               "captures": {
                 "1": { "name": "constant.language.boolean.poe2filter" }
+              }
+            }
+          ]
+        },
+        {
+          "begin": "\\b(HasExplicitMod)\\b",
+          "beginCaptures": {
+            "1": { "name": "support.function.poe2filter" }
+          },
+          "end": "(?=$|#)",
+          "patterns": [
+            {
+              "match": "(==|>=|<=|<|>)(\\d+)\\b",
+              "captures": {
+                "1": { "name": "keyword.operator.comparison.poe2filter" },
+                "2": { "name": "constant.numeric.level.poe2filter" }
+              }
+            },
+            {
+              "match": "\\b(True)\\b",
+              "captures": {
+                "1": { "name": "constant.language.boolean.poe2filter" }
+              }
+            },
+            {
+              "match": "(\"[^\"]+\")",
+              "captures": {
+                "1": { "name": "string.quoted.double.basetype.poe2filter" }
               }
             }
           ]
