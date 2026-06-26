@@ -177,9 +177,15 @@ function extractCommandsFromGrammar(): Record<string, CommandDefinition> {
               return /^(?:"[^"]*"(?:\s+"[^"]*")*|\S+)$/;
             }
 
-            // Handle comparison operators
-            if (groupPattern === "==|=") {
-              return /^(?:==|=)$/;
+            // Handle comparison operators (e.g. "==|!=|=|!" or ">=|<=|==|!=|=|!|<|>")
+            const operatorAlternatives = groupPattern.split("|");
+            if (
+              operatorAlternatives.length > 0 &&
+              operatorAlternatives.every((alt) =>
+                /^(==|!=|>=|<=|=|!|<|>)$/.test(alt)
+              )
+            ) {
+              return new RegExp(`^(?:${groupPattern})$`);
             }
 
             // Handle other simple patterns (like numbers, enums)
@@ -274,6 +280,18 @@ function getParamTypeFromScope(scope: string): string {
 
 // Use the extracted commands
 const VALID_COMMANDS = extractCommandsFromGrammar();
+
+// Conditions that take a True/False value. Writing them with a "not equal"
+// operator (e.g. "Corrupted != True") is valid but confusing, so we suggest
+// the simpler inverted form ("Corrupted False").
+const BOOLEAN_CONDITIONS = new Set([
+  "FracturedItem",
+  "Mirrored",
+  "Corrupted",
+  "SynthesisedItem",
+  "AnyEnchantment",
+  "Identified",
+]);
 
 // TODO: detect nested blocks
 // TODO: detect empty blocks
@@ -461,6 +479,45 @@ function validateSoundFile(
   }
 }
 
+/**
+ * Flags the confusing "BooleanCondition != True/False" form and suggests the
+ * simpler inverted value (e.g. "Corrupted != True" -> "Corrupted False").
+ */
+function validateBooleanCondition(
+  command: string,
+  parts: string[],
+  line: vscode.TextLine,
+  problems: vscode.Diagnostic[]
+) {
+  const rest = parts.slice(1);
+  const hasOperator =
+    rest[0] !== undefined && /^(==|!=|>=|<=|=|!|<|>)$/.test(rest[0]);
+  const operator = hasOperator ? rest[0] : undefined;
+  const value = hasOperator ? rest[1] : rest[0];
+
+  const isNotEqual = operator === "!" || operator === "!=";
+  if (!isNotEqual || (value !== "True" && value !== "False")) {
+    return;
+  }
+
+  const inverted = value === "True" ? "False" : "True";
+
+  const commandEnd = line.text.indexOf(command) + command.length;
+  const operatorIndex = line.text.indexOf(operator!, commandEnd);
+  const valueIndex = line.text.indexOf(value, operatorIndex + operator!.length);
+
+  const diagnostic = createDiagnostic(
+    new vscode.Range(
+      line.range.start.translate(0, operatorIndex),
+      line.range.start.translate(0, valueIndex + value.length)
+    ),
+    `"${command} ${operator} ${value}" is confusing. Use "${command} ${inverted}" instead.`,
+    vscode.DiagnosticSeverity.Warning
+  );
+  diagnostic.code = `replace:${inverted}`;
+  problems.push(diagnostic);
+}
+
 export function validateDocument(
   document: vscode.TextDocument,
   gameData: GameDataService
@@ -540,6 +597,11 @@ export function validateDocument(
       continue;
     }
 
+    // Suggest the simpler form for confusing "Corrupted != True" style usage
+    if (BOOLEAN_CONDITIONS.has(command)) {
+      validateBooleanCondition(command, parts, line, problems);
+    }
+
     // Validate parameters based on command definition
     validateCommandParams(command, parts.slice(1), line, problems);
   }
@@ -584,7 +646,7 @@ function validateCommandParams(
         return value.startsWith('"') && value.endsWith('"') ? 1 : -1;
 
       case "operator":
-        return /^[=<>]=?$/.test(value) ? 1 : -1;
+        return /^(==|!=|>=|<=|=|!|<|>)$/.test(value) ? 1 : -1;
 
       case "enum":
         // For enums, prefer exact matches over just valid identifiers
@@ -613,7 +675,7 @@ function validateCommandParams(
     // Penalize if the first parameter is an operator but none was provided
     if (
       paramSet.params[0]?.type === "operator" &&
-      !values[0]?.match(/^[=<>]/)
+      !values[0]?.match(/^[=<>!]/)
     ) {
       matchScore -= 500;
     }
@@ -835,7 +897,7 @@ function validateBaseTypeOrClass(
     value
       .match(/"[^"]*"|[^\s"]+/g)
       ?.map((v) => v.replace(/^"(.*)"$/, "$1")) // Extract quoted strings or single words
-      .filter((v) => !v.match(/^[=<>]=?$/)) || []; // Filter out operators
+      .filter((v) => !v.match(/^(==|!=|>=|<=|=|!|<|>)$/)) || []; // Filter out operators
 
   const isExact = line.text.includes("==");
 

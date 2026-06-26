@@ -35,6 +35,14 @@ export class FilterCodeActionProvider implements vscode.CodeActionProvider {
       ) {
         this.handleRuleConflict(diagnostic, actions);
       }
+
+      // Handle direct text replacements (e.g. simplify "!= True" to "False")
+      if (
+        typeof diagnostic.code === "string" &&
+        diagnostic.code.startsWith("replace:")
+      ) {
+        this.handleReplacement(diagnostic, document, actions);
+      }
     });
 
     return actions;
@@ -58,6 +66,28 @@ export class FilterCodeActionProvider implements vscode.CodeActionProvider {
       fix.diagnostics = [diagnostic];
       actions.push(fix);
     });
+  }
+
+  private handleReplacement(
+    diagnostic: vscode.Diagnostic,
+    document: vscode.TextDocument,
+    actions: vscode.CodeAction[]
+  ) {
+    if (typeof diagnostic.code !== "string") {
+      return;
+    }
+
+    const replacement = diagnostic.code.slice("replace:".length);
+    const fix = new vscode.CodeAction(
+      `Change to '${replacement}'`,
+      vscode.CodeActionKind.QuickFix
+    );
+
+    fix.edit = new vscode.WorkspaceEdit();
+    fix.edit.replace(document.uri, diagnostic.range, replacement);
+    fix.diagnostics = [diagnostic];
+    fix.isPreferred = true;
+    actions.push(fix);
   }
 
   private handleRuleConflict(

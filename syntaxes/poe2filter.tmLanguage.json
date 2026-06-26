@@ -57,7 +57,7 @@
           "end": "(?=$|#)",
           "patterns": [
             {
-              "match": "(>=|<=|==|=|<|>)\\s+(Normal|Magic|Rare|Unique)\\b",
+              "match": "(>=|<=|==|!=|=|!|<|>)\\s+(Normal|Magic|Rare|Unique)\\b",
               "captures": {
                 "1": { "name": "keyword.operator.comparison.poe2filter" },
                 "2": { "name": "variable.parameter.rarity.poe2filter" }
@@ -79,7 +79,7 @@
           "end": "(?=$|#)",
           "patterns": [
             {
-              "match": "(==|=)\\s+(\"[^\"]+\")",
+              "match": "(==|!=|=|!)\\s+(\"[^\"]+\")",
               "captures": {
                 "1": { "name": "keyword.operator.comparison.poe2filter" },
                 "2": { "name": "string.quoted.double.basetype.poe2filter" }
@@ -101,7 +101,7 @@
           "end": "(?=$|#)",
           "patterns": [
             {
-              "match": "(>=|<=|==|=|<|>)\\s+(\\d+)\\b",
+              "match": "(>=|<=|==|!=|=|!|<|>)\\s+(\\d+)\\b",
               "captures": {
                 "1": { "name": "keyword.operator.comparison.poe2filter" },
                 "2": { "name": "constant.numeric.level.poe2filter" }
@@ -122,6 +122,13 @@
           },
           "end": "(?=$|#)",
           "patterns": [
+            {
+              "match": "(==|!=|=|!)\\s+(True|False)\\b",
+              "captures": {
+                "1": { "name": "keyword.operator.comparison.poe2filter" },
+                "2": { "name": "constant.language.boolean.poe2filter" }
+              }
+            },
             {
               "match": "\\b(True|False)\\b",
               "captures": {
