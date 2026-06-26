@@ -1,0 +1,106 @@
+# Not-Equal Operator Test Filter (issue #125)
+# Demonstrates the "!" and "!=" operators (both mean "not equal").
+#
+# Tuned for LOW-LEVEL characters (Act 1): every rule targets items you see
+# constantly while leveling and paints them a DISTINCT colour + minimap icon
+# + light beam, so you can instantly tell which rule caught a drop.
+#
+# What to check:
+#   - No line below is flagged as a syntax error / "Unknown command" /
+#     "Invalid value for operator", and "!" / "!=" highlight as operators.
+#   - In game, drops are coloured by the rules below. If "!=" / "!" works,
+#     the non-equal rules catch everything EXCEPT the excluded value.
+
+#--------------------------------
+# Positive control (exact match) - WHITE text on GREEN
+# Scroll of Wisdom should look different from every other currency below.
+#--------------------------------
+Show
+    BaseType == "Scroll of Wisdom"
+    SetFontSize 45
+    SetTextColor 255 255 255 255
+    SetBackgroundColor 0 90 0 255
+    MinimapIcon 0 Green Circle
+    PlayEffect Green
+
+#--------------------------------
+# "!=" on BaseType - CYAN
+# Any currency that is NOT a Scroll of Wisdom.
+#--------------------------------
+Show
+    Class "Currency"
+    BaseType != "Scroll of Wisdom"
+    SetFontSize 40
+    SetTextColor 0 0 0 255
+    SetBackgroundColor 0 200 220 255
+    MinimapIcon 1 Cyan Diamond
+    PlayEffect Cyan
+
+#--------------------------------
+# "!=" on Rarity - BLUE
+# Flasks that are NOT Unique (i.e. Normal/Magic - all the ones you find early).
+#--------------------------------
+Show
+    Class "Flask"
+    Rarity != Unique
+    SetFontSize 38
+    SetTextColor 255 255 255 255
+    SetBackgroundColor 0 0 160 255
+    MinimapIcon 1 Blue Square
+    PlayEffect Blue
+
+#--------------------------------
+# "!" short form on Rarity - YELLOW
+# Weapons/armour that are NOT Normal (Magic or better) get a bright border.
+#--------------------------------
+Show
+    Class "Wands" "Sceptres" "Body Armours"
+    Rarity ! Normal
+    SetFontSize 40
+    SetTextColor 255 255 0 255
+    SetBorderColor 255 255 0 255
+    MinimapIcon 0 Yellow Star
+    PlayEffect Yellow
+
+#--------------------------------
+# "!=" on a numeric condition - ORANGE border
+# Uncut Skill Gems whose level is NOT 1 (drops scale with area while leveling).
+#--------------------------------
+Show
+    Class "Uncut Skill Gems"
+    ItemLevel != 1
+    SetFontSize 40
+    SetTextColor 255 160 0 255
+    SetBorderColor 255 160 0 255
+    MinimapIcon 0 Orange Triangle
+    PlayEffect Orange
+
+#--------------------------------
+# Enum not-equal test (Rarity) - GREEN vs GREY
+# The "!=" rule is intentionally FIRST so a broken not-equal is obvious:
+#   - Works:  Magic/Rare/Unique = green, Normal = grey (clean split).
+#   - Broken: Normal items ALSO turn green (rule 1 wrongly catches them).
+# Swap "Normal" for Unique/Magic/Rare to test each enum value.
+#--------------------------------
+Show
+    Rarity != Normal
+    SetFontSize 40
+    SetTextColor 0 255 0 255
+    SetBackgroundColor 0 80 0 255
+    MinimapIcon 0 Green Circle
+    PlayEffect Green
+Show
+    Rarity == Normal
+    SetFontSize 35
+    SetTextColor 255 255 255 255
+    SetBackgroundColor 60 60 60 255
+
+#--------------------------------
+# "!=" on a boolean - GREY catch-all
+# Everything else that is NOT corrupted still shows (so nothing disappears).
+#--------------------------------
+Show
+    Corrupted != True
+    SetFontSize 32
+    SetTextColor 200 200 200 255
+    SetBorderColor 80 80 80 255

@@ -371,172 +371,217 @@
   },
   {
     "_index": 74,
+    "Id": "Expedition2Logbooks",
+    "Name": "Expedition Logbook"
+  },
+  {
+    "_index": 75,
     "Id": "IncubatorStackable",
     "Name": "Incubators"
   },
   {
-    "_index": 75,
+    "_index": 76,
     "Id": "ArchnemesisMod",
     "Name": "Archnemesis Mods"
   },
   {
-    "_index": 76,
+    "_index": 77,
     "Id": "Meta Skill Gem",
     "Name": ""
   },
   {
-    "_index": 77,
+    "_index": 78,
     "Id": "Spear",
     "Name": "Spears"
   },
   {
-    "_index": 78,
+    "_index": 79,
     "Id": "Crossbow",
     "Name": "Crossbows"
   },
   {
-    "_index": 79,
+    "_index": 80,
     "Id": "Focus",
     "Name": "Foci"
   },
   {
-    "_index": 80,
+    "_index": 81,
     "Id": "InstanceLocalItem",
     "Name": "Instance Local Items"
   },
   {
-    "_index": 81,
+    "_index": 82,
     "Id": "SentinelDrone",
     "Name": "Sentinels"
   },
   {
-    "_index": 82,
+    "_index": 83,
     "Id": "MemoryLine",
     "Name": "Memories"
   },
   {
-    "_index": 83,
+    "_index": 84,
     "Id": "Flail",
     "Name": "Flails"
   },
   {
-    "_index": 84,
+    "_index": 85,
     "Id": "Relic",
     "Name": "Relics"
   },
   {
-    "_index": 85,
+    "_index": 86,
     "Id": "SanctumSpecialRelic",
     "Name": "Sanctified Relics"
   },
   {
-    "_index": 86,
+    "_index": 87,
     "Id": "Breachstone",
     "Name": "Breachstones"
   },
   {
-    "_index": 87,
+    "_index": 88,
     "Id": "GiftBox",
     "Name": ""
   },
   {
-    "_index": 88,
+    "_index": 89,
     "Id": "VaultKey",
     "Name": "Vault Keys"
   },
   {
-    "_index": 89,
+    "_index": 90,
     "Id": "ItemisedSanctum",
     "Name": "Trial Coins"
   },
   {
-    "_index": 90,
+    "_index": 91,
     "Id": "DONOTUSE12",
     "Name": ""
   },
   {
-    "_index": 91,
-    "Id": "UncutSkillGem",
+    "_index": 92,
+    "Id": "UncutSkillGem_OLD",
     "Name": ""
   },
   {
-    "_index": 92,
+    "_index": 93,
     "Id": "Buckler",
     "Name": "Bucklers"
   },
   {
-    "_index": 93,
+    "_index": 94,
     "Id": "Thrown One Hand Axe",
     "Name": ""
   },
   {
-    "_index": 94,
+    "_index": 95,
     "Id": "Thrown Two Hand Axe",
     "Name": ""
   },
   {
-    "_index": 95,
+    "_index": 96,
     "Id": "ConventionTreasure",
     "Name": ""
   },
   {
-    "_index": 96,
+    "_index": 97,
     "Id": "TrapTool",
     "Name": "Traps"
   },
   {
-    "_index": 97,
+    "_index": 98,
     "Id": "Crossbow Attachment REMOVE",
     "Name": ""
   },
   {
-    "_index": 98,
+    "_index": 99,
     "Id": "SkillGemToken",
     "Name": "Currency"
   },
   {
-    "_index": 99,
+    "_index": 100,
     "Id": "Nothing",
     "Name": ""
   },
   {
-    "_index": 100,
+    "_index": 101,
     "Id": "UltimatumKey",
     "Name": "Inscribed Ultimatum"
   },
   {
-    "_index": 101,
-    "Id": "UncutSupportGem",
-    "Name": ""
-  },
-  {
     "_index": 102,
-    "Id": "UncutReservationGem",
+    "Id": "UncutSupportGem_OLD",
     "Name": ""
   },
   {
     "_index": 103,
-    "Id": "Thrown Shield",
+    "Id": "UncutReservationGem_OLD",
     "Name": ""
   },
   {
     "_index": 104,
-    "Id": "SoulCore",
-    "Name": "Socketable"
+    "Id": "Thrown Shield",
+    "Name": ""
   },
   {
     "_index": 105,
+    "Id": "SoulCore",
+    "Name": "Augment"
+  },
+  {
+    "_index": 106,
     "Id": "TowerAugmentation",
     "Name": "Tablet"
   },
   {
-    "_index": 106,
+    "_index": 107,
     "Id": "Omen",
     "Name": "Omen"
   },
   {
-    "_index": 107,
-    "Id": "PinnacleKey",
+    "_index": 108,
+    "Id": "PinnacleKey_OLD",
+    "Name": ""
+  },
+  {
+    "_index": 109,
+    "Id": "Talisman",
+    "Name": "Talismans"
+  },
+  {
+    "_index": 110,
+    "Id": "UncutSkillGemStackable",
+    "Name": "Uncut Skill Gems"
+  },
+  {
+    "_index": 111,
+    "Id": "UncutSupportGemStackable",
+    "Name": "Uncut Support Gems"
+  },
+  {
+    "_index": 112,
+    "Id": "UncutReservationGemStackable",
+    "Name": "Uncut Spirit Gems"
+  },
+  {
+    "_index": 113,
+    "Id": "IncursionArm",
+    "Name": "Transcendent Arm"
+  },
+  {
+    "_index": 114,
+    "Id": "IncursionLeg",
+    "Name": "Transcendent Leg"
+  },
+  {
+    "_index": 115,
+    "Id": "BrequelFruit",
+    "Name": "Wombgifts"
+  },
+  {
+    "_index": 116,
+    "Id": "PinnacleKeyStackable",
     "Name": "Pinnacle Keys"
   }
 ]

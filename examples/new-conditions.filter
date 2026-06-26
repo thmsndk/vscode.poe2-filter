@@ -1,0 +1,80 @@
+# PoE2 Conditions Coverage Test Filter
+# Conditions added to the extension's grammar + preview, each present in
+# real PoE2 filters and/or listed in the PoE2 "Last of the Druids" item
+# filter post.
+#
+# What to check:
+#   - No line below is flagged as "Unknown command".
+#   - Numeric conditions accept an operator + number; booleans accept
+#     True/False (and the simpler-form suggestion fires on "!= True").
+#   - In game: load this filter and confirm each rule actually affects the
+#     matching drop. PoE2 is Early Access and may silently ignore some.
+
+#--------------------------------
+# Numeric (UnidentifiedItemTier: 108x in real PoE2 filters)
+#--------------------------------
+Show
+    UnidentifiedItemTier >= 4
+    SetTextColor 255 0 0 255
+
+#--------------------------------
+# HasExplicitMod (20x in real PoE2 filters). Syntax confirmed in-game (issue #11):
+#   HasExplicitMod [<op><count> | True] mod [mod ...]
+# - operator/count is optional; when present it must be GLUED (">=6", not ">= 6")
+# - at least one mod required (quotes optional; matched partially)
+# - valid operators: == > < >= <= and True  (NOT != or False)
+#--------------------------------
+Show
+    HasExplicitMod >=1 "King's" "Empowering"
+    SetBorderColor 255 255 255 255
+
+Show
+    HasExplicitMod "Populated"          # mods only, no operator
+    SetBorderColor 0 200 200 255
+
+Show
+    HasExplicitMod True "Populated" "Teeming"
+    SetBorderColor 0 200 200 255
+
+# Invalid in-game: a space between the operator and number (flagged as error)
+# Show
+#     HasExplicitMod >= 6 "Populated"
+
+#--------------------------------
+# Booleans confirmed in the PoE2 "Last of the Druids" filter post
+#--------------------------------
+Show
+    AlwaysShow True
+    SetTextColor 255 255 255 255
+
+Show
+    HasVaalUniqueMod True
+    SetBorderColor 200 0 200 255
+
+Show
+    IsVaalUnique True
+    SetBorderColor 200 0 200 255
+
+Show
+    TwiceCorrupted True
+    SetBorderColor 120 0 0 255
+
+#================================================================
+# REMOVED as PoE1-only after research (do NOT re-add without in-game proof):
+#   MemoryStrands  - Secrets of the Atlas, Memory-Influenced T16/T17 maps
+#   MirageMap      - "Path of Exile: Mirage" league
+#   AlternateQuality - PoE1 alternate-quality gems (Anomalous/Divergent/...)
+#   TransfiguredGem - PoE1 (Affliction); no transfig mechanic in PoE2 game data
+#   Imbued         - only an item mod-affix name in PoE2 data, not a filter state
+#
+# NOT ADDED - 0 usage in real PoE2 filters checked, so unverified:
+#   HasInfluence (Shaper/Elder/... - PoE1), HasImplicitMod, HasEnchantment,
+#   LinkedSockets, SocketGroup, CorruptedMods, BaseWard,
+#   BaseDefencePercentile, Replica, Scourged, GemQualityType,
+#   EnchantmentPassiveNode, EnchantmentPassiveNum
+#
+# Probably PoE1-only:
+#   ArchnemesisMod, BlightedMap, UberBlightedMap, ElderItem, ElderMap,
+#   ShaperItem, ShapedMap, HasCruciblePassiveTree,
+#   HasEaterOfWorldsImplicit, HasSearingExarchImplicit, ZanaMemory, Foulborn
+#================================================================

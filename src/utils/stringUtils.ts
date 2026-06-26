@@ -1,6 +1,4 @@
 export function levenshteinDistance(a: string, b: string): number {
-  console.log(`Comparing '${a}' with '${b}'`);
-
   if (a.length === 0) {
     return b.length;
   }
@@ -30,40 +28,55 @@ export function levenshteinDistance(a: string, b: string): number {
     }
   }
 
-  console.log("Distance matrix:");
-  console.log(matrix);
-
   return matrix[b.length][a.length];
 }
 
 export function findSimilarValues(
   input: string,
   validValues: string[],
-  maxDistance = 3,
   maxSuggestions = 3
 ): string[] {
-  // First try Levenshtein distance
-  const levenshteinMatches = validValues
-    .map((valid) => ({
-      value: valid,
-      distance: levenshteinDistance(input.toLowerCase(), valid.toLowerCase()),
-    }))
-    .filter((result) => result.distance <= maxDistance)
-    .sort((a, b) => a.distance - b.distance)
+  const lowerInput = input.toLowerCase();
+
+  // Edit-distance budget relative to the input length (~40%, min 1, capped at
+  // 3). A fixed budget of 3 let short words match unrelated candidates - e.g.
+  // "Gold" is distance 3 from both "Bows" and "Foci" despite sharing one
+  // letter. Scaling by length keeps suggestions actually similar.
+  const maxDistance = Math.max(1, Math.min(3, Math.floor(input.length * 0.4)));
+
+  // Substring/prefix matches (either direction) are almost always what the
+  // author meant (e.g. "Waystone" -> "Waystones"), so prefer them. Guard with a
+  // minimum length so a 1-2 char input doesn't match everything.
+  const isSubstringMatch = (lowerValid: string) =>
+    lowerInput.length >= 3 &&
+    (lowerValid.includes(lowerInput) || lowerInput.includes(lowerValid));
+
+  return [...new Set(validValues)]
+    .map((valid) => {
+      const lowerValid = valid.toLowerCase();
+      return {
+        value: valid,
+        distance: levenshteinDistance(lowerInput, lowerValid),
+        substring: isSubstringMatch(lowerValid),
+      };
+    })
+    .filter((result) => result.substring || result.distance <= maxDistance)
+    .sort((a, b) => {
+      // Substring matches first, then closest edit distance, then shorter and
+      // alphabetical so the output is stable instead of data-order dependent.
+      if (a.substring !== b.substring) {
+        return a.substring ? -1 : 1;
+      }
+      if (a.distance !== b.distance) {
+        return a.distance - b.distance;
+      }
+      if (a.value.length !== b.value.length) {
+        return a.value.length - b.value.length;
+      }
+      return a.value.localeCompare(b.value);
+    })
     .slice(0, maxSuggestions)
     .map((result) => result.value);
-
-  // If no matches found, try partial matching
-  if (levenshteinMatches.length === 0) {
-    const partialMatches = validValues
-      .filter((valid) => valid.toLowerCase().includes(input.toLowerCase()))
-      .sort((a, b) => a.length - b.length) // Prefer shorter matches
-      .slice(0, maxSuggestions);
-
-    return partialMatches;
-  }
-
-  return levenshteinMatches;
 }
 
 export function calculateNameSimilarity(a: string, b: string): number {

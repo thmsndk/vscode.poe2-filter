@@ -2,6 +2,7 @@ import * as vscode from "vscode";
 import {
   FilterItem,
   FilterRule,
+  FilterCondition,
   wouldRuleMatchItem,
   generateItemFromRule,
   parseRules,
@@ -16,6 +17,9 @@ import {
 
 type ExtendedFilterItem = FilterItem & {
   ruleLineNumber?: number;
+  // Marks an item generated to illustrate a not-equal rule's exception
+  // (i.e. a base the rule deliberately lets through).
+  isException?: boolean;
 };
 
 export class FilterPreviewEditor
@@ -279,7 +283,7 @@ export class FilterPreviewEditor
                 ctx.fillStyle = 'rgba(255, 0, 0, 0.8)';
                 ctx.fillText('HIDDEN', x, y + textHeight/2 + padding + hiddenFontSize/2);
               }
-                                                      
+
               ctx.restore();
             }
             
@@ -491,10 +495,10 @@ export class FilterPreviewEditor
               const hoveredItem = items.find(item => isMouseOverItem(mouseX, mouseY, item));
               
               if (hoveredItem) {
-                const skipProps = ['x', 'y', 'matched', 'hidden', 'textColor', 'fontSize', 'borderColor', 'backgroundColor', 'beam'];
+                const skipProps = ['x', 'y', 'matched', 'hidden', 'textColor', 'fontSize', 'borderColor', 'backgroundColor', 'beam', 'isException'];
                 const formatKey = (key) => key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
                 
-                const details = Object.entries(hoveredItem)
+                let details = Object.entries(hoveredItem)
                   .sort(([keyA], [keyB]) => {
                     if (keyA === 'name') return -1;
                     if (keyB === 'name') return 1;
@@ -507,7 +511,15 @@ export class FilterPreviewEditor
                     return acc;
                   }, [])
                   .join('\\n');
-                
+
+                // Explain preview-only "exception" items (a base type the rule's
+                // not-equal BaseType condition deliberately lets through).
+                if (hoveredItem.isException) {
+                  details =
+                    'Preview example: this base type is excluded by this rule (BaseType ! / !=), so the rule does not match it here — other rules decide how it looks.\\n\\n' +
+                    details;
+                }
+
                 tooltip.textContent = details;
                 tooltip.style.display = 'block';
                 
@@ -723,10 +735,16 @@ export class FilterPreviewEditor
                 .map((v) => parseInt(v as string));
               break;
             case "PlayEffect":
-              styles.beam = {
-                color: action.values[0] as string,
-                temporary: action.values[1] === "Temp",
-              };
+              // "None" disables the beam (and clears any beam from an
+              // earlier matching rule via Continue).
+              if (action.values[0] === "None") {
+                styles.beam = undefined;
+              } else {
+                styles.beam = {
+                  color: action.values[0] as string,
+                  temporary: action.values[1] === "Temp",
+                };
+              }
               break;
           }
         }
@@ -763,6 +781,82 @@ export class FilterPreviewEditor
     });
   }
 
+  private _pickRandom<T>(items: T[]): T | undefined {
+    if (items.length === 0) {
+      return undefined;
+    }
+    return items[Math.floor(Math.random() * items.length)];
+  }
+
+  /**
+   * Returns the base items belonging to the class(es) referenced by a Class
+   * condition, falling back to all base items when there is no usable match.
+   */
+  private _getClassBaseItems(
+    classCondition: FilterCondition | undefined
+  ): BaseItemType[] {
+    if (!classCondition) {
+      return this.gameData.baseItemTypes;
+    }
+    const classMatches = this.gameData.findMatchingClasses(
+      classCondition.values
+    );
+    if (classMatches.length === 0) {
+      return this.gameData.baseItemTypes;
+    }
+    const classIndexes = new Set(classMatches.map((m) => m.item._index));
+    const filtered = this.gameData.baseItemTypes.filter((b) =>
+      classIndexes.has(b.ItemClass)
+    );
+    return filtered.length > 0 ? filtered : this.gameData.baseItemTypes;
+  }
+
+  /**
+   * For a rule using a not-equal BaseType (e.g. `BaseType ! "Jade" "Lapis"`),
+   * generates two representative items:
+   *  - the item the rule actually catches (a base NOT in the excluded list)
+   *  - the exception the rule lets through (one of the excluded bases), flagged
+   *    so the preview can show how it renders when this rule does not apply.
+   */
+  private _generateNotEqualBaseTypeItems(
+    rule: FilterRule,
+    baseTypeCondition: FilterCondition,
+    classCondition: FilterCondition | undefined
+  ): ExtendedFilterItem[] {
+    const result: ExtendedFilterItem[] = [];
+    const excluded = baseTypeCondition.values.map((v) => v.toLowerCase());
+    const classItems = this._getClassBaseItems(classCondition);
+
+    const matchesExcluded = (b: BaseItemType) =>
+      excluded.some((e) => b.Name.toLowerCase().includes(e));
+
+    const caughtBase = this._pickRandom(
+      classItems.filter((b) => !matchesExcluded(b))
+    );
+    const caughtItem = generateItemFromRule(rule);
+    if (caughtBase) {
+      caughtItem.baseType = caughtBase.Name;
+      caughtItem.name = caughtBase.Name;
+      caughtItem.dropLevel = caughtBase.DropLevel;
+    }
+    result.push({ ...caughtItem, ruleLineNumber: rule.lineNumber });
+
+    const exceptionBase = this._pickRandom(classItems.filter(matchesExcluded));
+    if (exceptionBase) {
+      const exceptionItem = generateItemFromRule(rule);
+      exceptionItem.baseType = exceptionBase.Name;
+      exceptionItem.name = exceptionBase.Name;
+      exceptionItem.dropLevel = exceptionBase.DropLevel;
+      result.push({
+        ...exceptionItem,
+        ruleLineNumber: rule.lineNumber,
+        isException: true,
+      });
+    }
+
+    return result;
+  }
+
   private _generateItemsFromRules(rules: FilterRule[]): ExtendedFilterItem[] {
     const items: ExtendedFilterItem[] = [];
 
@@ -772,6 +866,23 @@ export class FilterPreviewEditor
         (c) => c.type === "BaseType"
       );
       const classCondition = rule.conditions.find((c) => c.type === "Class");
+
+      // not-equal BaseType: render a caught item plus the exception it lets through
+      if (
+        baseTypeCondition &&
+        (baseTypeCondition.operator === "!" ||
+          baseTypeCondition.operator === "!=")
+      ) {
+        items.push(
+          ...this._generateNotEqualBaseTypeItems(
+            rule,
+            baseTypeCondition,
+            classCondition
+          )
+        );
+        continue;
+      }
+
       const areaLevelCondition = rule.conditions.find(
         (c) => c.type === "AreaLevel"
       );

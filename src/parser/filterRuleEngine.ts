@@ -17,13 +17,19 @@ type ConditionType =
   | "BaseArmour"
   | "BaseEnergyShield"
   | "BaseEvasion"
+  | "UnidentifiedItemTier"
   | "Rarity"
   | "FracturedItem"
   | "Mirrored"
   | "Corrupted"
   | "SynthesisedItem"
   | "AnyEnchantment"
-  | "Identified";
+  | "Identified"
+  | "HasVaalUniqueMod"
+  | "IsVaalUnique"
+  | "TwiceCorrupted"
+  | "AlwaysShow"
+  | "HasExplicitMod";
 
 type ActionType =
   | "SetFontSize"
@@ -70,6 +76,7 @@ export interface FilterItem {
   baseArmour?: number;
   baseEnergyShield?: number;
   baseEvasion?: number;
+  unidentifiedItemTier?: number;
   // String properties
   baseType?: string;
   class?: string;
@@ -82,6 +89,13 @@ export interface FilterItem {
   synthesised?: boolean;
   enchanted?: boolean;
   identified?: boolean;
+  hasVaalUniqueMod?: boolean;
+  isVaalUnique?: boolean;
+  twiceCorrupted?: boolean;
+  alwaysShow?: boolean;
+  // Explicit mod names a HasExplicitMod rule requires (string list, so it is
+  // not part of NumericProps/boolean handling).
+  explicitMods?: string[];
 }
 type NumericProps = Exclude<
   {
@@ -92,22 +106,66 @@ type NumericProps = Exclude<
   undefined
 >;
 
+/**
+ * Returns true when the operator represents a "not equal" comparison.
+ * PoE2 supports both "!" and "!=" as not-equal operators.
+ */
+function isNotEqualOperator(operator?: string): boolean {
+  return operator === "!" || operator === "!=";
+}
+
+/**
+ * Case-insensitive substring match used for "not equal" BaseType/Class
+ * comparisons, mirroring how the game matches partial names (e.g. "Jade"
+ * excludes "Jade Amulet").
+ */
+function partiallyMatchesAnyValue(
+  itemValue: string | undefined,
+  values: string[]
+): boolean {
+  if (!itemValue) {
+    return false;
+  }
+  const target = itemValue.toLowerCase();
+  return values.some((value) => target.includes(value.toLowerCase()));
+}
+
+/**
+ * Resolves the boolean value a True/False condition expects, taking a
+ * "not equal" operator (e.g. "Corrupted != True") into account.
+ */
+function expectedBoolean(condition: FilterCondition): boolean {
+  const isTrue = condition.values[0] === "True";
+  return isNotEqualOperator(condition.operator) ? !isTrue : isTrue;
+}
+
 export function wouldRuleMatchItem(
   rule: FilterRule,
   item: FilterItem
 ): boolean {
   for (const condition of rule.conditions) {
     switch (condition.type) {
-      case "BaseType":
-        if (!item.baseType || !condition.values.includes(item.baseType)) {
+      case "BaseType": {
+        if (isNotEqualOperator(condition.operator)) {
+          // Partial match so e.g. "Jade" excludes "Jade Amulet"
+          if (partiallyMatchesAnyValue(item.baseType, condition.values)) {
+            return false;
+          }
+        } else if (!item.baseType || !condition.values.includes(item.baseType)) {
           return false;
         }
         break;
-      case "Class":
-        if (!item.class || !condition.values.includes(item.class)) {
+      }
+      case "Class": {
+        if (isNotEqualOperator(condition.operator)) {
+          if (partiallyMatchesAnyValue(item.class, condition.values)) {
+            return false;
+          }
+        } else if (!item.class || !condition.values.includes(item.class)) {
           return false;
         }
         break;
+      }
       case "Sockets":
       case "Quality":
       case "ItemLevel":
@@ -121,7 +179,8 @@ export function wouldRuleMatchItem(
       case "Width":
       case "BaseArmour":
       case "BaseEnergyShield":
-      case "BaseEvasion": {
+      case "BaseEvasion":
+      case "UnidentifiedItemTier": {
         const prop = (condition.type.charAt(0).toLowerCase() +
           condition.type.slice(1)) as NumericProps;
         if (
@@ -133,41 +192,76 @@ export function wouldRuleMatchItem(
         }
         break;
       }
-      case "Rarity":
-        if (!item.rarity || !condition.values.includes(item.rarity)) {
+      case "Rarity": {
+        const inList = !!item.rarity && condition.values.includes(item.rarity);
+        if (isNotEqualOperator(condition.operator) ? inList : !inList) {
           return false;
         }
         break;
+      }
       case "FracturedItem":
-        if (item.fractured !== (condition.values[0] === "True")) {
+        if (item.fractured !== expectedBoolean(condition)) {
           return false;
         }
         break;
       case "Mirrored":
-        if (item.mirrored !== (condition.values[0] === "True")) {
+        if (item.mirrored !== expectedBoolean(condition)) {
           return false;
         }
         break;
       case "Corrupted":
-        if (item.corrupted !== (condition.values[0] === "True")) {
+        if (item.corrupted !== expectedBoolean(condition)) {
           return false;
         }
         break;
       case "SynthesisedItem":
-        if (item.synthesised !== (condition.values[0] === "True")) {
+        if (item.synthesised !== expectedBoolean(condition)) {
           return false;
         }
         break;
       case "AnyEnchantment":
-        if (item.enchanted !== (condition.values[0] === "True")) {
+        if (item.enchanted !== expectedBoolean(condition)) {
           return false;
         }
         break;
       case "Identified":
-        if (item.identified !== (condition.values[0] === "True")) {
+        if (item.identified !== expectedBoolean(condition)) {
           return false;
         }
         break;
+      case "HasVaalUniqueMod":
+        if (item.hasVaalUniqueMod !== expectedBoolean(condition)) {
+          return false;
+        }
+        break;
+      case "IsVaalUnique":
+        if (item.isVaalUnique !== expectedBoolean(condition)) {
+          return false;
+        }
+        break;
+      case "TwiceCorrupted":
+        if (item.twiceCorrupted !== expectedBoolean(condition)) {
+          return false;
+        }
+        break;
+      case "AlwaysShow":
+        if (item.alwaysShow !== expectedBoolean(condition)) {
+          return false;
+        }
+        break;
+      case "HasExplicitMod": {
+        // The preview cannot simulate item mod rolls, so only an item that
+        // explicitly carries the required mods matches (the rule's own
+        // representative item does; sample items do not).
+        const required = condition.values;
+        const matches =
+          !!item.explicitMods &&
+          required.every((mod) => item.explicitMods!.includes(mod));
+        if (isNotEqualOperator(condition.operator) ? matches : !matches) {
+          return false;
+        }
+        break;
+      }
       default: {
         const _exhaustiveCheck: never = condition.type;
         return false;
@@ -285,6 +379,7 @@ export function generateItemFromRule(rule: FilterRule): FilterItem {
     baseArmour: 0,
     baseEnergyShield: 0,
     baseEvasion: 0,
+    unidentifiedItemTier: 0,
     // Boolean defaults
     fractured: false,
     mirrored: false,
@@ -292,6 +387,13 @@ export function generateItemFromRule(rule: FilterRule): FilterItem {
     synthesised: false,
     enchanted: false,
     identified: false,
+    hasVaalUniqueMod: false,
+    isVaalUnique: false,
+    twiceCorrupted: false,
+    alwaysShow: false,
+    // Fallback so a rule whose conditions don't determine a base item (e.g.
+    // boolean-only rules) still renders with a label instead of "undefined".
+    name: "Item",
   };
 
   let baseTypes: string[] = [];
@@ -299,12 +401,18 @@ export function generateItemFromRule(rule: FilterRule): FilterItem {
   for (const condition of rule.conditions) {
     switch (condition.type) {
       case "BaseType":
-        item.baseType = condition.values[0];
-        baseTypes.push(condition.values[0]);
+        // For "not equal" we can't represent the rule with the excluded value,
+        // so we leave baseType unset to avoid a self-contradicting item.
+        if (!isNotEqualOperator(condition.operator)) {
+          item.baseType = condition.values[0];
+          baseTypes.push(condition.values[0]);
+        }
         break;
       case "Class":
-        item.class = condition.values[0];
-        classes.push(condition.values[0]);
+        if (!isNotEqualOperator(condition.operator)) {
+          item.class = condition.values[0];
+          classes.push(condition.values[0]);
+        }
         break;
       case "Sockets":
       case "Quality":
@@ -319,7 +427,8 @@ export function generateItemFromRule(rule: FilterRule): FilterItem {
       case "Width":
       case "BaseArmour":
       case "BaseEnergyShield":
-      case "BaseEvasion": {
+      case "BaseEvasion":
+      case "UnidentifiedItemTier": {
         const prop = (condition.type.charAt(0).toLowerCase() +
           condition.type.slice(1)) as NumericProps;
 
@@ -339,32 +448,60 @@ export function generateItemFromRule(rule: FilterRule): FilterItem {
               item[prop] = value - 1;
               break;
             case "==":
+            case "=":
               item[prop] = value;
+              break;
+            case "!=":
+            case "!":
+              // Any value other than the excluded one satisfies "not equal".
+              item[prop] = value + 1;
               break;
           }
         }
         break;
       }
       case "Rarity":
-        item.rarity = condition.values[0];
+        if (isNotEqualOperator(condition.operator)) {
+          item.rarity = ["Normal", "Magic", "Rare", "Unique"].find(
+            (rarity) => !condition.values.includes(rarity)
+          );
+        } else {
+          item.rarity = condition.values[0];
+        }
         break;
       case "FracturedItem":
-        item.fractured = condition.values[0] === "True";
+        item.fractured = expectedBoolean(condition);
         break;
       case "Mirrored":
-        item.mirrored = condition.values[0] === "True";
+        item.mirrored = expectedBoolean(condition);
         break;
       case "Corrupted":
-        item.corrupted = condition.values[0] === "True";
+        item.corrupted = expectedBoolean(condition);
         break;
       case "SynthesisedItem":
-        item.synthesised = condition.values[0] === "True";
+        item.synthesised = expectedBoolean(condition);
         break;
       case "AnyEnchantment":
-        item.enchanted = condition.values[0] === "True";
+        item.enchanted = expectedBoolean(condition);
         break;
       case "Identified":
-        item.identified = condition.values[0] === "True";
+        item.identified = expectedBoolean(condition);
+        break;
+      case "HasVaalUniqueMod":
+        item.hasVaalUniqueMod = expectedBoolean(condition);
+        break;
+      case "IsVaalUnique":
+        item.isVaalUnique = expectedBoolean(condition);
+        break;
+      case "TwiceCorrupted":
+        item.twiceCorrupted = expectedBoolean(condition);
+        break;
+      case "AlwaysShow":
+        item.alwaysShow = expectedBoolean(condition);
+        break;
+      case "HasExplicitMod":
+        // Give the representative item the required mods so it matches itself.
+        item.explicitMods = condition.values;
         break;
       default: {
         const _exhaustiveCheck: never = condition.type;
@@ -379,6 +516,15 @@ export function generateItemFromRule(rule: FilterRule): FilterItem {
       item.name = classes[Math.floor(Math.random() * classes.length)];
     } else {
       item.name = "Item";
+    }
+
+    // Add stack size in front of the name if there is one
+    if (item.stackSize && item.stackSize > 1) {
+      item.name = `${item.stackSize}x ${item.name}`;
+    }
+
+    if (item.baseType === "Gold") {
+      console.log("Gold", rule, item);
     }
   }
 
@@ -400,7 +546,11 @@ export function compareNumeric(
     case "<":
       return value < conditionValue;
     case "==":
+    case "=":
       return value === conditionValue;
+    case "!=":
+    case "!":
+      return value !== conditionValue;
     default:
       return false;
   }
@@ -475,8 +625,8 @@ export function parseCondition(
   switch (type) {
     case "Class":
     case "BaseType": {
-      // Check for operator before the first quote
-      const operatorMatch = text.match(/\s+([=]{1,2})\s+/);
+      // Check for operator before the first quote (=, ==, !, !=)
+      const operatorMatch = text.match(/\s+(==|!=|=|!)\s+/);
       // Match all quoted strings, preserving spaces within quotes
       const matches = text.match(/"([^"]+)"/g) || [];
       return {
@@ -500,9 +650,10 @@ export function parseCondition(
     case "BaseArmour":
     case "BaseEnergyShield":
     case "BaseEvasion":
+    case "UnidentifiedItemTier":
       return {
         type,
-        operator: parts[1]?.match(/[<>=]+/)?.[0],
+        operator: parts[1]?.match(/[<>=!]+/)?.[0],
         values: [parts[parts.length - 1]],
         lineNumber,
       };
@@ -520,11 +671,36 @@ export function parseCondition(
     case "SynthesisedItem":
     case "AnyEnchantment":
     case "Identified":
+    case "HasVaalUniqueMod":
+    case "IsVaalUnique":
+    case "TwiceCorrupted":
+    case "AlwaysShow":
       return {
         type,
-        values: [parts[1]], // True/False
+        operator: parts[1]?.match(/^(==|!=|=|!)$/)?.[0],
+        values: [parts[parts.length - 1]], // True/False
         lineNumber,
       };
+    case "HasExplicitMod": {
+      // Form: HasExplicitMod [<op><count> | True] mod [mod ...]
+      // The operator/count is optional and glued to the number (">=6"); mod
+      // names may be quoted or unquoted and are matched partially in-game.
+      const operator = parts[1]?.match(/^(==|>=|<=|<|>)/)?.[0];
+      const quoted = text.match(/"([^"]+)"/g);
+      const modNames = quoted
+        ? quoted.map((m) => m.replace(/"/g, ""))
+        : parts
+            .slice(1)
+            .filter(
+              (p) => p !== "True" && !/^(==|>=|<=|<|>)?\d+$/.test(p)
+            );
+      return {
+        type,
+        operator,
+        values: modNames,
+        lineNumber,
+      };
+    }
     default:
       const _exhaustiveCheck: never = type;
       return null;

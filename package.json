@@ -3,7 +3,7 @@
   "publisher": "thmsn",
   "displayName": "Path of Exile 2 Filter",
   "description": "A Visual Studio Code extension for Path of Exile 2 item filter files",
-  "version": "0.0.15",
+  "version": "0.0.29",
   "repository": {
     "type": "git",
     "url": "https://github.com/thmsndk/vscode.poe2-filter"
@@ -94,7 +94,9 @@
     "test": "vscode-test",
     "vsce:publish": "vsce publish --no-dependencies",
     "data-sync": "ts-node scripts/data-sync.ts",
-    "patch-version": "ts-node scripts/patch-version.ts"
+    "patch-version": "ts-node scripts/patch-version.ts",
+    "update-data": "ts-node scripts/update-data.ts",
+    "generate-data-diff": "ts-node scripts/generate-data-diff.ts"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.10",
@@ -117,5 +119,10 @@
     "vscode-languageserver": "^9.0.1",
     "vscode-languageserver-textdocument": "^1.0.12",
     "vscode-languageclient": "^9.0.1"
+  },
+  "pnpm": {
+    "patchedDependencies": {
+      "pathofexile-dat@14.0.0": "patches/pathofexile-dat@14.0.0.patch"
+    }
   }
 }

@@ -6,6 +6,8 @@ A Visual Studio Code extension for Path of Exile 2 item filter files.
   <img src="images/support_me_on_kofi_red.png" alt="ko-fi" width="150" height="auto"/>
 </a>
 
+I Personally used this extension when PoE2 launched and [FilterBlade.xyz](<[text](https://www.filterblade.xyz/?game=Poe2)>) was not released, I now use FilterBlade for my personal filters, so if there is any issue with the extension, it is important that you report them:)
+
 ## Features
 
 - [Syntax highlighting](#syntax-highlighting) for POE2 filter files
@@ -204,6 +206,44 @@ See [CHANGELOG.md](CHANGELOG.md) for detailed release notes.
 Feel free to open issues or PRs on the [GitHub repository](https://github.com/thmsndk/vscode.poe2-filter).
 
 ## Development
+
+### Automated Releases
+
+This project uses [release-please](https://github.com/googleapis/release-please) for automated semantic versioning and release management.
+
+#### How it works:
+
+1. **Conventional Commits**: All commits should follow the [Conventional Commits](https://www.conventionalcommits.org/) specification:
+
+   - `feat:` for new features (minor version bump)
+   - `fix:` for bug fixes (patch version bump)
+   - `feat!:` or `fix!:` for breaking changes (major version bump)
+   - `docs:`, `style:`, `refactor:`, `perf:`, `test:`, `chore:` for other changes
+
+2. **Automated Release Process**:
+
+   - When commits are pushed to the `main` branch, release-please analyzes the commit messages
+   - It automatically determines the next version number based on semantic versioning
+   - Creates a pull request with updated version and changelog
+   - When the PR is merged, it creates a GitHub release
+   - The release triggers automatic publishing to the VS Code Marketplace
+
+3. **Commit Message Examples**:
+   ```bash
+   feat: add new filter validation feature
+   fix: resolve color preview display issue
+   feat!: breaking change in filter syntax
+   docs: update README with new features
+   ```
+
+#### Manual Release
+
+To create a release manually:
+
+1. Create a commit with a conventional commit message
+2. Push to the `main` branch
+3. Release-please will create a PR automatically
+4. Review and merge the PR to create the release
 
 ### Building and Packaging
 

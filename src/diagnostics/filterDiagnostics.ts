@@ -177,9 +177,15 @@ function extractCommandsFromGrammar(): Record<string, CommandDefinition> {
               return /^(?:"[^"]*"(?:\s+"[^"]*")*|\S+)$/;
             }
 
-            // Handle comparison operators
-            if (groupPattern === "==|=") {
-              return /^(?:==|=)$/;
+            // Handle comparison operators (e.g. "==|!=|=|!" or ">=|<=|==|!=|=|!|<|>")
+            const operatorAlternatives = groupPattern.split("|");
+            if (
+              operatorAlternatives.length > 0 &&
+              operatorAlternatives.every((alt) =>
+                /^(==|!=|>=|<=|=|!|<|>)$/.test(alt)
+              )
+            ) {
+              return new RegExp(`^(?:${groupPattern})$`);
             }
 
             // Handle other simple patterns (like numbers, enums)
@@ -206,7 +212,7 @@ function extractCommandsFromGrammar(): Record<string, CommandDefinition> {
     }
 
     // Process each section
-    ["blocks", "controlFlow", "conditions", "actions"].forEach((section) => {
+    ["blocks", "controlFlow", "imports", "conditions", "actions"].forEach((section) => {
       (grammar.repository[section].patterns as CommandPattern[]).forEach(
         (pattern) => {
           const { commands: commandNames, paramSets } =
@@ -274,6 +280,22 @@ function getParamTypeFromScope(scope: string): string {
 
 // Use the extracted commands
 const VALID_COMMANDS = extractCommandsFromGrammar();
+
+// Conditions that take a True/False value. Writing them with a "not equal"
+// operator (e.g. "Corrupted != True") is valid but confusing, so we suggest
+// the simpler inverted form ("Corrupted False").
+const BOOLEAN_CONDITIONS = new Set([
+  "FracturedItem",
+  "Mirrored",
+  "Corrupted",
+  "SynthesisedItem",
+  "AnyEnchantment",
+  "Identified",
+  "HasVaalUniqueMod",
+  "IsVaalUnique",
+  "TwiceCorrupted",
+  "AlwaysShow",
+]);
 
 // TODO: detect nested blocks
 // TODO: detect empty blocks
@@ -461,6 +483,126 @@ function validateSoundFile(
   }
 }
 
+/**
+ * Warns when a non-Optional `Import "file"` references a file that does not
+ * exist (resolved relative to the current document, as the game does). Optional
+ * imports are skipped because they are allowed to be absent. Severity is a
+ * warning rather than an error since in-game imports may resolve from the
+ * game's filter folder, which can differ from the edited file's location.
+ */
+function validateImport(
+  line: vscode.TextLine,
+  document: vscode.TextDocument,
+  problems: vscode.Diagnostic[]
+) {
+  const match = line.text.match(/^\s*Import\s+"([^"]+)"(\s+Optional\b)?/i);
+  if (!match) {
+    return;
+  }
+
+  const filePath = match[1];
+  const isOptional = Boolean(match[2]);
+  if (isOptional) {
+    return;
+  }
+
+  const resolved = path.isAbsolute(filePath)
+    ? filePath
+    : path.join(path.dirname(document.uri.fsPath), filePath);
+  if (fs.existsSync(resolved)) {
+    return;
+  }
+
+  const startCol = line.text.indexOf(`"${filePath}"`) + 1;
+  problems.push(
+    createDiagnostic(
+      new vscode.Range(
+        line.range.start.translate(0, startCol),
+        line.range.start.translate(0, startCol + filePath.length)
+      ),
+      `Imported filter not found: ${filePath}. Add "Optional" if the file may be absent.`,
+      vscode.DiagnosticSeverity.Warning
+    )
+  );
+}
+
+/**
+ * Flags the confusing "BooleanCondition != True/False" form and suggests the
+ * simpler inverted value (e.g. "Corrupted != True" -> "Corrupted False").
+ */
+function validateBooleanCondition(
+  command: string,
+  parts: string[],
+  line: vscode.TextLine,
+  problems: vscode.Diagnostic[]
+) {
+  const rest = parts.slice(1);
+  const hasOperator =
+    rest[0] !== undefined && /^(==|!=|>=|<=|=|!|<|>)$/.test(rest[0]);
+  const operator = hasOperator ? rest[0] : undefined;
+  const value = hasOperator ? rest[1] : rest[0];
+
+  const isNotEqual = operator === "!" || operator === "!=";
+  if (!isNotEqual || (value !== "True" && value !== "False")) {
+    return;
+  }
+
+  const inverted = value === "True" ? "False" : "True";
+
+  const commandEnd = line.text.indexOf(command) + command.length;
+  const operatorIndex = line.text.indexOf(operator!, commandEnd);
+  const valueIndex = line.text.indexOf(value, operatorIndex + operator!.length);
+
+  const diagnostic = createDiagnostic(
+    new vscode.Range(
+      line.range.start.translate(0, operatorIndex),
+      line.range.start.translate(0, valueIndex + value.length)
+    ),
+    `"${command} ${operator} ${value}" is confusing. Use "${command} ${inverted}" instead.`,
+    vscode.DiagnosticSeverity.Warning
+  );
+  diagnostic.code = `replace:${inverted}`;
+  problems.push(diagnostic);
+}
+
+/**
+ * HasExplicitMod has a bespoke syntax (confirmed in-game, issue #11):
+ *   HasExplicitMod [<op><count> | True] <mod> [<mod> ...]
+ * The operator/count is optional but, when present, must be glued to the
+ * number ("HasExplicitMod >=6 ..."); the game rejects a space
+ * ("HasExplicitMod >= 6 ..."). Mod names are matched partially and may be
+ * unquoted, so the list itself isn't validated - we only flag the spacing.
+ */
+function validateHasExplicitMod(
+  parts: string[],
+  line: vscode.TextLine,
+  problems: vscode.Diagnostic[]
+) {
+  const operator = parts[1];
+  const number = parts[2];
+  const isSpacedOperator =
+    /^(==|>=|<=|<|>)$/.test(operator ?? "") && /^\d+$/.test(number ?? "");
+  if (!isSpacedOperator) {
+    return;
+  }
+
+  const commandEnd =
+    line.text.indexOf("HasExplicitMod") + "HasExplicitMod".length;
+  const operatorIndex = line.text.indexOf(operator, commandEnd);
+  const numberIndex = line.text.indexOf(number, operatorIndex + operator.length);
+
+  problems.push(
+    createDiagnostic(
+      new vscode.Range(
+        line.range.start.translate(0, operatorIndex),
+        line.range.start.translate(0, numberIndex + number.length)
+      ),
+      `HasExplicitMod requires no space between the operator and number. Use "${operator}${number}".`,
+      vscode.DiagnosticSeverity.Error
+    )
+  );
+}
+
 export function validateDocument(
   document: vscode.TextDocument,
   gameData: GameDataService
@@ -484,6 +626,13 @@ export function validateDocument(
     const parts = trimmedText.split("#")[0].trim().split(/\s+/);
     const command = parts[0];
     const commandDef = VALID_COMMANDS[command];
+
+    // Check BaseType and Class commands first
+    if (command === "BaseType" || command === "Class") {
+      const value = parts.slice(1).join(" ");
+      validateBaseTypeOrClass(command, value, line, gameData, problems);
+      continue;
+    }
 
     if (!commandDef) {
       const suggestions = findSimilarCommands(command, validCommands);
@@ -521,16 +670,40 @@ export function validateDocument(
       command === "CustomAlertSound" ||
       command === "CustomAlertSoundOptional"
     ) {
-      if (parts[1]) {
-        validateSoundFile(
-          parts[1],
-          line,
-          document,
-          problems,
-          command === "CustomAlertSoundOptional"
-        );
+      // "None" disables the sound. Multiple files may be given as
+      // semicolon-separated quoted paths, in which case a random one plays.
+      if (parts[1] && parts[1] !== "None") {
+        const soundFiles = parts[1].split(";").filter((f) => f.length > 0);
+        for (const soundFile of soundFiles) {
+          validateSoundFile(
+            soundFile,
+            line,
+            document,
+            problems,
+            command === "CustomAlertSoundOptional"
+          );
+        }
       }
       continue;
+    }
+
+    // Warn when a non-Optional Import points at a missing file
+    if (command === "Import") {
+      validateImport(line, document, problems);
+      continue;
+    }
+
+    // HasExplicitMod uses a bespoke "count + mod-name list" form that does not
+    // fit the generic parameter validator. We only flag the one guaranteed
+    // client error (a space between the operator and number).
+    if (command === "HasExplicitMod") {
+      validateHasExplicitMod(parts, line, problems);
+      continue;
+    }
+
+    // Suggest the simpler form for confusing "Corrupted != True" style usage
+    if (BOOLEAN_CONDITIONS.has(command)) {
+      validateBooleanCondition(command, parts, line, problems);
     }
 
     // Validate parameters based on command definition
@@ -577,7 +750,7 @@ function validateCommandParams(
         return value.startsWith('"') && value.endsWith('"') ? 1 : -1;
 
       case "operator":
-        return /^[=<>]=?$/.test(value) ? 1 : -1;
+        return /^(==|!=|>=|<=|=|!|<|>)$/.test(value) ? 1 : -1;
 
       case "enum":
         // For enums, prefer exact matches over just valid identifiers
@@ -606,7 +779,7 @@ function validateCommandParams(
     // Penalize if the first parameter is an operator but none was provided
     if (
       paramSet.params[0]?.type === "operator" &&
-      !values[0]?.match(/^[=<>]/)
+      !values[0]?.match(/^[=<>!]/)
     ) {
       matchScore -= 500;
     }
@@ -814,4 +987,75 @@ function extractValidValuesFromRegex(regex: RegExp): string[] {
   }
 
   return [];
+}
+
+function validateBaseTypeOrClass(
+  command: string,
+  value: string,
+  line: vscode.TextLine,
+  gameData: GameDataService,
+  problems: vscode.Diagnostic[]
+) {
+  // Split by quotes and filter out empty strings and operators
+  const values =
+    value
+      .match(/"[^"]*"|[^\s"]+/g)
+      ?.map((v) => v.replace(/^"(.*)"$/, "$1")) // Extract quoted strings or single words
+      .filter((v) => !v.match(/^(==|!=|>=|<=|=|!|<|>)$/)) || []; // Filter out operators
+
+  const isExact = line.text.includes("==");
+
+  // Get matches using appropriate method
+  let matches;
+  switch (command) {
+    case "BaseType":
+      matches = isExact
+        ? gameData.findExactBaseType(values)
+        : gameData.findMatchingBaseTypes(values);
+      break;
+    case "Class":
+      matches = isExact
+        ? gameData.findExactClass(values)
+        : gameData.findMatchingClasses(values);
+      break;
+    default:
+      throw new Error(`Unexpected command: ${command}`);
+  }
+
+  // Find values that didn't match anything
+  const invalidValues = values.filter(
+    (value) => !matches.some((match) => match.matchedBy === value)
+  );
+
+  if (invalidValues.length > 0) {
+    for (const missingValue of invalidValues) {
+      const allValues =
+        command === "BaseType"
+          ? gameData.baseItemTypes.map((i) => i.Name)
+          : gameData.itemClasses.map((i) => i.Name);
+
+      const suggestions = findSimilarValues(missingValue, allValues);
+
+      const message =
+        suggestions.length > 0
+          ? `${command} "${missingValue}" not found. Did you mean: ${suggestions.join(
+              ", "
+            )}?`
+          : `${command} "${missingValue}" not found`;
+
+      problems.push(
+        createDiagnostic(
+          new vscode.Range(
+            line.range.start.translate(0, line.text.indexOf(missingValue)),
+            line.range.start.translate(
+              0,
+              line.text.indexOf(missingValue) + missingValue.length
+            )
+          ),
+          message,
+          vscode.DiagnosticSeverity.Error
+        )
+      );
+    }
+  }
 }

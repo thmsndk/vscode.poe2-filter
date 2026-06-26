@@ -1,0 +1,113 @@
+name: Update PoE2 Data
+
+on:
+  schedule:
+    # Run daily at 6 AM UTC
+    - cron: "0 6 * * *"
+  workflow_dispatch: # Allow manual triggering
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update-data:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: "20"
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4.3.0
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Check current data state
+        id: before
+        run: |
+          echo "timestamp=$(date +%s)" >> $GITHUB_OUTPUT
+          echo "config_hash=$(sha256sum data/config.json | cut -d' ' -f1)" >> $GITHUB_OUTPUT
+          echo "tables_hash=$(find data/tables -type f -name "*.json" -exec sha256sum {} \; | sort | sha256sum | cut -d' ' -f1)" >> $GITHUB_OUTPUT
+
+      - name: Update PoE2 data
+        run: pnpm run update-data
+
+      - name: Check for changes
+        id: after
+        run: |
+          echo "timestamp=$(date +%s)" >> $GITHUB_OUTPUT
+          echo "config_hash=$(sha256sum data/config.json | cut -d' ' -f1)" >> $GITHUB_OUTPUT
+          echo "tables_hash=$(find data/tables -type f -name "*.json" -exec sha256sum {} \; | sort | sha256sum | cut -d' ' -f1)" >> $GITHUB_OUTPUT
+
+      - name: Check if changes were made
+        id: changes
+        run: |
+          if [ "${{ steps.before.outputs.config_hash }}" != "${{ steps.after.outputs.config_hash }}" ] || [ "${{ steps.before.outputs.tables_hash }}" != "${{ steps.after.outputs.tables_hash }}" ]; then
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+            echo "Changes detected in PoE2 data"
+          else
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+            echo "No changes detected"
+          fi
+
+      - name: Get PoE2 version
+        id: version
+        if: steps.changes.outputs.has_changes == 'true'
+        run: |
+          VERSION=$(node -e "console.log(require('./data/config.json').patch)")
+          echo "poe2_version=$VERSION" >> $GITHUB_OUTPUT
+
+      # Produce a human-friendly, semantic diff (keyed by stable Id, ignoring
+      # _index shuffling and resolved foreign-key reordering). This step writes
+      # `body` (the PR description) and `has_semantic_changes` to GITHUB_OUTPUT.
+      # The diff compares the committed data on HEAD against the freshly synced
+      # working tree, so it must run before the PR is committed.
+      - name: Generate data diff
+        id: diff
+        if: steps.changes.outputs.has_changes == 'true'
+        run: pnpm run generate-data-diff
+
+      - name: Create Pull Request
+        id: cpr
+        if: steps.changes.outputs.has_changes == 'true'
+        uses: peter-evans/create-pull-request@c5a7806660adbe173f04e3e038b0ccdcd758773c # v6.1.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "feat: update PoE2 data to version ${{ steps.version.outputs.poe2_version }}"
+          title: "feat: update PoE2 data to version ${{ steps.version.outputs.poe2_version }}"
+          body: ${{ steps.diff.outputs.body }}
+          branch: update-poe2-data-${{ steps.version.outputs.poe2_version }}
+          delete-branch: true
+          labels: |
+            automated
+            data-update
+            poe2
+
+      # Version-bump-only updates (no semantic table changes, only patch version
+      # and/or internal index reshuffling) are merged automatically so they don't
+      # require manual review. PRs with real game-data changes are left open.
+      - name: Auto-merge version-bump-only update
+        if: >
+          steps.changes.outputs.has_changes == 'true' &&
+          steps.diff.outputs.has_semantic_changes == 'false' &&
+          steps.cpr.outputs.pull-request-number != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ steps.cpr.outputs.pull-request-number }}
+          POE2_VERSION: ${{ steps.version.outputs.poe2_version }}
+        run: |
+          echo "No semantic data changes detected — auto-merging version bump PR #${PR_NUMBER}"
+          gh pr merge "$PR_NUMBER" \
+            --squash \
+            --delete-branch \
+            --subject "feat: update PoE2 data to version ${POE2_VERSION}"

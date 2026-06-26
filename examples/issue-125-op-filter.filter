@@ -1,0 +1,258 @@
+###################################################### TEST #########################################################
+
+###### Visuals ######################################################################################################
+
+###### Rarity Items ##################
+
+# Unique
+Show
+    Rarity Unique
+    MinimapIcon 1 Orange Circle
+    SetTextColor 200 100 0
+    SetBorderColor 200 100 0
+    SetBackgroundColor 200 100 0 120
+    Continue
+
+# Rare
+Show
+    Rarity Rare
+    MinimapIcon 1 Yellow Circle
+    SetTextColor 240 200 40
+    SetBorderColor 240 200 40
+    SetBackgroundColor 240 200 40 120
+    Continue
+
+# Magic
+Show 
+    Rarity Magic
+    MinimapIcon 1 Blue Circle
+    SetTextColor 80 120 200
+    SetBorderColor 80 120 200
+    SetBackgroundColor 80 120 200 120
+    Continue
+
+# Normal
+Show 
+    Rarity Normal
+    MinimapIcon 1 White Circle
+    SetTextColor 200 200 200
+    SetBorderColor 200 200 200
+    SetBackgroundColor 200 200 200 120
+    Continue
+
+###### Non Rarity Items ##################
+
+# General
+Show
+    Class "Currency" "Gem" "Augment" "Trial" "Ultimatum"
+    MinimapIcon 1 Green Circle
+    SetTextColor 140 120 100
+    SetBorderColor 140 120 100
+    SetBackgroundColor 140 120 100 120
+    Continue
+
+# Quest
+Show
+    Class "Quest Item"
+    MinimapIcon 1 Purple Circle
+    SetTextColor 120 40 200
+    SetBorderColor 120 40 200
+    SetBackgroundColor 120 40 200 120
+    Continue
+
+###### Logic ########################################################################################################
+
+###### Normal Items Logic ##################
+
+# General
+#Show
+#    Rarity Normal
+#    Sockets > 0
+Show
+    Rarity Normal
+    Quality > 0
+Hide
+    Rarity Normal
+    Class "Flask"
+Hide
+    Rarity Normal
+    Class "Ring" 
+    BaseType ! "Prismatic" "Amethyst" "Topaz" "Sapphire" "Ruby"
+Hide
+    Rarity Normal
+    Class "Amulet"
+    BaseType ! "Jade" "Lapis" "Amber"
+Hide
+    Rarity Normal
+    Class "Belt"
+
+# Weapons
+Hide
+    Rarity Normal
+    Class "Claw" "Crossbow" "Spear" "Dagger" "Hand" "Stave" "Wand" "Shield" "Buckler" "Focus" "Sceptre" "Talisman"
+Hide
+    Rarity Normal
+    Class "Bows"
+    DropLevel < 67
+Hide
+    Rarity Normal
+    Class "Quiver"
+
+# Armor
+Show
+    Rarity Normal
+    Class "Body Armour" "Gloves" "Boots" "Helmet"
+    AreaLevel <= 5
+Show
+    Rarity Normal
+    Class "Body Armour" "Gloves" "Boots"
+    DropLevel > 54
+    AreaLevel < 65
+    BaseEnergyShield == 0
+    BaseArmour == 0
+Show
+    Rarity Normal
+    Class "Helmet"
+    DropLevel > 54
+    AreaLevel < 65
+    BaseArmour == 0
+Show
+    Rarity Normal
+    Class "Body Armour" "Gloves" "Boots"
+    AreaLevel >= 65
+    DropLevel >= 65
+    BaseEnergyShield == 0
+    BaseArmour == 0
+Show
+    Rarity Normal
+    Class "Helmet"
+    DropLevel >= 65
+    AreaLevel >= 65
+    BaseArmour == 0
+Hide
+    Rarity Normal
+    Class "Body Armour" "Gloves" "Boots" "Helmet"
+
+###### Magic Items Logic ##################
+
+# General
+#Show
+#    Rarity Magic
+#    Sockets > 0
+Show
+    Rarity Magic
+    Quality > 0
+Hide
+    Rarity Magic
+    Class "Flask"
+    AreaLevel > 65
+    DropLevel < 60
+Hide
+    Rarity Magic
+    Class "Ring" 
+    BaseType ! "Prismatic" "Amethyst" "Topaz" "Sapphire" "Ruby"
+
+# Weapons
+Hide
+    Rarity Magic
+    Class "Claw" "Crossbow" "Spear" "Dagger" "Hand" "Stave" "Wand" "Shield" "Buckler" "Focus" "Sceptre" "Talisman"
+Hide
+    Rarity Magic
+    Class "Bow"
+    DropLevel < 67
+Hide
+    Rarity Magic
+    Class "Quiver"
+
+# Armor
+Show
+    Rarity Magic
+    Class "Body Armour" "Gloves" "Boots" "Helmet"
+    AreaLevel <= 15
+Show
+    Rarity Magic
+    Class "Body Armour" "Gloves" "Boots"
+    DropLevel > 54
+    AreaLevel < 65
+    BaseEnergyShield == 0
+    BaseArmour == 0
+Show
+    Rarity Magic
+    Class "Helmet"
+    DropLevel > 54
+    AreaLevel < 65
+    BaseArmour == 0
+Show
+    Rarity Magic
+    Class "Body Armour" "Gloves" "Boots"
+    AreaLevel >= 65
+    DropLevel >= 65
+    BaseEnergyShield == 0
+    BaseArmour == 0
+Show
+    Rarity Magic
+    Class "Helmet"
+    DropLevel >= 65
+    AreaLevel >= 65
+    BaseArmour == 0
+Hide
+    Rarity Magic
+    Class "Body Armour" "Gloves" "Boots" "Helmet"
+
+###### Rare Items Logic ##################
+
+# General
+#Show
+#    Rarity Rare
+#    Sockets > 0
+Show
+    Rarity Rare
+    Quality > 0
+
+# Weapons
+Hide
+    Rarity Rare
+    Class "Claw" "Dagger" "Hand" "Wand" "Shield" "Buckler" "Focus" "Sceptre"
+Hide
+    Rarity Rare
+    Class "Crossbow" "Spear" "Quarterstave"
+    DropLevel < 67
+Hide
+    Rarity Rare
+    Class "Talisman"
+    DropLevel < 65
+Hide
+    Rarity Rare
+    Class "Bow"
+    DropLevel < 67
+
+# Armor
+Show
+    Rarity Rare
+    Class "Body Armour" "Gloves" "Boots" "Helmet"
+    AreaLevel <= 32
+Show
+    Rarity Rare
+    Class "Body Armour" "Gloves" "Boots"
+    BaseEnergyShield == 0
+    BaseArmour == 0
+    AreaLevel <= 53
+Show
+    Rarity Rare
+    Class "Helmet"
+    BaseEvasion == 0
+    BaseArmour == 0
+    AreaLevel <= 53
+Show
+    Rarity Rare
+    Class "Body Armour" "Gloves" "Boots" "Helmet"
+    DropLevel >= 54
+    AreaLevel >= 54
+Show
+    Rarity Rare
+    Class "Body Armour" "Gloves" "Boots" "Helmet"
+    AreaLevel >= 65
+    DropLevel >= 65
+Hide
+    Rarity Rare
+    Class "Body Armour" "Gloves" "Boots" "Helmet"

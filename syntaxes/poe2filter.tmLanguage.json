@@ -7,6 +7,9 @@
       "include": "#comments"
     },
     {
+      "include": "#imports"
+    },
+    {
       "include": "#blocks"
     },
     {
@@ -47,6 +50,32 @@
         }
       ]
     },
+    "imports": {
+      "patterns": [
+        {
+          "begin": "\\b(Import)\\b",
+          "beginCaptures": {
+            "1": { "name": "keyword.control.import.poe2filter" }
+          },
+          "end": "(?=$|#)",
+          "patterns": [
+            {
+              "match": "(\"[^\"]+\")\\s+(Optional)\\b",
+              "captures": {
+                "1": { "name": "string.quoted.double.poe2filter" },
+                "2": { "name": "keyword.control.poe2filter" }
+              }
+            },
+            {
+              "match": "(\"[^\"]+\")",
+              "captures": {
+                "1": { "name": "string.quoted.double.poe2filter" }
+              }
+            }
+          ]
+        }
+      ]
+    },
     "conditions": {
       "patterns": [
         {
@@ -57,7 +86,7 @@
           "end": "(?=$|#)",
           "patterns": [
             {
-              "match": "(>=|<=|==|=|<|>)\\s+(Normal|Magic|Rare|Unique)\\b",
+              "match": "(>=|<=|==|!=|=|!|<|>)\\s+(Normal|Magic|Rare|Unique)\\b",
               "captures": {
                 "1": { "name": "keyword.operator.comparison.poe2filter" },
                 "2": { "name": "variable.parameter.rarity.poe2filter" }
@@ -79,7 +108,7 @@
           "end": "(?=$|#)",
           "patterns": [
             {
-              "match": "(==|=)\\s+(\"[^\"]+\")",
+              "match": "(==|!=|=|!)\\s+(\"[^\"]+\")",
               "captures": {
                 "1": { "name": "keyword.operator.comparison.poe2filter" },
                 "2": { "name": "string.quoted.double.basetype.poe2filter" }
@@ -94,14 +123,14 @@
           ]
         },
         {
-          "begin": "\\b(ItemLevel|DropLevel|Quality|AreaLevel|GemLevel|Sockets|MapTier|WaystoneTier|StackSize|Height|Width|BaseArmour|BaseEnergyShield|BaseEvasion)\\b",
+          "begin": "\\b(ItemLevel|DropLevel|Quality|AreaLevel|GemLevel|Sockets|MapTier|WaystoneTier|StackSize|Height|Width|BaseArmour|BaseEnergyShield|BaseEvasion|UnidentifiedItemTier)\\b",
           "beginCaptures": {
             "1": { "name": "support.function.poe2filter" }
           },
           "end": "(?=$|#)",
           "patterns": [
             {
-              "match": "(>=|<=|==|=|<|>)\\s+(\\d+)\\b",
+              "match": "(>=|<=|==|!=|=|!|<|>)\\s+(\\d+)\\b",
               "captures": {
                 "1": { "name": "keyword.operator.comparison.poe2filter" },
                 "2": { "name": "constant.numeric.level.poe2filter" }
@@ -116,16 +145,51 @@
           ]
         },
         {
-          "begin": "\\b(FracturedItem|Mirrored|Corrupted|SynthesisedItem|AnyEnchantment|Identified)\\b",
+          "begin": "\\b(FracturedItem|Mirrored|Corrupted|SynthesisedItem|AnyEnchantment|Identified|HasVaalUniqueMod|IsVaalUnique|TwiceCorrupted|AlwaysShow)\\b",
           "beginCaptures": {
             "1": { "name": "support.function.poe2filter" }
           },
           "end": "(?=$|#)",
           "patterns": [
             {
+              "match": "(==|!=|=|!)\\s+(True|False)\\b",
+              "captures": {
+                "1": { "name": "keyword.operator.comparison.poe2filter" },
+                "2": { "name": "constant.language.boolean.poe2filter" }
+              }
+            },
+            {
               "match": "\\b(True|False)\\b",
               "captures": {
                 "1": { "name": "constant.language.boolean.poe2filter" }
+              }
+            }
+          ]
+        },
+        {
+          "begin": "\\b(HasExplicitMod)\\b",
+          "beginCaptures": {
+            "1": { "name": "support.function.poe2filter" }
+          },
+          "end": "(?=$|#)",
+          "patterns": [
+            {
+              "match": "(==|>=|<=|<|>)(\\d+)\\b",
+              "captures": {
+                "1": { "name": "keyword.operator.comparison.poe2filter" },
+                "2": { "name": "constant.numeric.level.poe2filter" }
+              }
+            },
+            {
+              "match": "\\b(True)\\b",
+              "captures": {
+                "1": { "name": "constant.language.boolean.poe2filter" }
+              }
+            },
+            {
+              "match": "(\"[^\"]+\")",
+              "captures": {
+                "1": { "name": "string.quoted.double.basetype.poe2filter" }
               }
             }
           ]
@@ -174,6 +238,12 @@
                 "2": { "name": "variable.parameter.color.poe2filter" },
                 "3": { "name": "variable.parameter.shape.poe2filter" }
               }
+            },
+            {
+              "match": "(-1)\\b",
+              "captures": {
+                "1": { "name": "constant.numeric.size.poe2filter" }
+              }
             }
           ]
         },
@@ -197,6 +267,12 @@
                 "1": { "name": "constant.language.named-sound-id.poe2filter" },
                 "2": { "name": "constant.numeric.volume.poe2filter" }
               }
+            },
+            {
+              "match": "\\b(None)\\b",
+              "captures": {
+                "1": { "name": "constant.language.poe2filter" }
+              }
             }
           ]
         },
@@ -218,6 +294,12 @@
               "match": "\"([^\"]+)\"",
               "captures": {
                 "1": { "name": "string.quoted.double.sound-file.poe2filter" }
+              }
+            },
+            {
+              "match": "\\b(None)\\b",
+              "captures": {
+                "1": { "name": "constant.language.poe2filter" }
               }
             }
           ]
@@ -241,6 +323,12 @@
               "captures": {
                 "1": { "name": "variable.parameter.color.poe2filter" }
               }
+            },
+            {
+              "match": "\\b(None)\\b",
+              "captures": {
+                "1": { "name": "constant.language.poe2filter" }
+              }
             }
           ]
         },
@@ -260,7 +348,7 @@
           ]
         },
         {
-          "match": "\\b(DisableDropSound|EnableDropSound)\\b",
+          "match": "\\b(DisableDropSoundIfAlertSound|EnableDropSoundIfAlertSound|DisableDropSound|EnableDropSound)\\b",
           "name": "storage.type.sound.poe2filter"
         }
       ]
