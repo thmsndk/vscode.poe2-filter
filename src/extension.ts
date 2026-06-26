@@ -17,6 +17,8 @@ import path from "path";
 import { GameDataService } from "./services/gameDataService";
 import { FilterHoverProvider } from "./providers/filterHoverProvider";
 import { FilterDecorationProvider } from "./providers/filterDecorationProvider";
+import { FilterDocumentLinkProvider } from "./providers/filterDocumentLinkProvider";
+import { FilterCompletionProvider } from "./providers/filterCompletionProvider";
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -76,6 +78,24 @@ export async function activate(context: vscode.ExtensionContext) {
     vscode.languages.registerDocumentSymbolProvider(
       "poe2-filter",
       new FilterSymbolProvider()
+    )
+  );
+
+  // Register document link provider so Import "file" paths are clickable
+  context.subscriptions.push(
+    vscode.languages.registerDocumentLinkProvider(
+      "poe2-filter",
+      new FilterDocumentLinkProvider()
+    )
+  );
+
+  // Register completion of file names inside Import / CustomAlertSound paths
+  context.subscriptions.push(
+    vscode.languages.registerCompletionItemProvider(
+      "poe2-filter",
+      new FilterCompletionProvider(),
+      '"',
+      "/"
     )
   );
 

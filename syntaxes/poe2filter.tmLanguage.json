@@ -7,6 +7,9 @@
       "include": "#comments"
     },
     {
+      "include": "#imports"
+    },
+    {
       "include": "#blocks"
     },
     {
@@ -44,6 +47,32 @@
         {
           "name": "keyword.control.poe2filter",
           "match": "\\bContinue\\b"
+        }
+      ]
+    },
+    "imports": {
+      "patterns": [
+        {
+          "begin": "\\b(Import)\\b",
+          "beginCaptures": {
+            "1": { "name": "keyword.control.import.poe2filter" }
+          },
+          "end": "(?=$|#)",
+          "patterns": [
+            {
+              "match": "(\"[^\"]+\")\\s+(Optional)\\b",
+              "captures": {
+                "1": { "name": "string.quoted.double.poe2filter" },
+                "2": { "name": "keyword.control.poe2filter" }
+              }
+            },
+            {
+              "match": "(\"[^\"]+\")",
+              "captures": {
+                "1": { "name": "string.quoted.double.poe2filter" }
+              }
+            }
+          ]
         }
       ]
     },
@@ -209,6 +238,12 @@
                 "2": { "name": "variable.parameter.color.poe2filter" },
                 "3": { "name": "variable.parameter.shape.poe2filter" }
               }
+            },
+            {
+              "match": "(-1)\\b",
+              "captures": {
+                "1": { "name": "constant.numeric.size.poe2filter" }
+              }
             }
           ]
         },
@@ -232,6 +267,12 @@
                 "1": { "name": "constant.language.named-sound-id.poe2filter" },
                 "2": { "name": "constant.numeric.volume.poe2filter" }
               }
+            },
+            {
+              "match": "\\b(None)\\b",
+              "captures": {
+                "1": { "name": "constant.language.poe2filter" }
+              }
             }
           ]
         },
@@ -253,6 +294,12 @@
               "match": "\"([^\"]+)\"",
               "captures": {
                 "1": { "name": "string.quoted.double.sound-file.poe2filter" }
+              }
+            },
+            {
+              "match": "\\b(None)\\b",
+              "captures": {
+                "1": { "name": "constant.language.poe2filter" }
               }
             }
           ]
@@ -276,6 +323,12 @@
               "captures": {
                 "1": { "name": "variable.parameter.color.poe2filter" }
               }
+            },
+            {
+              "match": "\\b(None)\\b",
+              "captures": {
+                "1": { "name": "constant.language.poe2filter" }
+              }
             }
           ]
         },
@@ -295,7 +348,7 @@
           ]
         },
         {
-          "match": "\\b(DisableDropSound|EnableDropSound)\\b",
+          "match": "\\b(DisableDropSoundIfAlertSound|EnableDropSoundIfAlertSound|DisableDropSound|EnableDropSound)\\b",
           "name": "storage.type.sound.poe2filter"
         }
       ]
