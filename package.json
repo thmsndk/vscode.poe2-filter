@@ -95,7 +95,8 @@
     "vsce:publish": "vsce publish --no-dependencies",
     "data-sync": "ts-node scripts/data-sync.ts",
     "patch-version": "ts-node scripts/patch-version.ts",
-    "update-data": "ts-node scripts/update-data.ts"
+    "update-data": "ts-node scripts/update-data.ts",
+    "generate-data-diff": "ts-node scripts/generate-data-diff.ts"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.10",
