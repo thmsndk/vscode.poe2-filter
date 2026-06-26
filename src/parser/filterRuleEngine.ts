@@ -92,22 +92,44 @@ type NumericProps = Exclude<
   undefined
 >;
 
+/**
+ * Returns true when the operator represents a "not equal" comparison.
+ * PoE2 supports both "!" and "!=" as not-equal operators.
+ */
+function isNotEqualOperator(operator?: string): boolean {
+  return operator === "!" || operator === "!=";
+}
+
+/**
+ * Resolves the boolean value a True/False condition expects, taking a
+ * "not equal" operator (e.g. "Corrupted != True") into account.
+ */
+function expectedBoolean(condition: FilterCondition): boolean {
+  const isTrue = condition.values[0] === "True";
+  return isNotEqualOperator(condition.operator) ? !isTrue : isTrue;
+}
+
 export function wouldRuleMatchItem(
   rule: FilterRule,
   item: FilterItem
 ): boolean {
   for (const condition of rule.conditions) {
     switch (condition.type) {
-      case "BaseType":
-        if (!item.baseType || !condition.values.includes(item.baseType)) {
+      case "BaseType": {
+        const inList =
+          !!item.baseType && condition.values.includes(item.baseType);
+        if (isNotEqualOperator(condition.operator) ? inList : !inList) {
           return false;
         }
         break;
-      case "Class":
-        if (!item.class || !condition.values.includes(item.class)) {
+      }
+      case "Class": {
+        const inList = !!item.class && condition.values.includes(item.class);
+        if (isNotEqualOperator(condition.operator) ? inList : !inList) {
           return false;
         }
         break;
+      }
       case "Sockets":
       case "Quality":
       case "ItemLevel":
@@ -133,38 +155,40 @@ export function wouldRuleMatchItem(
         }
         break;
       }
-      case "Rarity":
-        if (!item.rarity || !condition.values.includes(item.rarity)) {
+      case "Rarity": {
+        const inList = !!item.rarity && condition.values.includes(item.rarity);
+        if (isNotEqualOperator(condition.operator) ? inList : !inList) {
           return false;
         }
         break;
+      }
       case "FracturedItem":
-        if (item.fractured !== (condition.values[0] === "True")) {
+        if (item.fractured !== expectedBoolean(condition)) {
           return false;
         }
         break;
       case "Mirrored":
-        if (item.mirrored !== (condition.values[0] === "True")) {
+        if (item.mirrored !== expectedBoolean(condition)) {
           return false;
         }
         break;
       case "Corrupted":
-        if (item.corrupted !== (condition.values[0] === "True")) {
+        if (item.corrupted !== expectedBoolean(condition)) {
           return false;
         }
         break;
       case "SynthesisedItem":
-        if (item.synthesised !== (condition.values[0] === "True")) {
+        if (item.synthesised !== expectedBoolean(condition)) {
           return false;
         }
         break;
       case "AnyEnchantment":
-        if (item.enchanted !== (condition.values[0] === "True")) {
+        if (item.enchanted !== expectedBoolean(condition)) {
           return false;
         }
         break;
       case "Identified":
-        if (item.identified !== (condition.values[0] === "True")) {
+        if (item.identified !== expectedBoolean(condition)) {
           return false;
         }
         break;
@@ -299,12 +323,18 @@ export function generateItemFromRule(rule: FilterRule): FilterItem {
   for (const condition of rule.conditions) {
     switch (condition.type) {
       case "BaseType":
-        item.baseType = condition.values[0];
-        baseTypes.push(condition.values[0]);
+        // For "not equal" we can't represent the rule with the excluded value,
+        // so we leave baseType unset to avoid a self-contradicting item.
+        if (!isNotEqualOperator(condition.operator)) {
+          item.baseType = condition.values[0];
+          baseTypes.push(condition.values[0]);
+        }
         break;
       case "Class":
-        item.class = condition.values[0];
-        classes.push(condition.values[0]);
+        if (!isNotEqualOperator(condition.operator)) {
+          item.class = condition.values[0];
+          classes.push(condition.values[0]);
+        }
         break;
       case "Sockets":
       case "Quality":
@@ -339,32 +369,44 @@ export function generateItemFromRule(rule: FilterRule): FilterItem {
               item[prop] = value - 1;
               break;
             case "==":
+            case "=":
               item[prop] = value;
+              break;
+            case "!=":
+            case "!":
+              // Any value other than the excluded one satisfies "not equal".
+              item[prop] = value + 1;
               break;
           }
         }
         break;
       }
       case "Rarity":
-        item.rarity = condition.values[0];
+        if (isNotEqualOperator(condition.operator)) {
+          item.rarity = ["Normal", "Magic", "Rare", "Unique"].find(
+            (rarity) => !condition.values.includes(rarity)
+          );
+        } else {
+          item.rarity = condition.values[0];
+        }
         break;
       case "FracturedItem":
-        item.fractured = condition.values[0] === "True";
+        item.fractured = expectedBoolean(condition);
         break;
       case "Mirrored":
-        item.mirrored = condition.values[0] === "True";
+        item.mirrored = expectedBoolean(condition);
         break;
       case "Corrupted":
-        item.corrupted = condition.values[0] === "True";
+        item.corrupted = expectedBoolean(condition);
         break;
       case "SynthesisedItem":
-        item.synthesised = condition.values[0] === "True";
+        item.synthesised = expectedBoolean(condition);
         break;
       case "AnyEnchantment":
-        item.enchanted = condition.values[0] === "True";
+        item.enchanted = expectedBoolean(condition);
         break;
       case "Identified":
-        item.identified = condition.values[0] === "True";
+        item.identified = expectedBoolean(condition);
         break;
       default: {
         const _exhaustiveCheck: never = condition.type;
@@ -409,7 +451,11 @@ export function compareNumeric(
     case "<":
       return value < conditionValue;
     case "==":
+    case "=":
       return value === conditionValue;
+    case "!=":
+    case "!":
+      return value !== conditionValue;
     default:
       return false;
   }
@@ -484,8 +530,8 @@ export function parseCondition(
   switch (type) {
     case "Class":
     case "BaseType": {
-      // Check for operator before the first quote
-      const operatorMatch = text.match(/\s+([=]{1,2})\s+/);
+      // Check for operator before the first quote (=, ==, !, !=)
+      const operatorMatch = text.match(/\s+(==|!=|=|!)\s+/);
       // Match all quoted strings, preserving spaces within quotes
       const matches = text.match(/"([^"]+)"/g) || [];
       return {
@@ -511,7 +557,7 @@ export function parseCondition(
     case "BaseEvasion":
       return {
         type,
-        operator: parts[1]?.match(/[<>=]+/)?.[0],
+        operator: parts[1]?.match(/[<>=!]+/)?.[0],
         values: [parts[parts.length - 1]],
         lineNumber,
       };
@@ -531,7 +577,8 @@ export function parseCondition(
     case "Identified":
       return {
         type,
-        values: [parts[1]], // True/False
+        operator: parts[1]?.match(/^(==|!=|=|!)$/)?.[0],
+        values: [parts[parts.length - 1]], // True/False
         lineNumber,
       };
     default:
