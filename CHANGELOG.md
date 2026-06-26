@@ -2,6 +2,27 @@
 
 All notable changes to the "poe2-filter" extension will be documented in this file.
 
+## [0.0.29](https://github.com/thmsndk/vscode.poe2-filter/compare/v0.0.28...v0.0.29) (2026-06-26)
+
+
+### ### Added
+
+* ✨ Add Import keyword, disabled-value actions, and path tooling ([#130](https://github.com/thmsndk/vscode.poe2-filter/issues/130)) ([9294782](https://github.com/thmsndk/vscode.poe2-filter/commit/929478293522823435fb9aead0c5ff74f609b385))
+* ✨ add PoE2 filter conditions ([#129](https://github.com/thmsndk/vscode.poe2-filter/issues/129)) ([98f601e](https://github.com/thmsndk/vscode.poe2-filter/commit/98f601e4bae7956c80448162a364a295be0800ab))
+* ✨ semantic game-data diff + auto-merge version bumps ([#127](https://github.com/thmsndk/vscode.poe2-filter/issues/127)) ([a7d98fb](https://github.com/thmsndk/vscode.poe2-filter/commit/a7d98fb6fcd07de18a8d120133aba16f13617e92))
+* support "!" and "!=" not-equal operators ([#128](https://github.com/thmsndk/vscode.poe2-filter/issues/128)) ([7ef3c69](https://github.com/thmsndk/vscode.poe2-filter/commit/7ef3c69c2686212f5b5b45ea6f52fc96b3aa3a97))
+* update PoE2 data to version 4.5.4.1.2 ([#124](https://github.com/thmsndk/vscode.poe2-filter/issues/124)) ([ac2de6c](https://github.com/thmsndk/vscode.poe2-filter/commit/ac2de6c988208c6957404996da9065355413b937))
+
+
+### ### Fixed
+
+* 🐛 rank Class/BaseType suggestions by relevance ([#131](https://github.com/thmsndk/vscode.poe2-filter/issues/131)) ([6dc20ee](https://github.com/thmsndk/vscode.poe2-filter/commit/6dc20ee2ff7b8e705c5d066754c21fc2f50e9cbb))
+
+
+### ### Chore
+
+* 🔧 add release-please commit message skill ([82cb56c](https://github.com/thmsndk/vscode.poe2-filter/commit/82cb56cff4dce69a1c5b0e0b302738b1ab84d603))
+
 ## [0.0.28](https://github.com/thmsndk/vscode.poe2-filter/compare/v0.0.27...v0.0.28) (2026-06-25)
 
 
