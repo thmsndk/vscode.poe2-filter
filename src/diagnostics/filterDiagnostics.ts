@@ -480,6 +480,49 @@ function validateSoundFile(
 }
 
 /**
+ * Warns when a non-Optional `Import "file"` references a file that does not
+ * exist (resolved relative to the current document, as the game does). Optional
+ * imports are skipped because they are allowed to be absent. Severity is a
+ * warning rather than an error since in-game imports may resolve from the
+ * game's filter folder, which can differ from the edited file's location.
+ */
+function validateImport(
+  line: vscode.TextLine,
+  document: vscode.TextDocument,
+  problems: vscode.Diagnostic[]
+) {
+  const match = line.text.match(/^\s*Import\s+"([^"]+)"(\s+Optional\b)?/i);
+  if (!match) {
+    return;
+  }
+
+  const filePath = match[1];
+  const isOptional = Boolean(match[2]);
+  if (isOptional) {
+    return;
+  }
+
+  const resolved = path.isAbsolute(filePath)
+    ? filePath
+    : path.join(path.dirname(document.uri.fsPath), filePath);
+  if (fs.existsSync(resolved)) {
+    return;
+  }
+
+  const startCol = line.text.indexOf(`"${filePath}"`) + 1;
+  problems.push(
+    createDiagnostic(
+      new vscode.Range(
+        line.range.start.translate(0, startCol),
+        line.range.start.translate(0, startCol + filePath.length)
+      ),
+      `Imported filter not found: ${filePath}. Add "Optional" if the file may be absent.`,
+      vscode.DiagnosticSeverity.Warning
+    )
+  );
+}
+
+/**
  * Flags the confusing "BooleanCondition != True/False" form and suggests the
  * simpler inverted value (e.g. "Corrupted != True" -> "Corrupted False").
  */
@@ -599,6 +642,12 @@ export function validateDocument(
           );
         }
       }
+      continue;
+    }
+
+    // Warn when a non-Optional Import points at a missing file
+    if (command === "Import") {
+      validateImport(line, document, problems);
       continue;
     }
 
