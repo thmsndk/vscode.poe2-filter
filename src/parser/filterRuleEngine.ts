@@ -101,6 +101,22 @@ function isNotEqualOperator(operator?: string): boolean {
 }
 
 /**
+ * Case-insensitive substring match used for "not equal" BaseType/Class
+ * comparisons, mirroring how the game matches partial names (e.g. "Jade"
+ * excludes "Jade Amulet").
+ */
+function partiallyMatchesAnyValue(
+  itemValue: string | undefined,
+  values: string[]
+): boolean {
+  if (!itemValue) {
+    return false;
+  }
+  const target = itemValue.toLowerCase();
+  return values.some((value) => target.includes(value.toLowerCase()));
+}
+
+/**
  * Resolves the boolean value a True/False condition expects, taking a
  * "not equal" operator (e.g. "Corrupted != True") into account.
  */
@@ -116,16 +132,22 @@ export function wouldRuleMatchItem(
   for (const condition of rule.conditions) {
     switch (condition.type) {
       case "BaseType": {
-        const inList =
-          !!item.baseType && condition.values.includes(item.baseType);
-        if (isNotEqualOperator(condition.operator) ? inList : !inList) {
+        if (isNotEqualOperator(condition.operator)) {
+          // Partial match so e.g. "Jade" excludes "Jade Amulet"
+          if (partiallyMatchesAnyValue(item.baseType, condition.values)) {
+            return false;
+          }
+        } else if (!item.baseType || !condition.values.includes(item.baseType)) {
           return false;
         }
         break;
       }
       case "Class": {
-        const inList = !!item.class && condition.values.includes(item.class);
-        if (isNotEqualOperator(condition.operator) ? inList : !inList) {
+        if (isNotEqualOperator(condition.operator)) {
+          if (partiallyMatchesAnyValue(item.class, condition.values)) {
+            return false;
+          }
+        } else if (!item.class || !condition.values.includes(item.class)) {
           return false;
         }
         break;
