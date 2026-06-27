@@ -11,7 +11,6 @@ import path from "path";
 import { GameDataService } from "./services/gameDataService";
 import { FilterDecorationProvider } from "./providers/filterDecorationProvider";
 import { FilterDocumentLinkProvider } from "./providers/filterDocumentLinkProvider";
-import { FilterCompletionProvider } from "./providers/filterCompletionProvider";
 import {
   LanguageClient,
   ServerOptions,
@@ -107,15 +106,8 @@ export async function activate(context: vscode.ExtensionContext) {
     )
   );
 
-  // Register completion of file names inside Import / CustomAlertSound paths
-  context.subscriptions.push(
-    vscode.languages.registerCompletionItemProvider(
-      "poe2-filter",
-      new FilterCompletionProvider(),
-      '"',
-      "/"
-    )
-  );
+  // Path completion inside Import / CustomAlertSound quotes is now provided by
+  // the language server.
 
   // Register the formatter
   const formatter = new FilterFormatter();

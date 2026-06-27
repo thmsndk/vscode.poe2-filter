@@ -46,6 +46,8 @@ import { InlayHintsProvider } from "./providers/inlayHintsProvider";
 import { ActionSyntaxMap, ActionType, ActionSyntax } from "./ast/actions";
 import { SymbolProvider } from "./providers/symbolProvider";
 import { CodeActionProvider } from "./providers/codeActionProvider";
+import { CompletionProvider } from "./providers/completionProvider";
+import { CompletionParams } from "vscode-languageserver";
 
 // Create a connection for the server
 const connection = createConnection(ProposedFeatures.all);
@@ -120,6 +122,9 @@ connection.onInitialize(
         colorProvider: true,
         documentSymbolProvider: true,
         codeActionProvider: true,
+        completionProvider: {
+          triggerCharacters: ['"', "/"],
+        },
       },
     };
   }
@@ -400,6 +405,16 @@ connection.onCodeAction((params: CodeActionParams) => {
     return [];
   }
   return codeActionProvider.provideCodeActions(document, params);
+});
+
+const completionProvider = new CompletionProvider();
+
+connection.onCompletion((params: CompletionParams) => {
+  const document = documents.get(params.textDocument.uri);
+  if (!document) {
+    return [];
+  }
+  return completionProvider.provideCompletions(document, params);
 });
 
 documents.listen(connection);
