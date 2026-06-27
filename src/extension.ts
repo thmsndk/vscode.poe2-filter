@@ -2,7 +2,6 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
 import { FilterFormatter } from "./formatter/formatter";
-import { FilterSymbolProvider } from "./outline/filterSymbolProvider";
 import { MinimapIconDecorator } from "./decorations/minimapIconDecorator";
 import { FilterPreviewEditor } from "./preview/FilterPreviewEditor";
 
@@ -98,13 +97,7 @@ export async function activate(context: vscode.ExtensionContext) {
     );
   }
 
-  // Register document symbol provider for outline
-  context.subscriptions.push(
-    vscode.languages.registerDocumentSymbolProvider(
-      "poe2-filter",
-      new FilterSymbolProvider()
-    )
-  );
+  // Document symbols (outline/breadcrumbs) are now provided by the language server.
 
   // Register document link provider so Import "file" paths are clickable
   context.subscriptions.push(
