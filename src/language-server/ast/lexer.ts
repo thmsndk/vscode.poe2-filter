@@ -267,7 +267,7 @@ export class Lexer {
       this.column = 1;
 
       /* 
-        TODO: There is actually different strategies for determining the level
+        TODO(#134): There is actually different strategies for determining the level
         markdown style is one, 
         using -- as the secondary border level is another, 
         and then there is the id in increments
