@@ -33,10 +33,10 @@ jobs:
       - name: Lint
         run: pnpm run lint
 
-      - name: Build
-        run: node esbuild.js --production
-
-      # The extension test suite launches a headless VS Code (Electron), which
-      # needs a virtual display on Linux runners.
-      - name: Test
-        run: xvfb-run -a pnpm test
+      # `test:ci` compiles the tests, builds the production (minified) bundle,
+      # and runs the suite against that bundle - so tests exercise the same
+      # artifact that ships to the Marketplace (plain `pnpm test` rebuilds a dev
+      # bundle via its pretest hook). The headless VS Code (Electron) needs a
+      # virtual display on Linux runners.
+      - name: Build and test (production bundle)
+        run: xvfb-run -a pnpm run test:ci
