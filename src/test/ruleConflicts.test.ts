@@ -1,0 +1,417 @@
+import * as assert from "assert";
+import { Parser } from "../language-server/ast/parser";
+import { FilterRuleEngine } from "../language-server/analysis/ruleEngine";
+import { BlockNode } from "../language-server/ast/nodes";
+
+suite("Rule Conflict Detection Tests", () => {
+  test("should detect basic rule conflict with identical conditions and overlapping conditions", () => {
+    const input = `
+Show
+    BaseType "Gold"
+    StackSize >= 1000
+    SetFontSize 45
+
+Show
+    BaseType "Gold"
+    StackSize >= 2000
+    SetFontSize 45`;
+
+    const parser = new Parser(input);
+    const ast = parser.parse();
+    const engine = new FilterRuleEngine(ast);
+    const conflicts = engine.detectConflicts();
+
+    assert.strictEqual(conflicts.length, 1);
+    assert.strictEqual(
+      conflicts[0].message,
+      'This rule will never trigger because an earlier rule on line 2 already matches these items: BaseType "Gold", StackSize >= 1000'
+    );
+    assert.strictEqual((conflicts[0].node as BlockNode).line, 7);
+  });
+
+  test("does not throw on conditions without a value (still being typed)", () => {
+    // Reproduces a crash hit while typing: a condition keyword with no value
+    // yet produced `node.values[0].value` on undefined.
+    const input = `
+Show
+    Rarity Normal
+    BaseType
+
+Show
+    Rarity`;
+
+    const parser = new Parser(input);
+    const ast = parser.parse();
+    const engine = new FilterRuleEngine(ast);
+    assert.doesNotThrow(() => engine.detectConflicts());
+  });
+
+  test("should detect conflicts with area level conditions", () => {
+    const input = `
+Show
+    Class "Currency"
+    BaseType "Scroll of Wisdom"
+    AreaLevel > 10
+    SetFontSize 15
+
+Hide
+    Class "Currency"
+    BaseType "Scroll of Wisdom"
+    AreaLevel > 15`;
+
+    const parser = new Parser(input);
+    const ast = parser.parse();
+    const engine = new FilterRuleEngine(ast);
+    const conflicts = engine.detectConflicts();
+
+    assert.strictEqual(conflicts.length, 1);
+    assert.strictEqual(
+      conflicts[0].message,
+      'This rule will never trigger because an earlier rule on line 2 already matches these items: Class "Currency", BaseType "Scroll of Wisdom", AreaLevel > 10'
+    );
+  });
+
+  test("Rarity Normal Magic should conflict with Rarity Normal", () => {
+    const input = `
+Show
+    Rarity Normal
+    SetFontSize 45
+
+Show
+    Rarity Normal Magic
+    SetFontSize 40`;
+
+    const parser = new Parser(input);
+    const ast = parser.parse();
+    const engine = new FilterRuleEngine(ast);
+    const conflicts = engine.detectConflicts();
+
+    assert.strictEqual(conflicts.length, 1);
+    assert.strictEqual(
+      conflicts[0].message,
+      "This rule will never trigger because an earlier rule on line 2 already matches these items: Rarity Normal"
+    );
+  });
+
+  test("should not detect conflict when numeric conditions cover different ranges >=", () => {
+    const input = `
+Show
+    ItemLevel >= 65
+    Rarity Normal
+    Class "Body Armours"
+    SetBorderColor 100 100 100 150
+
+Show
+    Rarity Normal
+    Class "Body Armours"
+    SetBorderColor 100 100 100 150`;
+
+    const parser = new Parser(input);
+    const ast = parser.parse();
+    const engine = new FilterRuleEngine(ast);
+    const conflicts = engine.detectConflicts();
+
+    assert.strictEqual(
+      conflicts.length,
+      0,
+      "First rule matches ItemLevel >= 65 and second rule matches ItemLevel < 65"
+    );
+  });
+
+  test("should not detect conflict when numeric conditions cover different ranges <", () => {
+    const input = `
+Show
+    ItemLevel < 65
+    Rarity Normal
+    Class "Body Armours"
+    SetBorderColor 100 100 100 150
+
+Show
+    Rarity Normal
+    Class "Body Armours"
+    SetBorderColor 100 100 100 150`;
+
+    const parser = new Parser(input);
+    const ast = parser.parse();
+    const engine = new FilterRuleEngine(ast);
+    const conflicts = engine.detectConflicts();
+
+    assert.strictEqual(
+      conflicts.length,
+      0,
+      "First rule matches ItemLevel < 65 and second rule matches ItemLevel >= 65"
+    );
+  });
+});
+
+suite("Rule Conflict Detection - Continue Blocks", () => {
+  test("should not report conflict when Continue is present", () => {
+    const input = `
+Show
+    BaseType "Chaos Orb"
+    SetFontSize 45
+    Continue
+
+Show
+    BaseType "Chaos Orb"
+    SetFontSize 40`;
+
+    const parser = new Parser(input);
+    const ast = parser.parse();
+    const engine = new FilterRuleEngine(ast);
+    const conflicts = engine.detectConflicts();
+
+    assert.strictEqual(conflicts.length, 0);
+  });
+
+  test("should not report conflict when rules properly chain with Continue", () => {
+    const input = `
+Show
+    BaseType "Chaos Orb"
+    Continue
+
+Show
+    Rarity Rare
+    SetFontSize 40
+
+Show
+    ItemLevel >= 75
+    SetFontSize 45`;
+
+    const parser = new Parser(input);
+    const ast = parser.parse();
+    const engine = new FilterRuleEngine(ast);
+    const conflicts = engine.detectConflicts();
+
+    assert.strictEqual(conflicts.length, 0);
+  });
+
+  test("should detect conflict where third rule is caught by second rule after Continue", () => {
+    const input = `
+Show
+    BaseType "Chaos Orb"
+    Continue
+
+Show
+    ItemLevel >= 60
+    SetFontSize 45
+
+Show # This should conflict as it's caught by the previous rule
+    ItemLevel >= 75
+    SetFontSize 40`;
+
+    const parser = new Parser(input);
+    const ast = parser.parse();
+    const engine = new FilterRuleEngine(ast);
+    const conflicts = engine.detectConflicts();
+
+    assert.strictEqual(conflicts.length, 1);
+    assert.strictEqual(
+      conflicts[0].message,
+      "This rule will never trigger because an earlier rule on line 6 already matches these items: ItemLevel >= 60"
+    );
+  });
+
+  test("should detect conflict caught by a non-Continue rule past a Continue rule", () => {
+    const input = `
+Show
+    BaseType "Chaos Orb"
+    Continue
+
+Show
+    ItemLevel >= 60
+    SetFontSize 45
+
+Show # Caught by the (non-Continue) ItemLevel >= 60 rule above
+    BaseType "Chaos Orb"
+    ItemLevel >= 75
+    SetFontSize 40`;
+
+    const parser = new Parser(input);
+    const ast = parser.parse();
+    const engine = new FilterRuleEngine(ast);
+    const conflicts = engine.detectConflicts();
+
+    // The Continue block does not add its conditions to later blocks. The third
+    // rule (any Chaos Orb with ItemLevel >= 75) is fully caught by the second
+    // rule (any item with ItemLevel >= 60), so that is the catching rule.
+    assert.strictEqual(conflicts.length, 1);
+    assert.strictEqual(
+      conflicts[0].message,
+      "This rule will never trigger because an earlier rule on line 6 already matches these items: ItemLevel >= 60"
+    );
+  });
+
+  // This test needs in-game validation
+  test("should handle Show/Hide interaction with Continue", () => {
+    const input = `
+Show
+    BaseType "Chaos Orb"
+    Continue
+
+Hide
+    ItemLevel < 50
+    SetFontSize 45
+
+Show
+    BaseType "Chaos Orb"
+    ItemLevel >= 60
+    SetFontSize 40`;
+
+    const parser = new Parser(input);
+    const ast = parser.parse();
+    const engine = new FilterRuleEngine(ast);
+    const conflicts = engine.detectConflicts();
+
+    // TODO: Validate this behavior in-game
+    // Currently marking as pending until we confirm the correct behavior
+    assert.strictEqual(conflicts.length, 0);
+  });
+});
+
+suite("Rule Conflict Detection - Commented Blocks", () => {
+  test("should ignore commented blocks in conflict detection", () => {
+    const input = `
+Show
+    BaseType "Chaos Orb"
+    SetFontSize 45
+
+# Show                          # This block should be ignored
+#     BaseType "Chaos Orb"
+#     SetFontSize 40`;
+
+    const parser = new Parser(input);
+    const ast = parser.parse();
+    const engine = new FilterRuleEngine(ast);
+    const conflicts = engine.detectConflicts();
+
+    assert.strictEqual(
+      conflicts.length,
+      0,
+      "Commented block should not cause conflicts"
+    );
+  });
+
+  test("should ignore commented conditions in conflict detection", () => {
+    const input = `
+Show
+    BaseType "Chaos Orb"
+    # ItemLevel >= 75           # This condition should be ignored
+    SetFontSize 45
+
+Show
+    BaseType "Chaos Orb"
+    ItemLevel >= 75
+    SetFontSize 40`;
+
+    const parser = new Parser(input);
+    const ast = parser.parse();
+    const engine = new FilterRuleEngine(ast);
+    const conflicts = engine.detectConflicts();
+
+    // The commented `ItemLevel >= 75` on the first rule must be ignored, so the
+    // first rule matches *all* Chaos Orbs and the second rule (Chaos Orbs with
+    // ItemLevel >= 75) can never trigger. The message proves the comment was
+    // ignored: it only mentions BaseType, not ItemLevel.
+    assert.strictEqual(conflicts.length, 1);
+    assert.strictEqual(
+      conflicts[0].message,
+      'This rule will never trigger because an earlier rule on line 2 already matches these items: BaseType "Chaos Orb"'
+    );
+  });
+
+  test("should detect conflicts between active blocks even with commented blocks in between", () => {
+    const input = `
+Show
+    BaseType "Chaos Orb"
+    ItemLevel >= 60
+    SetFontSize 45
+
+# Show                          # This commented block should be ignored
+#     BaseType "Something Else"
+#     SetFontSize 40
+
+Show # This should still conflict with first block
+    BaseType "Chaos Orb"
+    ItemLevel >= 75
+    SetFontSize 40`;
+
+    const parser = new Parser(input);
+    const ast = parser.parse();
+    const engine = new FilterRuleEngine(ast);
+    const conflicts = engine.detectConflicts();
+
+    assert.strictEqual(conflicts.length, 1);
+    assert.strictEqual(
+      conflicts[0].message,
+      'This rule will never trigger because an earlier rule on line 2 already matches these items: BaseType "Chaos Orb", ItemLevel >= 60'
+    );
+  });
+});
+
+suite("Rule Conflict Detection - Condition coverage", () => {
+  test("does not log errors for known but conflict-unmodeled conditions", () => {
+    const input = `
+Show
+    UnidentifiedItemTier <= 3
+    MapTier >= 5
+    TwiceCorrupted True
+    HasVaalUniqueMod True
+    IsVaalUnique True
+    AlwaysShow True
+    SetFontSize 18
+
+Show
+    UnidentifiedItemTier <= 3
+    SetFontSize 15
+`;
+
+    const errors: string[] = [];
+    const ast = new Parser(input).parse();
+    new FilterRuleEngine(ast, (msg) => errors.push(msg)).detectConflicts();
+
+    assert.deepStrictEqual(
+      errors,
+      [],
+      "recognized conditions must not be reported as unknown"
+    );
+  });
+
+  test("reports a genuinely unknown condition exactly once", () => {
+    const mkBlock = (): BlockNode =>
+      ({
+        type: "Show",
+        commented: false,
+        line: 1,
+        columnStart: 1,
+        columnEnd: 5,
+        body: [
+          {
+            type: "Condition",
+            condition: "TotallyMadeUp",
+            operator: undefined,
+            values: [{ value: "X", columnStart: 1, columnEnd: 2 }],
+            commented: false,
+            line: 1,
+            columnStart: 1,
+            columnEnd: 5,
+          },
+        ],
+      }) as unknown as BlockNode;
+
+    const ast = {
+      type: "Root",
+      children: [mkBlock(), mkBlock(), mkBlock()],
+    } as never;
+
+    const errors: string[] = [];
+    new FilterRuleEngine(ast, (msg) => errors.push(msg)).detectConflicts();
+
+    assert.strictEqual(
+      errors.length,
+      1,
+      "an unknown condition should be logged once, not per comparison"
+    );
+    assert.match(errors[0], /unsupported condition "TotallyMadeUp"/);
+  });
+});

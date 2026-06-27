@@ -2,8 +2,15 @@
   "name": "poe2-filter",
   "publisher": "thmsn",
   "displayName": "Path of Exile 2 Filter",
-  "description": "A Visual Studio Code extension for Path of Exile 2 item filter files",
+  "description": "IntelliSense, live validation, quick fixes, and an in-editor preview for Path of Exile 2 item filters.",
   "version": "0.0.29",
+  "license": "MIT",
+  "homepage": "https://github.com/thmsndk/vscode.poe2-filter#readme",
+  "icon": "images/icon.png",
+  "galleryBanner": {
+    "color": "#1a1410",
+    "theme": "dark"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/thmsndk/vscode.poe2-filter"
@@ -19,6 +26,16 @@
     "Formatters",
     "Other"
   ],
+  "keywords": [
+    "poe2",
+    "path of exile 2",
+    "path of exile",
+    "poe",
+    "loot filter",
+    "item filter",
+    "filterblade",
+    "neversink"
+  ],
   "activationEvents": [],
   "main": "./dist/extension.js",
   "contributes": {
@@ -29,6 +46,7 @@
           "filter",
           ".filter"
         ],
+        "firstLine": "^(#\\s?Online Item Filter\\b|\\s*(Show|Hide|Minimal)\\b)",
         "aliases": [
           "filter",
           ".filter",
@@ -76,6 +94,52 @@
           "group": "navigation"
         }
       ]
+    },
+    "semanticTokenTypes": [
+      {
+        "id": "commentedCode",
+        "description": "Commented-out filter code (disabled Show/Hide blocks, conditions, and actions)"
+      },
+      {
+        "id": "rarityNormal",
+        "description": "A Normal rarity value in a Rarity condition"
+      },
+      {
+        "id": "rarityMagic",
+        "description": "A Magic rarity value in a Rarity condition"
+      },
+      {
+        "id": "rarityRare",
+        "description": "A Rare rarity value in a Rarity condition"
+      },
+      {
+        "id": "rarityUnique",
+        "description": "A Unique rarity value in a Rarity condition"
+      }
+    ],
+    "semanticTokenScopes": [
+      {
+        "language": "poe2-filter",
+        "scopes": {
+          "commentedCode": [
+            "comment.block.poe2-filter"
+          ]
+        }
+      }
+    ],
+    "configurationDefaults": {
+      "editor.semanticTokenColorCustomizations": {
+        "rules": {
+          "commentedCode": {
+            "foreground": "#808a99",
+            "italic": true
+          },
+          "rarityNormal": "#c8c8c8",
+          "rarityMagic": "#8888ff",
+          "rarityRare": "#ffff77",
+          "rarityUnique": "#af6025"
+        }
+      }
     }
   },
   "scripts": {
@@ -92,6 +156,7 @@
     "check-types": "tsc --noEmit",
     "lint": "eslint src",
     "test": "vscode-test",
+    "test:ci": "pnpm run compile-tests && node esbuild.js --production && vscode-test",
     "vsce:publish": "vsce publish --no-dependencies",
     "data-sync": "ts-node scripts/data-sync.ts",
     "patch-version": "ts-node scripts/patch-version.ts",
@@ -102,22 +167,28 @@
     "@types/mocha": "^10.0.10",
     "@types/node": "20.x",
     "@types/vscode": "^1.93.1",
-    "@typescript-eslint/eslint-plugin": "^8.17.0",
-    "@typescript-eslint/parser": "^8.17.0",
-    "@vscode/test-cli": "^0.0.10",
-    "@vscode/test-electron": "^2.4.1",
-    "@vscode/vsce": "^3.2.1",
-    "esbuild": "^0.24.0",
-    "eslint": "^9.16.0",
+    "@typescript-eslint/eslint-plugin": "^8.62.0",
+    "@typescript-eslint/parser": "^8.62.0",
+    "@vscode/test-cli": "^0.0.15",
+    "@vscode/test-electron": "^3.0.0",
+    "@vscode/vsce": "^3.9.2",
+    "esbuild": "^0.28.1",
+    "eslint": "^10.6.0",
     "npm-run-all": "^4.1.5",
-    "pathofexile-dat": "^14.0.0",
+    "pathofexile-dat": "^15.1.0",
     "ts-node": "^10.9.2",
-    "typescript": "^5.7.2"
+    "typescript": "^6.0.3"
   },
-  "packageManager": "pnpm@9.5.0+sha1.8c155dc114e1689d18937974f6571e0ceee66f1d",
+  "packageManager": "pnpm@10.34.3+sha512.f2c531b08829d7be7f03c90addc266615f9c5477463e4bf1d275cb263ce9ea57cf0d5599110d94649a9bb3fed9f0b5efcea74a7016b61532a24cb9ad87860c1d",
+  "dependencies": {
+    "vscode-languageclient": "^10.0.1",
+    "vscode-languageserver": "^10.0.1",
+    "vscode-languageserver-textdocument": "^1.0.12"
+  },
   "pnpm": {
-    "patchedDependencies": {
-      "pathofexile-dat@14.0.0": "patches/pathofexile-dat@14.0.0.patch"
-    }
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "@vscode/vsce-sign"
+    ]
   }
 }

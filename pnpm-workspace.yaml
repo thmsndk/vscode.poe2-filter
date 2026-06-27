@@ -1,0 +1,4 @@
+# Supply-chain cooldown: don't resolve dependency versions published less
+# than 24h (1440 minutes) ago, so freshly-compromised releases are skipped.
+# Only affects resolving new/updated versions; frozen installs are unaffected.
+minimumReleaseAge: 1440

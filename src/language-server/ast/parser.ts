@@ -1,0 +1,886 @@
+import { Lexer } from "./lexer";
+import {
+  ColorValue,
+  RarityValue,
+  ShapeValue,
+  Token,
+  TokenType,
+} from "./tokens";
+import {
+  Node,
+  RootNode,
+  BlockNode,
+  ConditionNode,
+  ActionNode,
+  CommentNode,
+  HeaderNode,
+  ImportNode,
+  BlockType,
+  BlockNodeBodyType,
+  NodeValue,
+} from "./nodes";
+import { ConditionType, ConditionSyntaxMap } from "./conditions";
+import { ActionType, ActionSyntaxMap, ActionSyntax } from "./actions";
+
+export interface ParserDiagnostic {
+  message: string;
+  severity: "error" | "warning";
+  line: number;
+  columnStart: number;
+  columnEnd: number;
+  tags?: ("unnecessary" | "deprecated")[];
+}
+
+export class Parser {
+  private lexer: Lexer;
+  private currentToken: Token;
+  private previousToken: Token;
+  private tokens: Token[] = [];
+  private position: number = 0;
+  public diagnostics: ParserDiagnostic[] = [];
+
+  constructor(source: string) {
+    this.lexer = new Lexer(source);
+    this.currentToken = this.lexer.nextToken();
+    this.previousToken = this.currentToken;
+    this.tokens.push(this.currentToken);
+  }
+
+  private addError(message: string, token: Token) {
+    this.diagnostics.push({
+      message,
+      severity: "error",
+      line: token.line,
+      columnStart: token.columnStart,
+      columnEnd: token.columnEnd,
+    });
+  }
+
+  /**
+   * Adds a diagnostic at an explicit position instead of at a token. Useful for
+   * errors that describe a whole statement (e.g. a wrong parameter count) and
+   * should point at the action/condition keyword rather than at the current
+   * token, which - after a value loop - is the trailing NEWLINE whose `line`
+   * already belongs to the next source line.
+   */
+  private addErrorAt(
+    message: string,
+    position: { line: number; columnStart: number; columnEnd: number },
+    severity: "error" | "warning" = "error"
+  ) {
+    this.diagnostics.push({
+      message,
+      severity,
+      line: position.line,
+      columnStart: position.columnStart,
+      columnEnd: position.columnEnd,
+    });
+  }
+
+  public parse(): RootNode {
+    const start = 0;
+    const children: Node[] = [];
+
+    while (this.currentToken.type !== "EOF") {
+      switch (this.currentToken.type) {
+        case "SHOW":
+        case "HIDE":
+        case "MINIMAL":
+          children.push(this.parseBlock());
+          break;
+        case "COMMENTED_BLOCK":
+          children.push(this.parseCommentedBlock());
+          break;
+        case "IMPORT":
+          children.push(this.parseImport());
+          break;
+        case "HEADER":
+          children.push(this.parseHeader());
+          break;
+        case "COMMENT":
+          children.push(this.parseComment());
+          break;
+        case "NEWLINE":
+          // Skip newlines at root level
+          this.advance();
+          break;
+        default:
+          children.push({
+            type: "Error",
+            token: this.currentToken,
+            start: this.currentToken.start,
+            end: this.currentToken.end,
+            line: this.currentToken.line,
+            columnStart: this.currentToken.columnStart,
+            columnEnd: this.currentToken.columnEnd,
+          });
+          this.addError(
+            `Unexpected token at root level: ${this.currentToken.type}`,
+            this.currentToken
+          );
+          this.advance();
+      }
+    }
+
+    return {
+      type: "Root",
+      children,
+      start,
+      end: this.currentToken.start,
+      line: 1,
+      columnStart: 1,
+      columnEnd: 1,
+    };
+  }
+
+  private parseBlock(): BlockNode {
+    const start = this.currentToken.start;
+    const line = this.currentToken.line;
+    const columnStart = this.currentToken.columnStart;
+    const isCommented = this.currentToken.type === "COMMENTED_BLOCK";
+
+    let blockType: BlockType;
+    if (isCommented) {
+      blockType = this.currentToken.value as BlockType;
+    } else {
+      switch (this.currentToken.type) {
+        case "SHOW":
+          blockType = BlockType.Show;
+          break;
+        case "HIDE":
+          blockType = BlockType.Hide;
+          break;
+        case "MINIMAL":
+          blockType = BlockType.Minimal;
+          break;
+        default:
+          this.addError(
+            `Unexpected block type: ${this.currentToken.type}`,
+            this.currentToken
+          );
+          blockType = BlockType.Show; // Fallback for AST
+      }
+    }
+
+    let inlineComment: string | undefined;
+
+    this.advance(); // Consume block keyword or commented block
+
+    // Check for inline comment on block declaration
+    if (this.currentToken.type === "INLINE_COMMENT") {
+      inlineComment = this.currentToken.value as string;
+      this.advance();
+    }
+
+    const body: BlockNodeBodyType[] = [];
+
+    parseBlock: while (this.currentToken.type !== "EOF") {
+      switch (this.currentToken.type) {
+        case "CONDITION":
+        case "COMMENTED_CONDITION":
+          body.push(this.parseCondition());
+          break;
+        case "ACTION":
+        case "COMMENTED_ACTION":
+          body.push(this.parseAction());
+          break;
+        case "COMMENT":
+        case "INLINE_COMMENT":
+          body.push(this.parseComment());
+          break;
+        case "SHOW":
+        case "HIDE":
+        case "MINIMAL":
+        case "COMMENTED_BLOCK":
+        case "HEADER":
+          // Break out of while loop when we hit another block
+          break parseBlock;
+        case "NEWLINE":
+          this.advance();
+          break;
+        case "WORD": {
+          // A bare word where a condition or action is expected is an
+          // unknown/misspelled command. Emit a single Error node for it - the
+          // semantic validator turns this into an "Unknown action/condition"
+          // message with "Did you mean ...?" suggestions - and consume the rest
+          // of the line so the command's arguments don't each produce their own
+          // "Unexpected token" noise.
+          const commandToken = this.currentToken;
+          body.push({
+            type: "Error",
+            token: commandToken,
+            start: commandToken.start,
+            end: commandToken.end,
+            line: commandToken.line,
+            columnStart: commandToken.columnStart,
+            columnEnd: commandToken.columnEnd,
+          });
+          this.advance();
+          const statementEndTypes: TokenType[] = [
+            "EOF",
+            "NEWLINE",
+            "INLINE_COMMENT",
+            "CONDITION",
+            "ACTION",
+            "SHOW",
+            "HIDE",
+            "MINIMAL",
+            "COMMENTED_BLOCK",
+            "HEADER",
+          ];
+          while (!statementEndTypes.includes(this.currentToken.type)) {
+            this.advance();
+          }
+          break;
+        }
+        default:
+          // Handle unexpected tokens like in root parse
+          body.push({
+            type: "Error",
+            token: this.currentToken,
+            start: this.currentToken.start,
+            end: this.currentToken.end,
+            line: this.currentToken.line,
+            columnStart: this.currentToken.columnStart,
+            columnEnd: this.currentToken.columnEnd,
+          });
+          this.addError(
+            `Unexpected token in block: ${this.currentToken.type}`,
+            this.currentToken
+          );
+          this.advance();
+      }
+    }
+
+    return {
+      type: blockType,
+      body,
+      inlineComment,
+      commented: false,
+      start,
+      end: this.currentToken.start,
+      line,
+      columnStart,
+      columnEnd: this.currentToken.columnEnd,
+    };
+  }
+
+  private parseCommentedBlock(): BlockNode {
+    const block = this.parseBlock();
+    block.commented = true;
+    return block;
+  }
+
+  private parseImport(): ImportNode {
+    const start = this.currentToken.start;
+    const line = this.currentToken.line;
+    const columnStart = this.currentToken.columnStart;
+    const columnEnd = this.currentToken.columnEnd;
+
+    this.advance(); // Consume Import keyword
+
+    let importPath: NodeValue | undefined;
+    let optional = false;
+    let inlineComment: string | undefined;
+
+    while (this.shouldContinueParsing()) {
+      switch (this.currentToken.type) {
+        case "QUOTED_STRING":
+          if (!importPath) {
+            importPath = {
+              value: this.currentToken.value as string,
+              columnStart: this.currentToken.columnStart,
+              columnEnd: this.currentToken.columnEnd,
+            };
+          } else {
+            this.addError(
+              `Unexpected token in Import: ${this.currentToken.type}`,
+              this.currentToken
+            );
+          }
+          break;
+
+        case "WORD":
+          if ((this.currentToken.value as string) === "Optional") {
+            optional = true;
+          } else {
+            this.addError(
+              `Unexpected value in Import: ${this.currentToken.value}`,
+              this.currentToken
+            );
+          }
+          break;
+
+        case "INLINE_COMMENT":
+          inlineComment = this.consumeInlineComment();
+          continue;
+
+        default:
+          this.addError(
+            `Unexpected token in Import: ${this.currentToken.type}`,
+            this.currentToken
+          );
+      }
+      this.advance();
+    }
+
+    if (!importPath) {
+      this.addError("Expected a quoted file path for Import", this.previousToken);
+      importPath = { value: "", columnStart, columnEnd };
+    }
+
+    return {
+      type: "Import",
+      path: importPath,
+      optional,
+      inlineComment,
+      start,
+      end: this.currentToken.start,
+      line,
+      columnStart,
+      columnEnd,
+    };
+  }
+
+  private parseCondition(): ConditionNode {
+    const start = this.currentToken.start;
+    const line = this.currentToken.line;
+    const columnStart = this.currentToken.columnStart;
+    const columnEnd = this.currentToken.columnEnd;
+    const isCommented = this.currentToken.type === "COMMENTED_CONDITION";
+
+    if (!this.currentToken || !this.currentToken.value) {
+      this.addError(
+        "Expected condition type after condition marker",
+        this.currentToken
+      );
+      return this.createErrorConditionNode(start, line, columnStart, columnEnd);
+    }
+
+    const condition = this.currentToken.value as ConditionType;
+    const syntax = ConditionSyntaxMap[condition];
+    if (!syntax) {
+      this.addError(`Unknown condition: ${condition}`, this.currentToken);
+    }
+
+    this.advance(); // Consume condition type
+
+    // HasExplicitMod has a bespoke "[<op><count> | True] <mod> ..." form whose
+    // value list (mod names, optional count) is not type-validated by main, so
+    // we skip generic value-type checks for it here too.
+    const validateValueTypes = condition !== ConditionType.HasExplicitMod;
+
+    // Check for operator
+    let operator: string | undefined;
+    let operatorColumnStart: number | undefined;
+    let operatorColumnEnd: number | undefined;
+    if (this.currentToken.type === "OPERATOR") {
+      operator = this.currentToken.value as string;
+      operatorColumnStart = this.currentToken.columnStart;
+      operatorColumnEnd = this.currentToken.columnEnd;
+      // Equality operators (=, ==, !, !=) are accepted on any condition in
+      // PoE2 (the "!" / "!=" forms both mean "not equal"). Only the ordered
+      // comparison operators (<, >, <=, >=) are restricted by the condition's
+      // declared operator behavior.
+      const isEqualityOperator = ["=", "==", "!", "!="].includes(operator);
+      if (!isEqualityOperator) {
+        if (syntax?.operatorBehavior.allowed === false) {
+          this.addError(
+            `Operator not allowed for condition: ${condition}`,
+            this.currentToken
+          );
+        } else if (
+          syntax?.operatorBehavior.allowedOperators &&
+          !syntax.operatorBehavior.allowedOperators.includes(operator)
+        ) {
+          this.addError(
+            `Invalid operator ${operator} for condition: ${condition}`,
+            this.currentToken
+          );
+        }
+      }
+      this.advance();
+    } else if (
+      syntax?.operatorBehavior.allowed &&
+      !syntax.operatorBehavior.optional
+    ) {
+      this.addError(
+        `Operator required for condition: ${condition}`,
+        this.currentToken
+      );
+    }
+
+    const values: NodeValue[] = [];
+    let inlineComment: string | undefined;
+
+    while (this.shouldContinueParsing()) {
+      switch (this.currentToken.type) {
+        case "NUMBER":
+          if (validateValueTypes) {
+            this.validateTokenType(
+              syntax?.valueType ?? "",
+              "number",
+              `condition ${condition}`,
+              this.currentToken
+            );
+          }
+          values.push({
+            value: this.currentToken.value as number,
+            columnStart: this.currentToken.columnStart,
+            columnEnd: this.currentToken.columnEnd,
+          });
+          break;
+
+        case "BOOLEAN":
+          if (validateValueTypes) {
+            this.validateTokenType(
+              syntax?.valueType ?? "",
+              "boolean",
+              `condition ${condition}`,
+              this.currentToken
+            );
+          }
+          values.push({
+            value: this.currentToken.value as boolean,
+            columnStart: this.currentToken.columnStart,
+            columnEnd: this.currentToken.columnEnd,
+          });
+          break;
+
+        case "QUOTED_STRING":
+        case "WORD":
+          if (validateValueTypes) {
+            this.validateTokenType(
+              syntax?.valueType ?? "",
+              "string",
+              `condition ${condition}`,
+              this.currentToken
+            );
+          }
+          values.push({
+            value: this.currentToken.value as string,
+            columnStart: this.currentToken.columnStart,
+            columnEnd: this.currentToken.columnEnd,
+          });
+          break;
+
+        case "RARITY":
+        case "COLOR":
+        case "SHAPE":
+          if (validateValueTypes) {
+            this.validateTokenType(
+              syntax?.valueType ?? "",
+              this.currentToken.type.toLowerCase(),
+              `condition ${condition}`,
+              this.currentToken
+            );
+          }
+          values.push({
+            value: this.currentToken.value as
+              | string
+              | number
+              | boolean
+              | RarityValue,
+            columnStart: this.currentToken.columnStart,
+            columnEnd: this.currentToken.columnEnd,
+          });
+          break;
+
+        case "INLINE_COMMENT":
+          inlineComment = this.consumeInlineComment();
+          continue;
+
+        default:
+          this.addError(
+            `Unexpected token in condition: ${this.currentToken.type}`,
+            this.currentToken
+          );
+      }
+      this.advance();
+    }
+
+    if (values.length === 0) {
+      const errorToken =
+        this.previousToken.type === "INLINE_COMMENT"
+          ? this.tokens[this.position - 2]
+          : this.previousToken;
+
+      this.addError(
+        `Expected at least one value for condition ${condition}`,
+        errorToken
+      );
+    }
+
+    if (syntax?.valueSyntax.multiValue === false && values.length !== 1) {
+      this.addErrorAt(`Expected exactly one value for condition: ${condition}`, {
+        line,
+        columnStart,
+        columnEnd,
+      });
+    }
+
+    return {
+      type: "Condition",
+      condition,
+      operator,
+      operatorColumnStart,
+      operatorColumnEnd,
+      values,
+      inlineComment,
+      commented: isCommented,
+      start,
+      end: this.currentToken.start,
+      line,
+      columnStart,
+      columnEnd: this.currentToken.columnEnd,
+    };
+  }
+
+  private parseAction(): ActionNode {
+    const start = this.currentToken.start;
+    const line = this.currentToken.line;
+    const columnStart = this.currentToken.columnStart;
+    const columnEnd = this.currentToken.columnEnd;
+    const isCommented = this.currentToken.type === "COMMENTED_ACTION";
+
+    if (!this.currentToken || !this.currentToken.value) {
+      this.addError(
+        "Expected action type after action marker",
+        this.currentToken
+      );
+      return this.createErrorActionNode(start, line, columnStart, columnEnd);
+    }
+
+    const action = this.currentToken.value as ActionType;
+    const syntax = ActionSyntaxMap[action];
+    if (!syntax) {
+      this.addError(`Unknown action: ${action}`, this.currentToken);
+    }
+
+    this.advance(); // Consume action type
+
+    const values: NodeValue[] = [];
+    let parameterIndex = 0;
+    let inlineComment: string | undefined;
+
+    while (this.shouldContinueParsing()) {
+      const parameter = syntax?.parameters[parameterIndex];
+
+      switch (this.currentToken.type) {
+        case "NUMBER":
+          {
+            let receivedType = "number";
+            if (parameter?.type === "sound-id") {
+              receivedType = "sound-id";
+            }
+
+            if (parameter) {
+              this.validateTokenType(
+                parameter.type,
+                receivedType,
+                `parameter ${parameter.name}`,
+                this.currentToken
+              );
+            }
+            const num = this.currentToken.value as number;
+            values.push({
+              value: num,
+              columnStart: this.currentToken.columnStart,
+              columnEnd: this.currentToken.columnEnd,
+            });
+          }
+          break;
+
+        case "BOOLEAN":
+          if (parameter) {
+            this.validateTokenType(
+              parameter.type,
+              "boolean",
+              `parameter ${parameter.name}`,
+              this.currentToken
+            );
+          }
+          values.push({
+            value: this.currentToken.value as boolean,
+            columnStart: this.currentToken.columnStart,
+            columnEnd: this.currentToken.columnEnd,
+          });
+          break;
+
+        case "QUOTED_STRING":
+          if (parameter) {
+            this.validateTokenType(
+              parameter.type,
+              "string",
+              `parameter ${parameter.name}`,
+              this.currentToken
+            );
+          }
+          values.push({
+            value: this.currentToken.value as string,
+            columnStart: this.currentToken.columnStart,
+            columnEnd: this.currentToken.columnEnd,
+          });
+          break;
+
+        case "WORD":
+          {
+            let receivedType = "string";
+            if (parameter?.type === "sound-id") {
+              receivedType = "sound-id";
+            } else if (parameter?.type === "keyword") {
+              // A bare word is an acceptable token shape for a keyword
+              // parameter; the exact literal is validated semantically.
+              receivedType = "keyword";
+            }
+
+            if (parameter) {
+              this.validateTokenType(
+                parameter.type,
+                receivedType,
+                `parameter ${parameter.name}`,
+                this.currentToken
+              );
+            }
+            values.push({
+              value: this.currentToken.value as string,
+              columnStart: this.currentToken.columnStart,
+              columnEnd: this.currentToken.columnEnd,
+            });
+          }
+          break;
+
+        case "COLOR":
+          if (parameter) {
+            this.validateTokenType(
+              parameter.type,
+              "color",
+              `parameter ${parameter.name}`,
+              this.currentToken
+            );
+          }
+
+          values.push({
+            value: this.currentToken.value as ColorValue,
+            columnStart: this.currentToken.columnStart,
+            columnEnd: this.currentToken.columnEnd,
+          });
+
+          break;
+
+        case "SHAPE":
+          if (parameter) {
+            this.validateTokenType(
+              parameter.type,
+              "shape",
+              `parameter ${parameter.name}`,
+              this.currentToken
+            );
+          }
+
+          values.push({
+            value: this.currentToken.value as ShapeValue,
+            columnStart: this.currentToken.columnStart,
+            columnEnd: this.currentToken.columnEnd,
+          });
+
+          break;
+
+        case "INLINE_COMMENT":
+          inlineComment = this.consumeInlineComment();
+          continue;
+
+        default:
+          this.addError(
+            `Unexpected token in action: ${this.currentToken.type}`,
+            this.currentToken
+          );
+      }
+
+      this.advance();
+      parameterIndex++;
+    }
+
+    // Validate required parameters. Point at the action keyword itself: by the
+    // time the value loop ends, `currentToken` is the trailing NEWLINE whose
+    // line already belongs to the next source line.
+    const requiredCount =
+      syntax?.parameters.filter((p) => p.required).length ?? 0;
+    if (values.length < requiredCount) {
+      this.addErrorAt(
+        `Action ${action} requires at least ${requiredCount} parameters, got ${values.length}`,
+        { line, columnStart, columnEnd }
+      );
+    }
+
+    // Validate maximum parameters
+    if (values.length > (syntax?.parameters.length ?? 0)) {
+      this.addErrorAt(
+        `Too many parameters for action ${action}. Expected ${syntax?.parameters.length}, got ${values.length}`,
+        { line, columnStart, columnEnd }
+      );
+    }
+
+    if (values.length === 0 && this.requiresValues(syntax)) {
+      const errorToken =
+        this.previousToken.type === "INLINE_COMMENT"
+          ? this.tokens[this.position - 2]
+          : this.previousToken;
+
+      this.addError(
+        `Expected at least one value for action ${action}`,
+        errorToken
+      );
+    }
+
+    return {
+      type: "Action",
+      action,
+      values,
+      inlineComment,
+      commented: isCommented,
+      start,
+      end: this.currentToken.start,
+      line,
+      columnStart,
+      columnEnd,
+    };
+  }
+
+  private parseComment(): CommentNode {
+    const start = this.currentToken.start;
+    const line = this.currentToken.line;
+    const columnStart = this.currentToken.columnStart;
+    const columnEnd = this.currentToken.columnEnd;
+    const type =
+      this.currentToken.type === "COMMENT" ? "Comment" : "InlineComment";
+    const value = this.currentToken.value as string;
+
+    this.advance(); // Consume comment
+
+    return {
+      type,
+      value,
+      start,
+      end: this.currentToken.start,
+      line,
+      columnStart,
+      columnEnd,
+    };
+  }
+
+  private parseHeader(): HeaderNode {
+    const start = this.currentToken.start;
+    const line = this.currentToken.line;
+    const columnStart = this.currentToken.columnStart;
+    const columnEnd = this.currentToken.columnEnd;
+    const headerInfo = this.currentToken.value as any;
+
+    this.advance(); // Consume header
+
+    return {
+      type: "Header",
+      level: headerInfo.level,
+      text: headerInfo.text,
+      id: headerInfo.id,
+      style: headerInfo.style,
+      start,
+      end: this.currentToken.start,
+      line,
+      columnStart,
+      columnEnd,
+    };
+  }
+
+  private advance(): void {
+    this.previousToken = this.currentToken;
+    this.position++;
+    if (this.position >= this.tokens.length) {
+      this.currentToken = this.lexer.nextToken();
+      this.tokens.push(this.currentToken);
+    } else {
+      this.currentToken = this.tokens[this.position];
+    }
+  }
+
+  private createErrorConditionNode(
+    start: number,
+    line: number,
+    columnStart: number,
+    columnEnd: number
+  ): ConditionNode {
+    return {
+      type: "Condition",
+      condition: "Unknown" as ConditionType,
+      values: [],
+      start,
+      end: this.currentToken.start,
+      line,
+      columnStart,
+      columnEnd,
+    };
+  }
+
+  private createErrorActionNode(
+    start: number,
+    line: number,
+    columnStart: number,
+    columnEnd: number
+  ): ActionNode {
+    return {
+      type: "Action",
+      action: "Unknown" as ActionType,
+      values: [],
+      start,
+      end: this.currentToken.start,
+      line,
+      columnStart,
+      columnEnd,
+    };
+  }
+
+  private requiresValues(syntax: ActionSyntax): boolean {
+    if (syntax.parameters.length === 0) {
+      return false;
+    }
+
+    return syntax.parameters.some((p) => p.required);
+  }
+
+  private validateTokenType(
+    expectedType: string,
+    receivedType: string,
+    context: string,
+    token: Token
+  ): void {
+    if (expectedType !== receivedType) {
+      this.addError(
+        `Expected ${expectedType} but got ${receivedType} for ${context}`,
+        token
+      );
+    }
+  }
+
+  private consumeInlineComment(): string | undefined {
+    if (this.currentToken.type === "INLINE_COMMENT") {
+      const comment = this.currentToken.value as string;
+      this.advance();
+      return comment;
+    }
+    return undefined;
+  }
+
+  private shouldContinueParsing(): boolean {
+    return (
+      this.currentToken.type !== "EOF" &&
+      this.currentToken.type !== "NEWLINE" &&
+      // A new statement keyword ends the current statement's value list. A
+      // Continue appearing mid-block is therefore parsed as its own action; the
+      // semantic validator then flags any conditions/actions that follow it,
+      // since they never apply once a block hands control to later blocks.
+      !["CONDITION", "ACTION", "SHOW", "HIDE", "CONTINUE"].includes(
+        this.currentToken.type
+      )
+    );
+  }
+}

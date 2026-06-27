@@ -1,287 +1,91 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
-import { FilterFormatter } from "./formatter/formatter";
-import { FilterSymbolProvider } from "./outline/filterSymbolProvider";
-import {
-  registerDiagnostics,
-  validateDocument,
-} from "./diagnostics/filterDiagnostics";
-import { FilterCodeActionProvider } from "./diagnostics/filterCodeActions";
 import { MinimapIconDecorator } from "./decorations/minimapIconDecorator";
 import { FilterPreviewEditor } from "./preview/FilterPreviewEditor";
 
-import { CodelensProvider } from "./CodelensProvider";
 import { SoundPlayer } from "./utils/soundPlayer";
 import path from "path";
 import { GameDataService } from "./services/gameDataService";
-import { FilterHoverProvider } from "./providers/filterHoverProvider";
-import { FilterDecorationProvider } from "./providers/filterDecorationProvider";
-import { FilterDocumentLinkProvider } from "./providers/filterDocumentLinkProvider";
-import { FilterCompletionProvider } from "./providers/filterCompletionProvider";
+import {
+  LanguageClient,
+  ServerOptions,
+  TransportKind,
+} from "vscode-languageclient/node";
+
+let client: LanguageClient;
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export async function activate(context: vscode.ExtensionContext) {
   console.log("POE2 Filter extension is now active");
 
+  // Initialize language server client
+  const serverModule = context.asAbsolutePath(
+    path.join("dist", "language-server", "server.js")
+  );
+
+  const serverOptions: ServerOptions = {
+    run: { module: serverModule, transport: TransportKind.ipc },
+    debug: {
+      module: serverModule,
+      transport: TransportKind.ipc,
+      options: { execArgv: ["--nolazy", "--inspect=6009"] },
+    },
+  };
+
+  client = new LanguageClient(
+    "poeFilterLanguageServer",
+    "PoE Filter Language Server",
+    serverOptions,
+    {
+      documentSelector: [{ scheme: "file", language: "poe2-filter" }],
+      initializationOptions: {
+        extensionPath: context.extensionPath,
+      },
+    }
+  );
+
+  // Start the language server
+  client.start();
+  context.subscriptions.push(client);
+
   // Initialize game data service
   const gameData = new GameDataService();
-  await gameData.loadData(context);
+  await gameData.loadData(context.extensionPath);
 
-  // Register hover provider
-  context.subscriptions.push(
-    vscode.languages.registerHoverProvider(
-      "poe2-filter",
-      new FilterHoverProvider(gameData)
-    )
-  );
+  // Hover (BaseType/Class matching items) is now provided by the language server.
 
-  // Initialize and register decoration provider
-  const decorationProvider = new FilterDecorationProvider();
+  // BaseType/Class match-count hints (the "N·" markers) are now provided by the
+  // language server via inlay hints (see inlayHintsProvider); the old
+  // client-side decoration provider has been removed to avoid duplicate UI.
 
-  // Update decorations when active editor changes
-  vscode.window.onDidChangeActiveTextEditor(
-    (editor) => {
-      if (editor && editor.document.languageId === "poe2-filter") {
-        decorationProvider.updateDecorations(editor, gameData);
-      }
-    },
-    null,
-    context.subscriptions
-  );
+  // Document symbols (outline/breadcrumbs) are now provided by the language server.
 
-  // Update decorations when document changes
-  vscode.workspace.onDidChangeTextDocument(
-    (event) => {
-      if (event.document.languageId === "poe2-filter") {
-        const editor = vscode.window.activeTextEditor;
-        if (editor && editor.document === event.document) {
-          decorationProvider.updateDecorations(editor, gameData);
-        }
-      }
-    },
-    null,
-    context.subscriptions
-  );
+  // Clickable Import / CustomAlertSound path links are now provided by the
+  // language server.
 
-  // Initial decoration update
-  if (vscode.window.activeTextEditor) {
-    decorationProvider.updateDecorations(
-      vscode.window.activeTextEditor,
-      gameData
-    );
-  }
+  // Path completion inside Import / CustomAlertSound quotes is now provided by
+  // the language server.
 
-  // Register document symbol provider for outline
-  context.subscriptions.push(
-    vscode.languages.registerDocumentSymbolProvider(
-      "poe2-filter",
-      new FilterSymbolProvider()
-    )
-  );
-
-  // Register document link provider so Import "file" paths are clickable
-  context.subscriptions.push(
-    vscode.languages.registerDocumentLinkProvider(
-      "poe2-filter",
-      new FilterDocumentLinkProvider()
-    )
-  );
-
-  // Register completion of file names inside Import / CustomAlertSound paths
-  context.subscriptions.push(
-    vscode.languages.registerCompletionItemProvider(
-      "poe2-filter",
-      new FilterCompletionProvider(),
-      '"',
-      "/"
-    )
-  );
-
-  // Register the formatter
-  const formatter = new FilterFormatter();
-  const formattingProvider =
-    vscode.languages.registerDocumentFormattingEditProvider("poe2-filter", {
-      async provideDocumentFormattingEdits(
-        document: vscode.TextDocument
-      ): Promise<vscode.TextEdit[]> {
-        const formattedText = await formatter.format(document);
-
-        const fullRange = new vscode.Range(
-          document.positionAt(0),
-          document.positionAt(document.getText().length)
-        );
-
-        return [vscode.TextEdit.replace(fullRange, formattedText)];
-      },
-    });
-
-  context.subscriptions.push(formattingProvider);
+  // Document formatting is now provided by the language server
+  // (see src/language-server/server.ts onDocumentFormatting).
 
   // Create the minimap icon decorator (it will register itself with the context)
   new MinimapIconDecorator(context);
 
-  // Register color provider
-  context.subscriptions.push(
-    vscode.languages.registerColorProvider("poe2-filter", {
-      provideDocumentColors(
-        document: vscode.TextDocument
-      ): vscode.ColorInformation[] {
-        const colors: vscode.ColorInformation[] = [];
+  // Color swatches/presentations for RGB color actions are now provided by the
+  // language server.
 
-        for (let i = 0; i < document.lineCount; i++) {
-          const line = document.lineAt(i);
-          const colorMatch = line.text.match(
-            /(SetTextColor|SetBorderColor|SetBackgroundColor)\s+(\d+)\s+(\d+)\s+(\d+)(?:\s+(\d+))?/
-          );
+  // Diagnostics (validation + rule-conflict detection) are now provided by the
+  // language server (see src/language-server). The old client-side
+  // registerDiagnostics/filterConflicts registration has been removed.
 
-          if (colorMatch) {
-            const [_, command, r, g, b, a] = colorMatch;
-            const startPos = line.text.indexOf(command) + command.length;
-            const endPos = line.text.length;
+  // Code actions (quick fixes) are now provided by the language server.
 
-            colors.push(
-              new vscode.ColorInformation(
-                new vscode.Range(i, startPos, i, endPos),
-                new vscode.Color(
-                  parseInt(r) / 255,
-                  parseInt(g) / 255,
-                  parseInt(b) / 255,
-                  a ? parseInt(a) / 255 : 1
-                )
-              )
-            );
-          }
-        }
-
-        return colors;
-      },
-
-      provideColorPresentations(
-        color: vscode.Color
-      ): vscode.ColorPresentation[] {
-        const red = Math.round(color.red * 255);
-        const green = Math.round(color.green * 255);
-        const blue = Math.round(color.blue * 255);
-        const alpha = Math.round(color.alpha * 255);
-
-        return [
-          new vscode.ColorPresentation(
-            ` ${red} ${green} ${blue}${alpha !== 255 ? ` ${alpha}` : ""}`
-          ),
-        ];
-      },
-    })
-  );
-
-  // TODO: figure out how to handle color decorations better when the document changes and so such
-  // // Update decorations when the active editor changes
-  // let activeEditor = vscode.window.activeTextEditor;
-  // function updateDecorations() {
-  //   if (!activeEditor) {
-  //     return;
-  //   }
-
-  //   // const decorations: vscode.DecorationOptions[] = [];
-  //   const text = activeEditor.document.getText();
-
-  //   // regex to handle both RGB and RGBA, with RGBA preferred
-  //   const colorRegex =
-  //     /(SetTextColor|SetBorderColor|SetBackgroundColor)\s+(\d+)\s+(\d+)\s+(\d+)(?:\s+(\d+))?/g;
-
-  //   let match;
-  //   while ((match = colorRegex.exec(text)) !== null) {
-  //     const [fullMatch, command, r, g, b, a] = match;
-  //     // const startPos = activeEditor.document.positionAt(
-  //     //   match.index + (match[0].length - fullMatch.length)
-  //     // );
-  //     // const endPos = activeEditor.document.positionAt(colorRegex.lastIndex);
-  //     const startPos = activeEditor.document.positionAt(
-  //       match.index + fullMatch.indexOf(r)
-  //     );
-  //     const endPos = activeEditor.document.positionAt(
-  //       match.index + fullMatch.length
-  //     );
-
-  //     // Default alpha to 1 if not provided
-  //     const rgba = `rgba(${r}, ${g}, ${b}, ${a ? parseInt(a) / 255 : 1})`;
-
-  //     const colorDecorationType = vscode.window.createTextEditorDecorationType({
-  //       backgroundColor: rgba,
-  //       // color: getColorContrast(rgba),
-  //       border: `3px solid ${rgba}`,
-  //       borderRadius: "3px",
-  //     });
-
-  //     // decorations.push({
-  //     //   range: new vscode.Range(startPos, endPos),
-  //     //   renderOptions: {
-  //     //     // after: {
-  //     //     //   backgroundColor: rgba,
-  //     //     //   contentText: `${r} ${g} ${b}${a ? ` ${a}` : ""}`,
-  //     //     //   color: "currentColor", // Use editor's text color
-  //     //     // },
-  //     //     decorationType,
-  //     //   },
-  //     // });
-  //     activeEditor.setDecorations(colorDecorationType, [
-  //       {
-  //         range: new vscode.Range(startPos, endPos),
-  //       },
-  //     ]);
-  //   }
-  // }
-
-  // // Update decorations on editor changes
-  // vscode.window.onDidChangeActiveTextEditor(
-  //   (editor) => {
-  //     activeEditor = editor;
-  //     if (editor) {
-  //       updateDecorations();
-  //     }
-  //   },
-  //   null,
-  //   context.subscriptions
-  // );
-
-  // vscode.workspace.onDidChangeTextDocument(
-  //   (event) => {
-  //     if (activeEditor && event.document === activeEditor.document) {
-  //       updateDecorations();
-  //     }
-  //   },
-  //   null,
-  //   context.subscriptions
-  // );
-
-  // // Initial update
-  // if (activeEditor) {
-  //   updateDecorations();
-  // }
-
-  // Register diagnostics
-  registerDiagnostics(context, gameData);
-
-  // Register code actions
-  context.subscriptions.push(
-    vscode.languages.registerCodeActionsProvider(
-      "poe2-filter",
-      new FilterCodeActionProvider(),
-      {
-        providedCodeActionKinds:
-          FilterCodeActionProvider.providedCodeActionKinds,
-      }
-    )
-  );
-
-  // Register code lens
-  context.subscriptions.push(
-    vscode.languages.registerCodeLensProvider(
-      "poe2-filter",
-      new CodelensProvider()
-    )
-  );
+  // Sound "Play" code lenses are now provided by the language server; the
+  // commands they invoke (below) still run client-side where audio playback
+  // and file-system access live.
 
   // Register command
   context.subscriptions.push(
@@ -317,6 +121,52 @@ export async function activate(context: vscode.ExtensionContext) {
     )
   );
 
+  // Conflict "Shadows N later rules" code lenses (provided by the language
+  // server) invoke this command, which opens a peek view listing every rule the
+  // current rule makes unreachable. The lens passes plain JSON, so we rebuild
+  // the vscode types here before delegating to the built-in references peek.
+  context.subscriptions.push(
+    vscode.commands.registerCommand(
+      "poe2-filter.showConflicts",
+      async (
+        uri: string,
+        position: { line: number; character: number },
+        locations: {
+          uri: string;
+          range: {
+            start: { line: number; character: number };
+            end: { line: number; character: number };
+          };
+        }[]
+      ) => {
+        const targetUri = vscode.Uri.parse(uri);
+        const targetPosition = new vscode.Position(
+          position.line,
+          position.character
+        );
+        const refs = locations.map(
+          (loc) =>
+            new vscode.Location(
+              vscode.Uri.parse(loc.uri),
+              new vscode.Range(
+                loc.range.start.line,
+                loc.range.start.character,
+                loc.range.end.line,
+                loc.range.end.character
+              )
+            )
+        );
+
+        await vscode.commands.executeCommand(
+          "editor.action.showReferences",
+          targetUri,
+          targetPosition,
+          refs
+        );
+      }
+    )
+  );
+
   // Register the preview editor
   context.subscriptions.push(FilterPreviewEditor.register(context, gameData));
 
@@ -340,4 +190,9 @@ export async function activate(context: vscode.ExtensionContext) {
 }
 
 // This method is called when your extension is deactivated
-export function deactivate() {}
+export function deactivate(): Thenable<void> | undefined {
+  if (!client) {
+    return undefined;
+  }
+  return client.stop();
+}

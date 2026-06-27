@@ -1,4 +1,10 @@
-import * as vscode from "vscode";
+import { Parser } from "../language-server/ast/parser";
+import {
+  RootNode,
+  ConditionNode,
+  ActionNode,
+  isBlockNode,
+} from "../language-server/ast/nodes";
 
 type ConditionType =
   | "BaseType"
@@ -556,174 +562,157 @@ export function compareNumeric(
   }
 }
 
-export function parseRules(input: vscode.TextDocument | string): FilterRule[] {
+// Condition keywords the preview's matching engine understands. Anything else
+// (e.g. HasInfluence) is skipped, mirroring how the old line parser returned
+// null for unknown conditions.
+const SUPPORTED_CONDITIONS = new Set<ConditionType>([
+  "BaseType",
+  "Class",
+  "Sockets",
+  "Quality",
+  "ItemLevel",
+  "DropLevel",
+  "AreaLevel",
+  "GemLevel",
+  "MapTier",
+  "WaystoneTier",
+  "StackSize",
+  "Height",
+  "Width",
+  "BaseArmour",
+  "BaseEnergyShield",
+  "BaseEvasion",
+  "UnidentifiedItemTier",
+  "Rarity",
+  "FracturedItem",
+  "Mirrored",
+  "Corrupted",
+  "SynthesisedItem",
+  "AnyEnchantment",
+  "Identified",
+  "HasVaalUniqueMod",
+  "IsVaalUnique",
+  "TwiceCorrupted",
+  "AlwaysShow",
+  "HasExplicitMod",
+]);
+
+// Action keywords the preview renders/considers. Others are ignored.
+const SUPPORTED_ACTIONS = new Set<ActionType>([
+  "SetFontSize",
+  "PlayAlertSound",
+  "MinimapIcon",
+  "PlayEffect",
+  "SetTextColor",
+  "SetBorderColor",
+  "SetBackgroundColor",
+]);
+
+/**
+ * Parses filter text into the preview's rule model by reusing the shared
+ * language-server AST parser, then projecting each Show/Hide/Minimal block onto
+ * the {@link FilterRule} shape the preview engine expects.
+ */
+export function parseRules(input: string): FilterRule[] {
+  const ast = new Parser(input).parse();
+  return rulesFromAst(ast);
+}
+
+function rulesFromAst(ast: RootNode): FilterRule[] {
   const rules: FilterRule[] = [];
-  let currentRule: FilterRule | null = null;
 
-  // Convert input to lines whether it's a TextDocument or string
-  const lines =
-    typeof input === "string"
-      ? input.split("\n")
-      : Array.from({ length: input.lineCount }, (_, i) => input.lineAt(i).text);
-
-  for (let i = 0; i < lines.length; i++) {
-    const text = lines[i].trim();
-
-    if (text.startsWith("#") || text === "") {
+  for (const node of ast.children) {
+    if (!isBlockNode(node)) {
       continue;
     }
 
-    if (text.startsWith("Show") || text.startsWith("Hide")) {
-      if (currentRule) {
-        rules.push(currentRule);
+    const rule: FilterRule = {
+      // Keep the previous 0-based line index semantics used by "jump to rule".
+      lineNumber: node.line - 1,
+      conditions: [],
+      actions: [],
+      hasContinue: false,
+      // Show and Minimal both render the item; only Hide hides it.
+      isShow: node.type !== "Hide",
+    };
+
+    for (const child of node.body) {
+      if (child.commented === true) {
+        continue;
       }
-      currentRule = {
-        lineNumber: i,
-        conditions: [],
-        actions: [],
-        hasContinue: false,
-        isShow: text.startsWith("Show"),
-      };
-      continue;
-    }
 
-    if (!currentRule) {
-      continue;
-    }
-
-    if (text === "Continue") {
-      currentRule.hasContinue = true;
-      continue;
-    }
-
-    const condition = parseCondition(text, i);
-    if (condition) {
-      currentRule.conditions.push(condition);
-    } else {
-      // If not a condition, try parsing as an action
-      const action = parseAction(text);
-      if (action) {
-        currentRule.actions.push(action);
+      if (child.type === "Condition") {
+        const condition = conditionFromNode(child);
+        if (condition) {
+          rule.conditions.push(condition);
+        }
+      } else if (child.type === "Action") {
+        if (child.action === "Continue") {
+          rule.hasContinue = true;
+          continue;
+        }
+        const action = actionFromNode(child);
+        if (action) {
+          rule.actions.push(action);
+        }
       }
     }
-  }
 
-  if (currentRule) {
-    rules.push(currentRule);
+    rules.push(rule);
   }
 
   return rules;
 }
 
-export function parseCondition(
-  text: string,
-  lineNumber: number
-): FilterCondition | null {
-  const parts = text.split(/\s+/);
-  const type = parts[0] as ConditionType;
-
-  switch (type) {
-    case "Class":
-    case "BaseType": {
-      // Check for operator before the first quote (=, ==, !, !=)
-      const operatorMatch = text.match(/\s+(==|!=|=|!)\s+/);
-      // Match all quoted strings, preserving spaces within quotes
-      const matches = text.match(/"([^"]+)"/g) || [];
-      return {
-        type,
-        operator: operatorMatch?.[1] || undefined,
-        values: matches.map((m) => m.replace(/"/g, "")),
-        lineNumber,
-      };
-    }
-    case "MapTier":
-    case "ItemLevel":
-    case "DropLevel":
-    case "Quality":
-    case "AreaLevel":
-    case "GemLevel":
-    case "Sockets":
-    case "WaystoneTier":
-    case "StackSize":
-    case "Height":
-    case "Width":
-    case "BaseArmour":
-    case "BaseEnergyShield":
-    case "BaseEvasion":
-    case "UnidentifiedItemTier":
-      return {
-        type,
-        operator: parts[1]?.match(/[<>=!]+/)?.[0],
-        values: [parts[parts.length - 1]],
-        lineNumber,
-      };
-    case "Rarity":
-      return {
-        type,
-        values: parts
-          .slice(1)
-          .filter((p) => ["Normal", "Magic", "Rare", "Unique"].includes(p)),
-        lineNumber,
-      };
-    case "FracturedItem":
-    case "Mirrored":
-    case "Corrupted":
-    case "SynthesisedItem":
-    case "AnyEnchantment":
-    case "Identified":
-    case "HasVaalUniqueMod":
-    case "IsVaalUnique":
-    case "TwiceCorrupted":
-    case "AlwaysShow":
-      return {
-        type,
-        operator: parts[1]?.match(/^(==|!=|=|!)$/)?.[0],
-        values: [parts[parts.length - 1]], // True/False
-        lineNumber,
-      };
-    case "HasExplicitMod": {
-      // Form: HasExplicitMod [<op><count> | True] mod [mod ...]
-      // The operator/count is optional and glued to the number (">=6"); mod
-      // names may be quoted or unquoted and are matched partially in-game.
-      const operator = parts[1]?.match(/^(==|>=|<=|<|>)/)?.[0];
-      const quoted = text.match(/"([^"]+)"/g);
-      const modNames = quoted
-        ? quoted.map((m) => m.replace(/"/g, ""))
-        : parts
-            .slice(1)
-            .filter(
-              (p) => p !== "True" && !/^(==|>=|<=|<|>)?\d+$/.test(p)
-            );
-      return {
-        type,
-        operator,
-        values: modNames,
-        lineNumber,
-      };
-    }
-    default:
-      const _exhaustiveCheck: never = type;
-      return null;
+function conditionFromNode(node: ConditionNode): FilterCondition | null {
+  const type = node.condition as unknown as ConditionType;
+  if (!SUPPORTED_CONDITIONS.has(type)) {
+    return null;
   }
+
+  const values = node.values.map((v) => String(v.value));
+  const lineNumber = node.line - 1;
+
+  // Rarity historically matched on membership only (the operator was dropped by
+  // the line parser); preserve that to keep preview output stable.
+  if (type === "Rarity") {
+    return {
+      type,
+      values: values.filter((p) =>
+        ["Normal", "Magic", "Rare", "Unique"].includes(p)
+      ),
+      lineNumber,
+    };
+  }
+
+  if (type === "HasExplicitMod") {
+    // Keep only the mod names (drop an optional "True" / count token).
+    return {
+      type,
+      operator: node.operator,
+      values: values.filter(
+        (p) => p !== "True" && !/^(==|>=|<=|<|>)?\d+$/.test(p)
+      ),
+      lineNumber,
+    };
+  }
+
+  return {
+    type,
+    operator: node.operator,
+    values,
+    lineNumber,
+  };
 }
 
-function parseAction(text: string): FilterAction | null {
-  const parts = text.split(/\s+/);
-  const type = parts[0];
-
-  switch (type) {
-    case "SetFontSize":
-    case "PlayAlertSound":
-    case "MinimapIcon":
-    case "PlayEffect":
-    case "SetTextColor":
-    case "SetBorderColor":
-    case "SetBackgroundColor":
-      return {
-        type,
-        values: parts.slice(1),
-      };
-    default:
-      return null;
+function actionFromNode(node: ActionNode): FilterAction | null {
+  const type = node.action as unknown as ActionType;
+  if (!SUPPORTED_ACTIONS.has(type)) {
+    return null;
   }
+
+  return {
+    type,
+    values: node.values.map((v) => String(v.value)),
+  };
 }

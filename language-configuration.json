@@ -6,9 +6,15 @@
   "autoClosingPairs": [{ "open": "\"", "close": "\"" }],
   "surroundingPairs": [{ "open": "\"", "close": "\"" }],
   "indentationRules": {
-    "increaseIndentPattern": "^(Show|Hide|Minimal)\\b",
-    "decreaseIndentPattern": "^(?=(Show|Hide|Minimal)\\b|$)"
+    "increaseIndentPattern": "^\\s*(Show|Hide|Minimal)\\b",
+    "decreaseIndentPattern": "^\\s*(Show|Hide|Minimal)\\b"
   },
+  "onEnterRules": [
+    {
+      "beforeText": "^\\s+$",
+      "action": { "indent": "outdent" }
+    }
+  ],
   "folding": {
     "markers": {
       "start": "^(Show|Hide|Minimal)\\b.*$",

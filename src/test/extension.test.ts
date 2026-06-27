@@ -78,7 +78,7 @@ Hide # Something else
 
     const expected =
       `
-#Comment
+# Comment
 Show
     BaseType "Mirror of Kalandra"
 

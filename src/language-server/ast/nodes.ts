@@ -1,0 +1,115 @@
+import { ColorValue, RarityValue, ShapeValue, Token } from "./tokens";
+import { ConditionType } from "./conditions";
+import { ActionType } from "./actions";
+
+export type Node =
+  | RootNode
+  | BlockNode
+  | ConditionNode
+  | ActionNode
+  | CommentNode
+  | HeaderNode
+  | ImportNode
+  | ErrorNode;
+
+export interface BaseNode {
+  type: string;
+  start: number;
+  end: number;
+  line: number;
+  columnStart: number;
+  columnEnd: number;
+  inlineComment?: string;
+  commented?: boolean;
+}
+
+// Root node represents the entire file
+export interface RootNode extends BaseNode {
+  type: "Root";
+  children: Node[]; // All top-level nodes
+}
+
+// A section header with optional border
+export interface HeaderNode extends BaseNode {
+  type: "Header";
+  level: number;
+  text: string;
+  id?: number;
+  style: {
+    border?: string;
+    idStyle?: "single" | "double";
+    isMarkdown: boolean;
+  };
+}
+
+export function isHeaderNode(node: Node): node is HeaderNode {
+  return node.type === "Header";
+}
+
+export enum BlockType {
+  Show = "Show",
+  Hide = "Hide",
+  Minimal = "Minimal",
+}
+
+export type BlockNodeBodyType =
+  | ConditionNode
+  | ActionNode
+  | CommentNode
+  | ErrorNode;
+
+// A block statement (Show/Hide/Continue)
+export interface BlockNode extends BaseNode {
+  type: BlockType;
+  body: BlockNodeBodyType[];
+}
+
+export function isBlockNode(node: Node): node is BlockNode {
+  return node.type in BlockType;
+}
+
+// A condition with its operator and values
+export interface ConditionNode extends BaseNode {
+  type: "Condition";
+  condition: ConditionType;
+  operator?: string;
+  operatorColumnStart?: number;
+  operatorColumnEnd?: number;
+  values: NodeValue[];
+  negated?: boolean;
+}
+
+// An action with its values
+export interface ActionNode extends BaseNode {
+  type: "Action";
+  action: ActionType;
+  values: NodeValue[];
+}
+
+// A comment (either standalone or inline)
+export interface CommentNode extends BaseNode {
+  type: "Comment" | "InlineComment";
+  value: string;
+}
+
+// A top-level `Import "file" [Optional]` statement
+export interface ImportNode extends BaseNode {
+  type: "Import";
+  path: NodeValue;
+  optional: boolean;
+}
+
+export function isImportNode(node: Node): node is ImportNode {
+  return node.type === "Import";
+}
+
+export interface ErrorNode extends BaseNode {
+  type: "Error";
+  token: Token;
+}
+
+export interface NodeValue {
+  value: string | number | boolean | RarityValue | ColorValue | ShapeValue;
+  columnStart: number;
+  columnEnd: number;
+}

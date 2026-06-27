@@ -20,10 +20,52 @@ export interface Match<T> {
   matchedBy: string;
 }
 
+/**
+ * Internal/dev game-data rows are tagged with a leading bracket marker such as
+ * `[DNT]` (Do Not Translate), `[UNUSED]`, or `[DNT-UNUSED]`. These are never
+ * shown to players, so we exclude them from the data we surface.
+ */
+export function isInternalGameName(name: string | undefined): boolean {
+  return /^\s*\[/.test(name ?? "");
+}
+
 export class GameDataService {
   public baseItemTypes: BaseItemType[] = [];
   public itemClasses: ItemClass[] = [];
   private language: string = "English"; // Default to English
+
+  // Lazily-built lowercase-name index for O(1) exact BaseType lookups. Without
+  // it, exact BaseType validation scans the entire table (thousands of items)
+  // on every value, which dominates validation time on large filters. The index
+  // is rebuilt whenever `baseItemTypes` is replaced (loadData, or direct
+  // assignment in tests), detected via the stored source reference.
+  private baseItemTypeIndex?: Map<string, BaseItemType[]>;
+  private baseItemTypeIndexSource?: BaseItemType[];
+
+  // Lazily-built `_index` -> ItemClass map, rebuilt when `itemClasses` changes.
+  private itemClassByIndex?: Map<number, ItemClass>;
+  private itemClassByIndexSource?: ItemClass[];
+
+  private getBaseItemTypeIndex(): Map<string, BaseItemType[]> {
+    if (
+      !this.baseItemTypeIndex ||
+      this.baseItemTypeIndexSource !== this.baseItemTypes
+    ) {
+      const index = new Map<string, BaseItemType[]>();
+      for (const item of this.baseItemTypes) {
+        const key = item.Name.toLowerCase();
+        const bucket = index.get(key);
+        if (bucket) {
+          bucket.push(item);
+        } else {
+          index.set(key, [item]);
+        }
+      }
+      this.baseItemTypeIndex = index;
+      this.baseItemTypeIndexSource = this.baseItemTypes;
+    }
+    return this.baseItemTypeIndex;
+  }
 
   // Language support could be implemented in several ways:
   // 1. VSCode Setting:
@@ -47,22 +89,28 @@ export class GameDataService {
   //    - Quick access to change language
   //    - Example: vscode.window.createStatusBarItem()
 
-  async loadData(context: vscode.ExtensionContext) {
+  async loadData(dataPath: string) {
     try {
-      const dataPath = path.join(
-        context.extensionPath,
-        "data",
-        "tables",
-        this.language
-      );
+      const tablesPath = path.join(dataPath, "data", "tables", this.language);
 
       const [baseItemTypesData, itemClassesData] = await Promise.all([
-        fs.readFile(path.join(dataPath, "BaseItemTypes.json"), "utf-8"),
-        fs.readFile(path.join(dataPath, "ItemClasses.json"), "utf-8"),
+        fs.readFile(path.join(tablesPath, "BaseItemTypes.json"), "utf-8"),
+        fs.readFile(path.join(tablesPath, "ItemClasses.json"), "utf-8"),
       ]);
 
-      this.baseItemTypes = JSON.parse(baseItemTypesData);
-      this.itemClasses = JSON.parse(itemClassesData);
+      const baseItemTypes: BaseItemType[] = JSON.parse(baseItemTypesData);
+      const itemClasses: ItemClass[] = JSON.parse(itemClassesData);
+
+      // Drop internal/dev rows that leak from the extracted game data (e.g.
+      // "[DNT] Not Shown To Players", "[DNT-UNUSED] Axe Chop", "[UNUSED] ...").
+      // They are never visible to players, so they only add noise to
+      // completions, hovers, match counts, and validation.
+      this.baseItemTypes = baseItemTypes.filter(
+        (item) => !isInternalGameName(item.Name)
+      );
+      this.itemClasses = itemClasses.filter(
+        (cls) => !isInternalGameName(cls.Name)
+      );
     } catch (error) {
       console.error(
         `Failed to load game data for language ${this.language}:`,
@@ -97,18 +145,17 @@ export class GameDataService {
 
   findExactBaseType(name: string | string[]): Match<BaseItemType>[] {
     const names = Array.isArray(name) ? name : [name];
+    const index = this.getBaseItemTypeIndex();
     const matches: Match<BaseItemType>[] = [];
 
-    this.baseItemTypes.forEach((item) => {
-      const itemNameLower = item.Name.toLowerCase();
-      const matchingName = names.find((n) => itemNameLower === n.toLowerCase());
-      if (matchingName) {
-        matches.push({
-          item,
-          matchedBy: matchingName,
-        });
+    for (const search of names) {
+      const bucket = index.get(search.toLowerCase());
+      if (bucket) {
+        for (const item of bucket) {
+          matches.push({ item, matchedBy: search });
+        }
       }
-    });
+    }
 
     return matches;
   }
@@ -140,6 +187,22 @@ export class GameDataService {
     });
 
     return matches;
+  }
+
+  /** Resolves an ItemClass from a BaseItemType's numeric `ItemClass` index. */
+  findClassByIndex(index: number): ItemClass | undefined {
+    if (
+      !this.itemClassByIndex ||
+      this.itemClassByIndexSource !== this.itemClasses
+    ) {
+      const map = new Map<number, ItemClass>();
+      for (const cls of this.itemClasses) {
+        map.set(cls._index, cls);
+      }
+      this.itemClassByIndex = map;
+      this.itemClassByIndexSource = this.itemClasses;
+    }
+    return this.itemClassByIndex.get(index);
   }
 
   findExactClass(name: string | string[]): Match<ItemClass>[] {

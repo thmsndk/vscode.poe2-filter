@@ -12,6 +12,20 @@
       "args": ["--extensionDevelopmentPath=${workspaceFolder}"],
       "outFiles": ["${workspaceFolder}/dist/**/*.js"],
       "preLaunchTask": "${defaultBuildTask}"
+    },
+    {
+      "type": "node",
+      "request": "attach",
+      "name": "Attach to Language Server",
+      "port": 6009,
+      "restart": false,
+      "outFiles": ["${workspaceRoot}/dist/language-server/**/*.js"]
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Extension + Language Server",
+      "configurations": ["Run Extension", "Attach to Language Server"]
     }
   ]
 }
