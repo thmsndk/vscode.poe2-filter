@@ -387,6 +387,7 @@ Show
       diagnostics[0].message,
       'Class/BaseType combination never matches: BaseType "Sapphire Ring" (a Rings) does not belong to Class "Currency"'
     );
+    assert.deepStrictEqual(diagnostics[0].tags, ["unnecessary"]);
   });
 
   test("does not warn when the BaseType belongs to the Class", () => {

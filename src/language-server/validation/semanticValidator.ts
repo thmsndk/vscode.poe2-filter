@@ -887,6 +887,7 @@ export class SemanticValidator {
         line: baseTypeNode.line,
         columnStart: nodeValue.columnStart,
         columnEnd: nodeValue.columnEnd,
+        tags: ["unnecessary"],
       });
     }
   }

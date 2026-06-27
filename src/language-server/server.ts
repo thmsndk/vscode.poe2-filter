@@ -261,6 +261,11 @@ function buildConflictDiagnostics(
       source: "poe-filter-ls-conflicts",
     };
 
+    // A fully shadowed rule can never be reached - fade it as dead code.
+    if (conflict.type === "unreachable") {
+      diagnostic.tags = [DiagnosticTag.Unnecessary];
+    }
+
     // Point at the earlier conflicting rule so users can navigate to it
     // (parity with the old client "go to conflicting rule" code action).
     if (conflict.relatedNode) {
