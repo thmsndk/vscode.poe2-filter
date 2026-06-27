@@ -270,6 +270,34 @@ export class SemanticValidator {
     }
   }
 
+  /**
+   * Warns about repeated values in any list condition (e.g. a `BaseType` or
+   * `Class` list that names the same value twice). Only string values are
+   * considered, so numeric arguments such as a `HasExplicitMod` count are
+   * ignored.
+   */
+  private validateDuplicateValues(node: ConditionNode): void {
+    const seenValues = new Set<string>();
+    for (const nodeValue of node.values) {
+      const value = nodeValue.value;
+      if (typeof value !== "string") {
+        continue;
+      }
+
+      if (seenValues.has(value)) {
+        this.diagnostics.push({
+          message: `Duplicate value "${value}" in ${node.condition} condition`,
+          severity: "warning",
+          line: node.line,
+          columnStart: nodeValue.columnStart,
+          columnEnd: nodeValue.columnEnd,
+        });
+      } else {
+        seenValues.add(value);
+      }
+    }
+  }
+
   private validateCondition(node: ConditionNode): void {
     // Validate condition keyword exists
     const syntax = ConditionSyntaxMap[node.condition];
@@ -292,6 +320,8 @@ export class SemanticValidator {
       });
       return;
     }
+
+    this.validateDuplicateValues(node);
 
     if (syntax.valueType === "boolean") {
       this.validateBooleanNotEqual(node);
@@ -773,7 +803,9 @@ export class SemanticValidator {
     }
 
     const isExact = node.operator === "==";
-    const seenValues = new Map<string, number>(); // value -> first column start
+    // Skip re-validating repeated values; the duplicate itself is reported
+    // generically by validateDuplicateValues.
+    const seenValues = new Set<string>();
 
     for (const nodeValue of values) {
       const value = nodeValue.value;
@@ -794,19 +826,11 @@ export class SemanticValidator {
         continue;
       }
 
-      // Check for duplicates
       if (seenValues.has(value)) {
-        this.diagnostics.push({
-          message: `Duplicate value "${value}" in ${node.condition} condition`,
-          severity: "warning",
-          line: node.line,
-          columnStart: nodeValue.columnStart,
-          columnEnd: nodeValue.columnEnd,
-        });
         continue;
       }
 
-      seenValues.set(value, nodeValue.columnStart);
+      seenValues.add(value);
 
       let matches;
       switch (node.condition) {

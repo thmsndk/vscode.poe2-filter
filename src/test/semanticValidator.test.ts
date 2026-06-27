@@ -331,6 +331,25 @@ Show
       }
     );
   });
+
+  test("should report duplicate values in non-BaseType/Class list conditions", () => {
+    const input = `
+Show
+    HasInfluence "Shaper" "Elder" "Shaper"
+`;
+    const parser = new Parser(input);
+    const ast = parser.parse();
+
+    const validator = new SemanticValidator(mockGameData);
+    validator.validate(ast);
+
+    assert.strictEqual(validator.diagnostics.length, 1);
+    assert.strictEqual(
+      validator.diagnostics[0].message,
+      'Duplicate value "Shaper" in HasInfluence condition'
+    );
+    assert.strictEqual(validator.diagnostics[0].severity, "warning");
+  });
 });
 
 suite("Import Validation", () => {
