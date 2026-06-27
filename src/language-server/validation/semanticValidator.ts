@@ -91,6 +91,11 @@ export class SemanticValidator {
         // or actions in this block can never apply.
         const blockNode = node as BlockNode;
         let afterContinue = false;
+        // Track active (non-commented) conditions/actions to flag duplicates:
+        // PoE only evaluates the first condition of each type and only applies
+        // the last action of each type, so the others are dead code.
+        const firstConditionByType = new Map<string, ConditionNode>();
+        const actionsByType = new Map<string, ActionNode[]>();
         for (const child of blockNode.body) {
           const isCommented =
             (child.type === "Condition" || child.type === "Action") &&
@@ -111,15 +116,49 @@ export class SemanticValidator {
             continue;
           }
 
+          if (!isCommented && child.type === "Condition") {
+            const conditionNode = child as ConditionNode;
+            if (firstConditionByType.has(conditionNode.condition)) {
+              this.diagnostics.push({
+                message: `Duplicate condition "${conditionNode.condition}": only the first ${conditionNode.condition} in a block is evaluated`,
+                severity: "warning",
+                line: conditionNode.line,
+                columnStart: conditionNode.columnStart,
+                columnEnd: conditionNode.columnEnd,
+              });
+            } else {
+              firstConditionByType.set(conditionNode.condition, conditionNode);
+            }
+          }
+
           if (
             !isCommented &&
             child.type === "Action" &&
             (child as ActionNode).action === "Continue"
           ) {
             afterContinue = true;
+          } else if (!isCommented && child.type === "Action") {
+            const actionNode = child as ActionNode;
+            const occurrences = actionsByType.get(actionNode.action) ?? [];
+            occurrences.push(actionNode);
+            actionsByType.set(actionNode.action, occurrences);
           }
 
           this.visitNode(child, node);
+        }
+
+        // The last action of each type wins; warn on the overridden earlier ones.
+        for (const occurrences of actionsByType.values()) {
+          for (let index = 0; index < occurrences.length - 1; index++) {
+            const overridden = occurrences[index];
+            this.diagnostics.push({
+              message: `Duplicate action "${overridden.action}": only the last ${overridden.action} in a block is applied`,
+              severity: "warning",
+              line: overridden.line,
+              columnStart: overridden.columnStart,
+              columnEnd: overridden.columnEnd,
+            });
+          }
         }
         break;
       }

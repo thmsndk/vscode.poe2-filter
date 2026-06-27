@@ -556,4 +556,64 @@ suite("CustomAlertSound Validation", () => {
       );
     });
   });
+
+  suite("Duplicate conditions and actions in a block", () => {
+    const validate = (input: string) => {
+      const ast = new Parser(input).parse();
+      const validator = new SemanticValidator(mockGameData);
+      validator.validate(ast);
+      return validator.diagnostics;
+    };
+
+    test("warns on a duplicate condition (only the first is evaluated)", () => {
+      const diagnostics = validate(`
+Show
+    ItemLevel >= 60
+    ItemLevel <= 70
+    SetFontSize 40
+`);
+      assert.strictEqual(diagnostics.length, 1);
+      assert.strictEqual(diagnostics[0].severity, "warning");
+      assert.strictEqual(diagnostics[0].line, 4);
+      assert.strictEqual(
+        diagnostics[0].message,
+        'Duplicate condition "ItemLevel": only the first ItemLevel in a block is evaluated'
+      );
+    });
+
+    test("warns on the overridden earlier action (only the last applies)", () => {
+      const diagnostics = validate(`
+Show
+    SetFontSize 30
+    SetFontSize 40
+`);
+      assert.strictEqual(diagnostics.length, 1);
+      assert.strictEqual(diagnostics[0].severity, "warning");
+      assert.strictEqual(diagnostics[0].line, 3);
+      assert.strictEqual(
+        diagnostics[0].message,
+        'Duplicate action "SetFontSize": only the last SetFontSize in a block is applied'
+      );
+    });
+
+    test("does not warn on distinct conditions and actions", () => {
+      const diagnostics = validate(`
+Show
+    ItemLevel >= 60
+    Quality >= 10
+    SetFontSize 40
+    SetTextColor 255 0 0
+`);
+      assert.deepStrictEqual(diagnostics, []);
+    });
+
+    test("ignores commented-out duplicates", () => {
+      const diagnostics = validate(`
+Show
+    SetFontSize 40
+    # SetFontSize 30
+`);
+      assert.deepStrictEqual(diagnostics, []);
+    });
+  });
 });
