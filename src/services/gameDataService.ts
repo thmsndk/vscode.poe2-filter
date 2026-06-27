@@ -25,6 +25,35 @@ export class GameDataService {
   public itemClasses: ItemClass[] = [];
   private language: string = "English"; // Default to English
 
+  // Lazily-built lowercase-name index for O(1) exact BaseType lookups. Without
+  // it, exact BaseType validation scans the entire table (thousands of items)
+  // on every value, which dominates validation time on large filters. The index
+  // is rebuilt whenever `baseItemTypes` is replaced (loadData, or direct
+  // assignment in tests), detected via the stored source reference.
+  private baseItemTypeIndex?: Map<string, BaseItemType[]>;
+  private baseItemTypeIndexSource?: BaseItemType[];
+
+  private getBaseItemTypeIndex(): Map<string, BaseItemType[]> {
+    if (
+      !this.baseItemTypeIndex ||
+      this.baseItemTypeIndexSource !== this.baseItemTypes
+    ) {
+      const index = new Map<string, BaseItemType[]>();
+      for (const item of this.baseItemTypes) {
+        const key = item.Name.toLowerCase();
+        const bucket = index.get(key);
+        if (bucket) {
+          bucket.push(item);
+        } else {
+          index.set(key, [item]);
+        }
+      }
+      this.baseItemTypeIndex = index;
+      this.baseItemTypeIndexSource = this.baseItemTypes;
+    }
+    return this.baseItemTypeIndex;
+  }
+
   // Language support could be implemented in several ways:
   // 1. VSCode Setting:
   //    - Add configuration in package.json: "poe2-filter.language"
@@ -92,18 +121,17 @@ export class GameDataService {
 
   findExactBaseType(name: string | string[]): Match<BaseItemType>[] {
     const names = Array.isArray(name) ? name : [name];
+    const index = this.getBaseItemTypeIndex();
     const matches: Match<BaseItemType>[] = [];
 
-    this.baseItemTypes.forEach((item) => {
-      const itemNameLower = item.Name.toLowerCase();
-      const matchingName = names.find((n) => itemNameLower === n.toLowerCase());
-      if (matchingName) {
-        matches.push({
-          item,
-          matchedBy: matchingName,
-        });
+    for (const search of names) {
+      const bucket = index.get(search.toLowerCase());
+      if (bucket) {
+        for (const item of bucket) {
+          matches.push({ item, matchedBy: search });
+        }
       }
-    });
+    }
 
     return matches;
   }
