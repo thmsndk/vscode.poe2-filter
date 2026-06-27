@@ -121,6 +121,52 @@ export async function activate(context: vscode.ExtensionContext) {
     )
   );
 
+  // Conflict "Shadows N later rules" code lenses (provided by the language
+  // server) invoke this command, which opens a peek view listing every rule the
+  // current rule makes unreachable. The lens passes plain JSON, so we rebuild
+  // the vscode types here before delegating to the built-in references peek.
+  context.subscriptions.push(
+    vscode.commands.registerCommand(
+      "poe2-filter.showConflicts",
+      async (
+        uri: string,
+        position: { line: number; character: number },
+        locations: {
+          uri: string;
+          range: {
+            start: { line: number; character: number };
+            end: { line: number; character: number };
+          };
+        }[]
+      ) => {
+        const targetUri = vscode.Uri.parse(uri);
+        const targetPosition = new vscode.Position(
+          position.line,
+          position.character
+        );
+        const refs = locations.map(
+          (loc) =>
+            new vscode.Location(
+              vscode.Uri.parse(loc.uri),
+              new vscode.Range(
+                loc.range.start.line,
+                loc.range.start.character,
+                loc.range.end.line,
+                loc.range.end.character
+              )
+            )
+        );
+
+        await vscode.commands.executeCommand(
+          "editor.action.showReferences",
+          targetUri,
+          targetPosition,
+          refs
+        );
+      }
+    )
+  );
+
   // Register the preview editor
   context.subscriptions.push(FilterPreviewEditor.register(context, gameData));
 

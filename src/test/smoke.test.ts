@@ -73,6 +73,38 @@ suite("Smoke Test (client + language server)", function () {
     assert.deepStrictEqual(playLens!.command!.arguments, ["1", "300"]);
   });
 
+  test("language server provides 'Shadows N later rules' conflict code lenses", async () => {
+    const conflictFilter = vscode.Uri.file(
+      path.join(repoRoot, "examples", "rule-conflicts.filter")
+    );
+    const doc = await vscode.workspace.openTextDocument(conflictFilter);
+    await vscode.window.showTextDocument(doc);
+
+    const lenses = await waitFor(
+      () =>
+        vscode.commands.executeCommand<vscode.CodeLens[]>(
+          "vscode.executeCodeLensProvider",
+          conflictFilter
+        ),
+      (l) =>
+        Array.isArray(l) &&
+        l.some((lens) => lens.command?.command === "poe2-filter.showConflicts")
+    );
+
+    const shadowLens = lenses?.find(
+      (l) => l.command?.command === "poe2-filter.showConflicts"
+    );
+    assert.ok(shadowLens, "expected a showConflicts code lens");
+    assert.match(shadowLens!.command!.title, /Shadows \d+ later rule/);
+    // arguments: [uri, position, locations[]]
+    assert.strictEqual(shadowLens!.command!.arguments?.length, 3);
+    const locations = shadowLens!.command!.arguments![2];
+    assert.ok(
+      Array.isArray(locations) && locations.length > 0,
+      "expected at least one shadowed-rule location"
+    );
+  });
+
   test("language server formats the document", async () => {
     const unformatted = vscode.Uri.file(
       path.join(repoRoot, "unformatted.filter")

@@ -27,7 +27,7 @@ import {
   SemanticValidator,
   SemanticDiagnostic,
 } from "./validation/semanticValidator";
-import { FilterRuleEngine } from "./analysis/ruleEngine";
+import { FilterRuleEngine, RuleConflict } from "./analysis/ruleEngine";
 import { GameDataService } from "../services/gameDataService";
 import {
   RootNode,
@@ -203,6 +203,57 @@ function convertToLSPDiagnostic(
   }
 }
 
+/**
+ * Builds an LSP {@link Range} spanning a single AST node (1-based internal
+ * line/column to 0-based LSP positions).
+ */
+function rangeForNode(node: Node): Range {
+  return Range.create(
+    Position.create(node.line - 1, node.columnStart - 1),
+    Position.create(node.line - 1, node.columnEnd - 1)
+  );
+}
+
+/**
+ * Converts rule conflicts into LSP diagnostics.
+ *
+ * Each conflict becomes a warning on the unreachable (later) rule, with related
+ * information that links back to the earlier rule that shadows it (so it shows
+ * up in the Problems panel and is navigable on hover). The *reverse* direction
+ * - seeing, from the earlier rule, which later rules it shadows - is surfaced as
+ * a CodeLens instead (see {@link CodeLensProvider}) to keep the Problems panel
+ * free of duplicate, non-actionable entries.
+ */
+function buildConflictDiagnostics(
+  conflicts: RuleConflict[],
+  uri: string
+): Diagnostic[] {
+  return conflicts.map((conflict) => {
+    const diagnostic: Diagnostic = {
+      severity:
+        conflict.severity === "error"
+          ? DiagnosticSeverity.Error
+          : DiagnosticSeverity.Warning,
+      range: rangeForNode(conflict.node),
+      message: conflict.message,
+      source: "poe-filter-ls-conflicts",
+    };
+
+    // Point at the earlier conflicting rule so users can navigate to it
+    // (parity with the old client "go to conflicting rule" code action).
+    if (conflict.relatedNode) {
+      diagnostic.relatedInformation = [
+        {
+          location: { uri, range: rangeForNode(conflict.relatedNode) },
+          message: `Conflicting rule defined here (line ${conflict.relatedNode.line})`,
+        },
+      ];
+    }
+
+    return diagnostic;
+  });
+}
+
 async function validateDocument(document: TextDocument): Promise<void> {
   const ast =
     documents.getAst(document.uri) ?? documents.parseDocument(document);
@@ -223,48 +274,7 @@ async function validateDocument(document: TextDocument): Promise<void> {
     ...semanticValidator.diagnostics.map((d) =>
       convertToLSPDiagnostic(d, "poe-filter-ls-semanticValidator")
     ),
-    ...conflicts.map((conflict) => {
-      const diagnostic: Diagnostic = {
-        severity:
-          conflict.severity === "error"
-            ? DiagnosticSeverity.Error
-            : DiagnosticSeverity.Warning,
-        range: Range.create(
-          Position.create(
-            conflict.node.line - 1,
-            conflict.node.columnStart - 1
-          ),
-          Position.create(conflict.node.line - 1, conflict.node.columnEnd - 1)
-        ),
-        message: conflict.message,
-        source: "poe-filter-ls-conflicts",
-      };
-
-      // Point at the earlier conflicting rule so users can navigate to it
-      // (parity with the old client "go to conflicting rule" code action).
-      if (conflict.relatedNode) {
-        diagnostic.relatedInformation = [
-          {
-            location: {
-              uri: document.uri,
-              range: Range.create(
-                Position.create(
-                  conflict.relatedNode.line - 1,
-                  conflict.relatedNode.columnStart - 1
-                ),
-                Position.create(
-                  conflict.relatedNode.line - 1,
-                  conflict.relatedNode.columnEnd - 1
-                )
-              ),
-            },
-            message: "Conflicting rule here",
-          },
-        ];
-      }
-
-      return diagnostic;
-    }),
+    ...buildConflictDiagnostics(conflicts, document.uri),
   ];
 
   // Send the diagnostics to VSCode
