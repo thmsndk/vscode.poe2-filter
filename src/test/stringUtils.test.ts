@@ -1,5 +1,8 @@
 import * as assert from "assert";
-import { levenshteinDistance } from "../utils/stringUtils";
+import {
+  findSimilarValues,
+  levenshteinDistance,
+} from "../utils/stringUtils";
 
 suite("String Utils Test Suite", () => {
   test("levenshteinDistance should return 0 for identical strings", () => {
@@ -30,5 +33,21 @@ suite("String Utils Test Suite", () => {
   test("levenshteinDistance should count all necessary substitutions", () => {
     assert.strictEqual(levenshteinDistance("cat", "dog"), 3); // c→d, a→o, t→g
     assert.strictEqual(levenshteinDistance("sitting", "kitten"), 3); // 's'→'k', 'i'→'e', delete 'g'
+  });
+
+  test("findSimilarValues ignores empty/whitespace candidates", () => {
+    // An empty string is a substring of every input and would otherwise always
+    // be suggested first, producing a misleading "Did you mean: ?" message.
+    const suggestions = findSimilarValues("ItemLvel", [
+      "",
+      "   ",
+      "ItemLevel",
+    ]);
+    assert.deepStrictEqual(suggestions, ["ItemLevel"]);
+  });
+
+  test("findSimilarValues returns nothing when only empty candidates match", () => {
+    const suggestions = findSimilarValues("CompletelyUnrelated", ["", "   "]);
+    assert.deepStrictEqual(suggestions, []);
   });
 });

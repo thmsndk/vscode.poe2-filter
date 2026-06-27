@@ -52,6 +52,10 @@ export function findSimilarValues(
     (lowerValid.includes(lowerInput) || lowerInput.includes(lowerValid));
 
   return [...new Set(validValues)]
+    // Guard against empty/whitespace candidate names (e.g. a blank game-data
+    // Name). An empty string is a substring of every input and would always be
+    // suggested first, producing a misleading "Did you mean: ?" message.
+    .filter((valid) => Boolean(valid) && valid.trim().length > 0)
     .map((valid) => {
       const lowerValid = valid.toLowerCase();
       return {

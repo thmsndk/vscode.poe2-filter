@@ -94,7 +94,14 @@ export class CodeActionProvider {
       return [];
     }
 
-    return (match[1] || match[2])
+    // The unmatched alternative's group is `undefined`, and a matched-but-empty
+    // group is `""`; both should yield no suggestions rather than throwing.
+    const captured = match[1] ?? match[2];
+    if (!captured) {
+      return [];
+    }
+
+    return captured
       .split(",")
       .map((s) => s.trim())
       .filter((s) => s.length > 0 && !s.includes("^") && !s.includes("$"));
