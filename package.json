@@ -169,7 +169,8 @@
   },
   "pnpm": {
     "onlyBuiltDependencies": [
-      "esbuild"
+      "esbuild",
+      "@vscode/vsce-sign"
     ]
   }
 }
