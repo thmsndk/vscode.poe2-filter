@@ -73,6 +73,7 @@ export class FilterFormatter {
       const isNextLineBlock = this.isBlockStart(nextLine);
 
       if (
+        result &&
         isBlock &&
         (!lastLineWasComment || isCommentedBlock || lastLineWasEmpty)
       ) {
@@ -81,6 +82,7 @@ export class FilterFormatter {
       }
 
       if (
+        result &&
         !isBlock &&
         isComment &&
         ((!insideBlock && !lastLineWasComment) || isNextLineBlock)
@@ -125,8 +127,9 @@ export class FilterFormatter {
       i++;
     }
 
-    // Ensure file ends with a newline
-    return result + "\n";
+    // Ensure the file ends with exactly one trailing newline (a bordered
+    // section as the last block would otherwise leave a dangling blank line).
+    return result.trimEnd() + "\n";
   }
 
   private isInlineComment(line: string): boolean {
@@ -152,9 +155,10 @@ export class FilterFormatter {
         return trimmed;
       }
 
-      // If this is a comment and next line is a block, treat it as a header
+      // If this is a comment and next line is a block, treat it as a header.
+      // Still normalize to exactly one space after the leading '#'.
       if (isNextLineBlock) {
-        return trimmed;
+        return trimmed.replace(/^#\s*/, "# ");
       }
 
       // For comments inside blocks
