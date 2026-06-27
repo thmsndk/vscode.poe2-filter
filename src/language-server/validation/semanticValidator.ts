@@ -157,6 +157,7 @@ export class SemanticValidator {
         }
 
         this.validateClassBaseTypeCombination(firstConditionByType);
+        this.validateDropLevelAgainstBaseType(firstConditionByType);
 
         // The last action of each type wins; warn on the overridden earlier ones.
         for (const occurrences of actionsByType.values()) {
@@ -889,6 +890,102 @@ export class SemanticValidator {
         columnEnd: nodeValue.columnEnd,
         tags: ["unnecessary"],
       });
+    }
+  }
+
+  /**
+   * Warns when a block's DropLevel constraint can never be satisfied by any of
+   * the base types it also requires - e.g. `BaseType == "Mirror of Kalandra"`
+   * together with `DropLevel < 50` when the Mirror's actual drop level is
+   * higher. DropLevel is an intrinsic property of each base item, so for a
+   * fixed BaseType set the combination is satisfiable only if at least one
+   * matching base's drop level passes the comparison.
+   *
+   * Only the first BaseType and first DropLevel conditions are considered (the
+   * others are reported as duplicates). The check is skipped when the BaseType
+   * is unknown (already reported as "not found") or the DropLevel value is not
+   * a number. A Class condition, if present, can only narrow the set further,
+   * so a "never matches" verdict from the BaseType set alone still holds.
+   */
+  private validateDropLevelAgainstBaseType(
+    firstConditionByType: Map<string, ConditionNode>
+  ): void {
+    if (!this.gameData) {
+      return;
+    }
+
+    const baseTypeNode = firstConditionByType.get("BaseType");
+    const dropLevelNode = firstConditionByType.get("DropLevel");
+    if (!baseTypeNode || !dropLevelNode) {
+      return;
+    }
+
+    const target = dropLevelNode.values[0];
+    if (!target || typeof target.value !== "number") {
+      return;
+    }
+    const targetLevel = target.value;
+    // An omitted operator means exact equality in this filter dialect.
+    const operator = dropLevelNode.operator ?? "==";
+
+    const baseValues = baseTypeNode.values
+      .map((v) => v.value)
+      .filter((v): v is string => typeof v === "string");
+
+    const matches =
+      baseTypeNode.operator === "=="
+        ? this.gameData.findExactBaseType(baseValues)
+        : this.gameData.findMatchingBaseTypes(baseValues);
+
+    if (matches.length === 0) {
+      // Unknown base type - already reported as "not found".
+      return;
+    }
+
+    const dropLevels = matches.map((match) => match.item.DropLevel);
+    const satisfiable = dropLevels.some((level) =>
+      this.satisfiesComparison(level, operator, targetLevel)
+    );
+    if (satisfiable) {
+      return;
+    }
+
+    const min = Math.min(...dropLevels);
+    const max = Math.max(...dropLevels);
+    const actual = min === max ? `${min}` : `${min}-${max}`;
+    const { columnStart, columnEnd } = this.valuePosition(dropLevelNode, 0);
+
+    this.diagnostics.push({
+      message: `DropLevel ${operator} ${targetLevel} never matches the block's BaseType: actual drop level ${actual}`,
+      severity: "warning",
+      line: dropLevelNode.line,
+      columnStart,
+      columnEnd,
+      tags: ["unnecessary"],
+    });
+  }
+
+  /** True when `value <operator> target` holds for a numeric filter comparison. */
+  private satisfiesComparison(
+    value: number,
+    operator: string,
+    target: number
+  ): boolean {
+    switch (operator) {
+      case ">=":
+        return value >= target;
+      case "<=":
+        return value <= target;
+      case ">":
+        return value > target;
+      case "<":
+        return value < target;
+      case "!=":
+        return value !== target;
+      case "==":
+      case "=":
+      default:
+        return value === target;
     }
   }
 

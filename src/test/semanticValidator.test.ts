@@ -410,6 +410,99 @@ Show
   });
 });
 
+suite("DropLevel/BaseType Combination", () => {
+  const buildGameData = () => {
+    const gameData = new GameDataService();
+    // Mirror drops at 35; the two ring bases bracket a 1-65 range.
+    gameData.baseItemTypes = [
+      { Id: "Mirror", Name: "Mirror of Kalandra", ItemClass: 0, DropLevel: 35 },
+      { Id: "Iron Ring", Name: "Iron Ring", ItemClass: 1, DropLevel: 1 },
+      { Id: "Gold Ring", Name: "Gold Ring", ItemClass: 1, DropLevel: 65 },
+    ];
+    return gameData;
+  };
+
+  const validate = (input: string) => {
+    const ast = new Parser(input).parse();
+    const validator = new SemanticValidator(buildGameData());
+    validator.validate(ast);
+    return validator.diagnostics;
+  };
+
+  test("warns when DropLevel can never match an exact BaseType", () => {
+    const diagnostics = validate(`
+Show
+    BaseType == "Mirror of Kalandra"
+    DropLevel < 35
+    SetFontSize 40
+`);
+    assert.strictEqual(diagnostics.length, 1);
+    assert.strictEqual(diagnostics[0].severity, "warning");
+    assert.strictEqual(diagnostics[0].line, 4);
+    assert.strictEqual(
+      diagnostics[0].message,
+      "DropLevel < 35 never matches the block's BaseType: actual drop level 35"
+    );
+    assert.deepStrictEqual(diagnostics[0].tags, ["unnecessary"]);
+  });
+
+  test("reports the drop-level range for partial BaseType matches", () => {
+    const diagnostics = validate(`
+Show
+    BaseType "Ring"
+    DropLevel > 65
+    SetFontSize 40
+`);
+    assert.strictEqual(diagnostics.length, 1);
+    assert.strictEqual(
+      diagnostics[0].message,
+      "DropLevel > 65 never matches the block's BaseType: actual drop level 1-65"
+    );
+  });
+
+  test("does not warn when at least one base can satisfy the DropLevel", () => {
+    const diagnostics = validate(`
+Show
+    BaseType "Ring"
+    DropLevel >= 65
+    SetFontSize 40
+`);
+    assert.deepStrictEqual(diagnostics, []);
+  });
+
+  test("does not warn for an exact DropLevel that matches a base", () => {
+    const diagnostics = validate(`
+Show
+    BaseType == "Mirror of Kalandra"
+    DropLevel 35
+    SetFontSize 40
+`);
+    assert.deepStrictEqual(diagnostics, []);
+  });
+
+  test("skips unknown base types (reported separately)", () => {
+    const diagnostics = validate(`
+Show
+    BaseType == "Totally Not An Item"
+    DropLevel < 5
+    SetFontSize 40
+`);
+    assert.ok(
+      !diagnostics.some((d) => d.message.startsWith("DropLevel")),
+      "should not emit a DropLevel cross-check for an unknown base"
+    );
+  });
+
+  test("does not warn without a DropLevel condition", () => {
+    const diagnostics = validate(`
+Show
+    BaseType == "Mirror of Kalandra"
+    SetFontSize 40
+`);
+    assert.deepStrictEqual(diagnostics, []);
+  });
+});
+
 suite("Import Validation", () => {
   test("warns when a non-Optional import is missing", () => {
     const input = `Import "definitely-missing-xyz.filter"\n`;
