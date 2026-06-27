@@ -37,10 +37,15 @@ import {
   isBlockNode,
 } from "./ast/nodes";
 import { HoverProvider } from "./providers/hoverProvider";
-import { InlayHint, InlayHintParams } from "vscode-languageserver";
+import {
+  InlayHint,
+  InlayHintParams,
+  CodeActionParams,
+} from "vscode-languageserver";
 import { InlayHintsProvider } from "./providers/inlayHintsProvider";
 import { ActionSyntaxMap, ActionType, ActionSyntax } from "./ast/actions";
 import { SymbolProvider } from "./providers/symbolProvider";
+import { CodeActionProvider } from "./providers/codeActionProvider";
 
 // Create a connection for the server
 const connection = createConnection(ProposedFeatures.all);
@@ -114,6 +119,7 @@ connection.onInitialize(
         },
         colorProvider: true,
         documentSymbolProvider: true,
+        codeActionProvider: true,
       },
     };
   }
@@ -196,18 +202,48 @@ async function validateDocument(document: TextDocument): Promise<void> {
     ...semanticValidator.diagnostics.map((d) =>
       convertToLSPDiagnostic(d, "poe-filter-ls-semanticValidator")
     ),
-    ...conflicts.map((conflict) => ({
-      severity:
-        conflict.severity === "error"
-          ? DiagnosticSeverity.Error
-          : DiagnosticSeverity.Warning,
-      range: Range.create(
-        Position.create(conflict.node.line - 1, conflict.node.columnStart - 1),
-        Position.create(conflict.node.line - 1, conflict.node.columnEnd - 1)
-      ),
-      message: conflict.message,
-      source: "poe-filter-ls-conflicts",
-    })),
+    ...conflicts.map((conflict) => {
+      const diagnostic: Diagnostic = {
+        severity:
+          conflict.severity === "error"
+            ? DiagnosticSeverity.Error
+            : DiagnosticSeverity.Warning,
+        range: Range.create(
+          Position.create(
+            conflict.node.line - 1,
+            conflict.node.columnStart - 1
+          ),
+          Position.create(conflict.node.line - 1, conflict.node.columnEnd - 1)
+        ),
+        message: conflict.message,
+        source: "poe-filter-ls-conflicts",
+      };
+
+      // Point at the earlier conflicting rule so users can navigate to it
+      // (parity with the old client "go to conflicting rule" code action).
+      if (conflict.relatedNode) {
+        diagnostic.relatedInformation = [
+          {
+            location: {
+              uri: document.uri,
+              range: Range.create(
+                Position.create(
+                  conflict.relatedNode.line - 1,
+                  conflict.relatedNode.columnStart - 1
+                ),
+                Position.create(
+                  conflict.relatedNode.line - 1,
+                  conflict.relatedNode.columnEnd - 1
+                )
+              ),
+            },
+            message: "Conflicting rule here",
+          },
+        ];
+      }
+
+      return diagnostic;
+    }),
   ];
 
   // Send the diagnostics to VSCode
@@ -354,6 +390,16 @@ connection.onDocumentSymbol((params) => {
     return [];
   }
   return symbolProvider.provideDocumentSymbols(ast);
+});
+
+const codeActionProvider = new CodeActionProvider();
+
+connection.onCodeAction((params: CodeActionParams) => {
+  const document = documents.get(params.textDocument.uri);
+  if (!document) {
+    return [];
+  }
+  return codeActionProvider.provideCodeActions(document, params);
 });
 
 documents.listen(connection);

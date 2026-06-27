@@ -3,7 +3,6 @@
 import * as vscode from "vscode";
 import { FilterFormatter } from "./formatter/formatter";
 import { FilterSymbolProvider } from "./outline/filterSymbolProvider";
-import { FilterCodeActionProvider } from "./diagnostics/filterCodeActions";
 import { MinimapIconDecorator } from "./decorations/minimapIconDecorator";
 import { FilterPreviewEditor } from "./preview/FilterPreviewEditor";
 
@@ -212,17 +211,7 @@ export async function activate(context: vscode.ExtensionContext) {
   // language server (see src/language-server). The old client-side
   // registerDiagnostics/filterConflicts registration has been removed.
 
-  // Register code actions
-  context.subscriptions.push(
-    vscode.languages.registerCodeActionsProvider(
-      "poe2-filter",
-      new FilterCodeActionProvider(),
-      {
-        providedCodeActionKinds:
-          FilterCodeActionProvider.providedCodeActionKinds,
-      }
-    )
-  );
+  // Code actions (quick fixes) are now provided by the language server.
 
   // Register code lens
   context.subscriptions.push(
