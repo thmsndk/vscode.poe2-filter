@@ -237,19 +237,26 @@ export class Parser {
     let operator: string | undefined;
     if (this.currentToken.type === "OPERATOR") {
       operator = this.currentToken.value as string;
-      if (syntax?.operatorBehavior.allowed === false) {
-        this.addError(
-          `Operator not allowed for condition: ${condition}`,
-          this.currentToken
-        );
-      } else if (
-        syntax?.operatorBehavior.allowedOperators &&
-        !syntax.operatorBehavior.allowedOperators.includes(operator)
-      ) {
-        this.addError(
-          `Invalid operator ${operator} for condition: ${condition}`,
-          this.currentToken
-        );
+      // Equality operators (=, ==, !, !=) are accepted on any condition in
+      // PoE2 (the "!" / "!=" forms both mean "not equal"). Only the ordered
+      // comparison operators (<, >, <=, >=) are restricted by the condition's
+      // declared operator behavior.
+      const isEqualityOperator = ["=", "==", "!", "!="].includes(operator);
+      if (!isEqualityOperator) {
+        if (syntax?.operatorBehavior.allowed === false) {
+          this.addError(
+            `Operator not allowed for condition: ${condition}`,
+            this.currentToken
+          );
+        } else if (
+          syntax?.operatorBehavior.allowedOperators &&
+          !syntax.operatorBehavior.allowedOperators.includes(operator)
+        ) {
+          this.addError(
+            `Invalid operator ${operator} for condition: ${condition}`,
+            this.currentToken
+          );
+        }
       }
       this.advance();
     } else if (

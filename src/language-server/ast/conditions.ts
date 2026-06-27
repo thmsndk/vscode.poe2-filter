@@ -2,6 +2,7 @@ import { RarityValue } from "./tokens";
 
 export enum ConditionType {
   AlternateQuality = "AlternateQuality",
+  AlwaysShow = "AlwaysShow",
   AnyEnchantment = "AnyEnchantment",
   ArchnemesisMod = "ArchnemesisMod",
   AreaLevel = "AreaLevel",
@@ -30,10 +31,13 @@ export enum ConditionType {
   HasImplicitMod = "HasImplicitMod",
   HasInfluence = "HasInfluence",
   HasSearingExarchImplicit = "HasSearingExarchImplicit",
+  HasVaalUniqueMod = "HasVaalUniqueMod",
   Height = "Height",
   Identified = "Identified",
+  IsVaalUnique = "IsVaalUnique",
   ItemLevel = "ItemLevel",
   LinkedSockets = "LinkedSockets",
+  MapTier = "MapTier",
   Mirrored = "Mirrored",
   Quality = "Quality",
   Rarity = "Rarity",
@@ -46,7 +50,9 @@ export enum ConditionType {
   StackSize = "StackSize",
   SynthesisedItem = "SynthesisedItem",
   TransfiguredGem = "TransfiguredGem",
+  TwiceCorrupted = "TwiceCorrupted",
   UberBlightedMap = "UberBlightedMap",
+  UnidentifiedItemTier = "UnidentifiedItemTier",
   Width = "Width",
   WaystoneTier = "WaystoneTier",
 }
@@ -722,5 +728,87 @@ export const ConditionSyntaxMap: Record<ConditionType, ConditionSyntax> = {
       range: { min: 1, max: 16 },
     },
     description: "Waystone's tier level",
+  },
+  [ConditionType.MapTier]: {
+    type: ConditionType.MapTier,
+    valueType: "number",
+    operatorBehavior: {
+      allowed: true,
+      optional: false,
+      allowedOperators: ["==", "<=", ">=", "<", ">"],
+    },
+    valueSyntax: {
+      range: { min: 1, max: 16 },
+    },
+    description: "Map's tier level",
+  },
+  [ConditionType.UnidentifiedItemTier]: {
+    type: ConditionType.UnidentifiedItemTier,
+    valueType: "number",
+    operatorBehavior: {
+      allowed: true,
+      optional: false,
+      allowedOperators: ["==", "<=", ">=", "<", ">"],
+    },
+    valueSyntax: {
+      range: { min: 0 },
+    },
+    description: "Tier of an unidentified item",
+  },
+  [ConditionType.AlwaysShow]: {
+    type: ConditionType.AlwaysShow,
+    valueType: "boolean",
+    operatorBehavior: {
+      allowed: false,
+      optional: false,
+      allowedOperators: [],
+    },
+    valueSyntax: {
+      allowSpaceSeparated: true,
+      allowQuoted: true,
+    },
+    description: "Item is always shown regardless of other rules",
+  },
+  [ConditionType.HasVaalUniqueMod]: {
+    type: ConditionType.HasVaalUniqueMod,
+    valueType: "boolean",
+    operatorBehavior: {
+      allowed: false,
+      optional: false,
+      allowedOperators: [],
+    },
+    valueSyntax: {
+      allowSpaceSeparated: true,
+      allowQuoted: true,
+    },
+    description: "Item has a Vaal unique modifier",
+  },
+  [ConditionType.IsVaalUnique]: {
+    type: ConditionType.IsVaalUnique,
+    valueType: "boolean",
+    operatorBehavior: {
+      allowed: false,
+      optional: false,
+      allowedOperators: [],
+    },
+    valueSyntax: {
+      allowSpaceSeparated: true,
+      allowQuoted: true,
+    },
+    description: "Item is a Vaal unique",
+  },
+  [ConditionType.TwiceCorrupted]: {
+    type: ConditionType.TwiceCorrupted,
+    valueType: "boolean",
+    operatorBehavior: {
+      allowed: false,
+      optional: false,
+      allowedOperators: [],
+    },
+    valueSyntax: {
+      allowSpaceSeparated: true,
+      allowQuoted: true,
+    },
+    description: "Item has been corrupted twice",
   },
 };
