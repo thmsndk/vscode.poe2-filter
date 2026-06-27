@@ -29,6 +29,23 @@ Show
     assert.strictEqual((conflicts[0].node as BlockNode).line, 7);
   });
 
+  test("does not throw on conditions without a value (still being typed)", () => {
+    // Reproduces a crash hit while typing: a condition keyword with no value
+    // yet produced `node.values[0].value` on undefined.
+    const input = `
+Show
+    Rarity Normal
+    BaseType
+
+Show
+    Rarity`;
+
+    const parser = new Parser(input);
+    const ast = parser.parse();
+    const engine = new FilterRuleEngine(ast);
+    assert.doesNotThrow(() => engine.detectConflicts());
+  });
+
   test("should detect conflicts with area level conditions", () => {
     const input = `
 Show

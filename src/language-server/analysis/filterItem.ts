@@ -55,15 +55,21 @@ export function generateItemFromBlock(block: BlockNode): FilterItem {
       continue;
     }
 
+    // While the user is still typing, a condition may not have a value yet.
+    const firstValue = node.values[0];
+    if (!firstValue) {
+      continue;
+    }
+
     switch (node.condition) {
       case "BaseType":
-        item.baseType = node.values[0].value as string;
+        item.baseType = firstValue.value as string;
         break;
       case "Class":
-        item.class = node.values[0].value as string;
+        item.class = firstValue.value as string;
         break;
       case "Rarity":
-        item.rarity = node.values[0].value as RarityValue;
+        item.rarity = firstValue.value as RarityValue;
         break;
       case "StackSize":
       case "ItemLevel":
@@ -80,7 +86,7 @@ export function generateItemFromBlock(block: BlockNode): FilterItem {
           node.condition.slice(1)) as NumericProps;
 
         if (prop) {
-          const value = Number(node.values[0].value);
+          const value = Number(firstValue.value);
           switch (node.operator) {
             case ">=":
             case "==":
