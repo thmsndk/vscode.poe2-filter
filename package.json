@@ -82,6 +82,22 @@
       {
         "id": "commentedCode",
         "description": "Commented-out filter code (disabled Show/Hide blocks, conditions, and actions)"
+      },
+      {
+        "id": "rarityNormal",
+        "description": "A Normal rarity value in a Rarity condition"
+      },
+      {
+        "id": "rarityMagic",
+        "description": "A Magic rarity value in a Rarity condition"
+      },
+      {
+        "id": "rarityRare",
+        "description": "A Rare rarity value in a Rarity condition"
+      },
+      {
+        "id": "rarityUnique",
+        "description": "A Unique rarity value in a Rarity condition"
       }
     ],
     "semanticTokenScopes": [
@@ -98,7 +114,11 @@
           "commentedCode": {
             "foreground": "#808a99",
             "italic": true
-          }
+          },
+          "rarityNormal": "#c8c8c8",
+          "rarityMagic": "#8888ff",
+          "rarityRare": "#ffff77",
+          "rarityUnique": "#af6025"
         }
       }
     }

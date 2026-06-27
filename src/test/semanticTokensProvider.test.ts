@@ -1,6 +1,10 @@
 import * as assert from "assert";
 import { TextDocument } from "vscode-languageserver-textdocument";
-import { SemanticTokensProvider } from "../language-server/providers/semanticTokensProvider";
+import {
+  SemanticTokensProvider,
+  semanticTokensLegend,
+} from "../language-server/providers/semanticTokensProvider";
+import { Parser } from "../language-server/ast/parser";
 
 suite("Semantic Tokens Provider Test Suite", () => {
   const provider = new SemanticTokensProvider();
@@ -58,5 +62,61 @@ suite("Semantic Tokens Provider Test Suite", () => {
       taggedSegments(['Show', '    BaseType "Mirror"'].join("\n")),
       []
     );
+  });
+});
+
+suite("Semantic Tokens - Rarity coloring", () => {
+  const provider = new SemanticTokensProvider();
+
+  /** Returns each emitted token as its source substring and resolved type. */
+  const tagged = (text: string): { text: string; type: string }[] => {
+    const document = TextDocument.create(
+      "file:///test.filter",
+      "poe2-filter",
+      1,
+      text
+    );
+    const ast = new Parser(text).parse();
+    const { data } = provider.provideSemanticTokens(document, ast);
+    const lines = text.split("\n");
+
+    const out: { text: string; type: string }[] = [];
+    let line = 0;
+    let char = 0;
+    for (let i = 0; i < data.length; i += 5) {
+      const deltaLine = data[i];
+      line += deltaLine;
+      char = deltaLine === 0 ? char + data[i + 1] : data[i + 1];
+      out.push({
+        text: lines[line].substr(char, data[i + 2]),
+        type: semanticTokensLegend.tokenTypes[data[i + 3]],
+      });
+    }
+    return out;
+  };
+
+  test("colors each Rarity value by its rarity type", () => {
+    assert.deepStrictEqual(tagged("Show\n    Rarity Normal Magic Rare\n"), [
+      { text: "Normal", type: "rarityNormal" },
+      { text: "Magic", type: "rarityMagic" },
+      { text: "Rare", type: "rarityRare" },
+    ]);
+  });
+
+  test("colors a Rarity value used with an operator", () => {
+    assert.deepStrictEqual(tagged("Show\n    Rarity <= Unique\n"), [
+      { text: "Unique", type: "rarityUnique" },
+    ]);
+  });
+
+  test("does not color rarity words outside a Rarity condition", () => {
+    const result = tagged('Show\n    BaseType "Normal Boots"\n');
+    assert.ok(!result.some((token) => token.type.startsWith("rarity")));
+  });
+
+  test("treats a commented-out Rarity line as commented code, not rarity", () => {
+    const result = tagged("#    Rarity Rare\n");
+    assert.ok(result.length > 0);
+    assert.ok(result.every((token) => token.type === "commentedCode"));
   });
 });

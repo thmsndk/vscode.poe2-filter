@@ -523,7 +523,8 @@ connection.languages.semanticTokens.on((params) => {
   if (!document) {
     return { data: [] };
   }
-  return semanticTokensProvider.provideSemanticTokens(document);
+  const ast = documents.getAst(params.textDocument.uri);
+  return semanticTokensProvider.provideSemanticTokens(document, ast);
 });
 
 const documentLinkProvider = new DocumentLinkProvider();
