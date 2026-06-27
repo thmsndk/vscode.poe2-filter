@@ -201,9 +201,13 @@ documents.onDidChangeContent((change) => {
   });
 });
 
-// Clean up ASTs when documents are closed
+// Clean up ASTs when documents are closed and clear their diagnostics, so a
+// closed/renamed file does not leave stale problems behind (renaming a file
+// closes the old URI and opens a new one - without this the old URI's
+// diagnostics linger and accumulate as duplicates).
 documents.onDidClose((e) => {
   documents.deleteAst(e.document.uri);
+  connection.sendDiagnostics({ uri: e.document.uri, diagnostics: [] });
 });
 
 function convertToLSPDiagnostic(

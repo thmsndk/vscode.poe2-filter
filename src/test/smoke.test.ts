@@ -1,4 +1,6 @@
 import * as assert from "assert";
+import * as fs from "fs";
+import * as os from "os";
 import * as path from "path";
 import * as vscode from "vscode";
 
@@ -174,5 +176,61 @@ suite("Smoke Test (client + language server)", function () {
       commands.includes("poe2-filter.openPreview"),
       "expected openPreview command"
     );
+  });
+
+  // Regression for #135: renaming a filter closes the old URI and opens a new
+  // one. If closing a document does not clear its diagnostics, the old URI's
+  // problems linger and pile up as duplicates on every rename. After a rename
+  // the old URI must hold no diagnostics and only the new URI should report.
+  test("clears diagnostics for the old URI when a file is renamed", async () => {
+    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "poe2-rename-"));
+    const oldUri = vscode.Uri.file(path.join(tmpDir, "before.filter"));
+    const newUri = vscode.Uri.file(path.join(tmpDir, "after.filter"));
+    fs.writeFileSync(
+      oldUri.fsPath,
+      'Show\n    CustomAlertSound "does-not-exist.mp3"\n'
+    );
+    try {
+      const doc = await vscode.workspace.openTextDocument(oldUri);
+      await vscode.window.showTextDocument(doc);
+
+      const before = await waitFor(
+        () => vscode.languages.getDiagnostics(oldUri),
+        (d) => d.length > 0
+      );
+      assert.ok(before.length > 0, "expected diagnostics on the original file");
+
+      const edit = new vscode.WorkspaceEdit();
+      edit.renameFile(oldUri, newUri);
+      const applied = await vscode.workspace.applyEdit(edit);
+      assert.ok(applied, "expected the rename edit to apply");
+
+      // The new file should report diagnostics, and the old URI must be empty -
+      // without clearing on close the old URI keeps its stale problems.
+      const onNew = await waitFor(
+        () => vscode.languages.getDiagnostics(newUri),
+        (d) => d.length > 0
+      );
+      assert.ok(onNew.length > 0, "expected diagnostics on the renamed file");
+
+      const onOld = await waitFor(
+        () => vscode.languages.getDiagnostics(oldUri),
+        (d) => d.length === 0
+      );
+      assert.strictEqual(
+        onOld.length,
+        0,
+        "expected the old URI's diagnostics to be cleared after the rename"
+      );
+    } finally {
+      // Best-effort cleanup: the renamed file may still be open in an editor on
+      // Windows, which locks the temp dir - don't let that mask the assertions.
+      await vscode.commands.executeCommand("workbench.action.closeAllEditors");
+      try {
+        fs.rmSync(tmpDir, { recursive: true, force: true });
+      } catch {
+        /* ignore - OS will reclaim the temp dir */
+      }
+    }
   });
 });
