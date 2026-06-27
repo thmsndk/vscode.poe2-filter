@@ -68,6 +68,23 @@ import { FilterFormatter } from "../formatter/formatter";
 // Create a connection for the server
 const connection = createConnection(ProposedFeatures.all);
 
+// A language server must survive a single bad document: an unhandled rejection
+// or stray exception would otherwise terminate the process, drop the
+// connection, and exhaust the client's restart budget (the "connection got
+// disposed" errors). Log and keep running instead.
+process.on("unhandledRejection", (reason) => {
+  connection.console.error(
+    `Unhandled rejection: ${
+      reason instanceof Error ? reason.stack ?? reason.message : String(reason)
+    }`
+  );
+});
+process.on("uncaughtException", (error) => {
+  connection.console.error(
+    `Uncaught exception: ${error.stack ?? error.message}`
+  );
+});
+
 class FilterDocuments extends TextDocuments<TextDocument> {
   private documentAsts = new Map<string, RootNode>();
   private documentParseDiagnostics = new Map<string, ParserDiagnostic[]>();
@@ -164,8 +181,24 @@ connection.onInitialize(
 // Parse document when content changes
 documents.onDidChangeContent((change) => {
   connection.console.info("Document changed, validating...");
-  documents.parseDocument(change.document);
-  validateDocument(change.document);
+  try {
+    documents.parseDocument(change.document);
+  } catch (error) {
+    connection.console.error(
+      `Failed to parse ${change.document.uri}: ${
+        error instanceof Error ? error.stack ?? error.message : String(error)
+      }`
+    );
+    return;
+  }
+
+  void validateDocument(change.document).catch((error) => {
+    connection.console.error(
+      `Failed to validate ${change.document.uri}: ${
+        error instanceof Error ? error.stack ?? error.message : String(error)
+      }`
+    );
+  });
 });
 
 // Clean up ASTs when documents are closed
