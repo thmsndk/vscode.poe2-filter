@@ -3,15 +3,23 @@ import {
   CodeActionKind,
   CodeActionParams,
   Diagnostic,
+  DiagnosticTag,
+  Position,
+  Range,
   TextEdit,
 } from "vscode-languageserver";
 import { TextDocument } from "vscode-languageserver-textdocument";
+import { Lexer } from "../ast/lexer";
+
+const SEMANTIC_SOURCE = "poe-filter-ls-semanticValidator";
 
 /**
  * Provides quick fixes for the diagnostics emitted by the language server,
  * mirroring the old client-side FilterCodeActionProvider:
  *  - "Did you mean: ..." suggestions become replace edits.
  *  - The confusing boolean "!= True/False" form is simplified to its inverse.
+ *  - "Remove dead code" deletes faded (unnecessary) dead statements.
+ *  - "Uncomment" re-enables commented-out code (single line or whole block).
  */
 export class CodeActionProvider {
   public provideCodeActions(
@@ -61,9 +69,176 @@ export class CodeActionProvider {
           );
         }
       }
+
+      // "Remove dead code" for faded, statement-level unnecessary diagnostics.
+      if (this.isRemovableDeadCode(document, diagnostic)) {
+        actions.push(this.makeRemoveLineAction(document, diagnostic));
+      }
+    }
+
+    // "Uncomment" for commented-out code at the cursor/selection.
+    actions.push(...this.makeUncommentActions(document, params));
+
+    return actions;
+  }
+
+  /**
+   * A diagnostic is removable dead code when it is one of our faded
+   * (Unnecessary) semantic diagnostics that covers a whole statement - i.e. it
+   * starts at the first non-whitespace character of its line. This excludes
+   * value-level fades (e.g. one bad BaseType in a list) and multi-line conflict
+   * diagnostics.
+   */
+  private isRemovableDeadCode(
+    document: TextDocument,
+    diagnostic: Diagnostic
+  ): boolean {
+    if (diagnostic.source !== SEMANTIC_SOURCE) {
+      return false;
+    }
+    if (!diagnostic.tags?.includes(DiagnosticTag.Unnecessary)) {
+      return false;
+    }
+
+    const line = diagnostic.range.start.line;
+    const lineText = this.getLineText(document, line);
+    const firstNonWhitespace = lineText.search(/\S/);
+    return diagnostic.range.start.character === firstNonWhitespace;
+  }
+
+  private makeRemoveLineAction(
+    document: TextDocument,
+    diagnostic: Diagnostic
+  ): CodeAction {
+    const line = diagnostic.range.start.line;
+    const start = Position.create(line, 0);
+    const end = document.positionAt(
+      document.offsetAt(Position.create(line + 1, 0))
+    );
+
+    return {
+      title: "Remove dead code",
+      kind: CodeActionKind.QuickFix,
+      diagnostics: [diagnostic],
+      edit: {
+        changes: {
+          [document.uri]: [TextEdit.del(Range.create(start, end))],
+        },
+      },
+    };
+  }
+
+  /**
+   * Offers "Uncomment" actions when the selection starts on a commented-out
+   * code line. Re-lexes the document so only genuine commented-out code (not
+   * prose comments or headers) is offered, and uncomments by removing the
+   * single leading `#`, preserving indentation.
+   */
+  private makeUncommentActions(
+    document: TextDocument,
+    params: CodeActionParams
+  ): CodeAction[] {
+    const commentedLines = this.collectCommentedCodeLines(document);
+    const startLine = params.range.start.line;
+    if (!commentedLines.has(startLine)) {
+      return [];
+    }
+
+    // Extend up/down over the contiguous run of commented-out code lines.
+    let top = startLine;
+    while (commentedLines.has(top - 1)) {
+      top--;
+    }
+    let bottom = startLine;
+    while (commentedLines.has(bottom + 1)) {
+      bottom++;
+    }
+
+    const actions: CodeAction[] = [
+      this.makeUncommentAction(
+        "Uncomment this line",
+        document,
+        [startLine],
+        commentedLines
+      ),
+    ];
+
+    if (bottom > top) {
+      const blockLines: number[] = [];
+      for (let line = top; line <= bottom; line++) {
+        blockLines.push(line);
+      }
+      actions.push(
+        this.makeUncommentAction(
+          `Uncomment block (${blockLines.length} lines)`,
+          document,
+          blockLines,
+          commentedLines
+        )
+      );
     }
 
     return actions;
+  }
+
+  private makeUncommentAction(
+    title: string,
+    document: TextDocument,
+    lines: number[],
+    hashColumnByLine: Map<number, number>
+  ): CodeAction {
+    const edits = lines.map((line) => {
+      const hashColumn = hashColumnByLine.get(line) ?? 0;
+      // Remove the `#` plus a single following space, so "# Show" becomes
+      // "Show" while a deeper "#    SetFontSize" keeps its indentation.
+      const lineText = this.getLineText(document, line);
+      const removeLength = lineText[hashColumn + 1] === " " ? 2 : 1;
+      return TextEdit.del(
+        Range.create(line, hashColumn, line, hashColumn + removeLength)
+      );
+    });
+
+    return {
+      title,
+      kind: CodeActionKind.QuickFix,
+      edit: {
+        changes: {
+          [document.uri]: edits,
+        },
+      },
+    };
+  }
+
+  /**
+   * Maps each commented-out code line (0-based) to the 0-based column of its
+   * leading `#`, by re-lexing and looking for commented block/condition/action
+   * tokens.
+   */
+  private collectCommentedCodeLines(
+    document: TextDocument
+  ): Map<number, number> {
+    const lexer = new Lexer(document.getText());
+    const lines = new Map<number, number>();
+
+    let token = lexer.nextToken();
+    while (token.type !== "EOF") {
+      if (
+        token.type === "COMMENTED_BLOCK" ||
+        token.type === "COMMENTED_CONDITION" ||
+        token.type === "COMMENTED_ACTION"
+      ) {
+        lines.set(token.line - 1, token.columnStart - 1);
+      }
+      token = lexer.nextToken();
+    }
+
+    return lines;
+  }
+
+  private getLineText(document: TextDocument, line: number): string {
+    const start = document.offsetAt(Position.create(line, 0));
+    const end = document.offsetAt(Position.create(line + 1, 0));
+    return document.getText().slice(start, end).replace(/\r?\n$/, "");
   }
 
   private makeReplaceAction(
