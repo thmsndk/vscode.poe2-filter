@@ -7,6 +7,7 @@ import {
   BlockNodeBodyType,
 } from "../ast/nodes";
 import { generateItemFromBlock, FilterItem } from "./filterItem";
+import { ConditionType } from "../ast/conditions";
 
 export interface RuleConflict {
   type: "empty-block" | "catch-all" | "unreachable" | "nested";
@@ -96,8 +97,8 @@ export class FilterRuleEngine {
 
     return conditions.every((condition) => {
       switch (condition.condition) {
-        case "BaseType":
-        case "Class": {
+        case ConditionType.BaseType:
+        case ConditionType.Class: {
           const prop = (condition.condition.charAt(0).toLowerCase() +
             condition.condition.slice(1)) as keyof FilterItem;
 
@@ -109,7 +110,7 @@ export class FilterRuleEngine {
 
           return condition.values.some((value) => value.value === itemValue);
         }
-        case "Rarity": {
+        case ConditionType.Rarity: {
           if (!item.rarity) {
             return false;
           }
@@ -137,22 +138,22 @@ export class FilterRuleEngine {
           }
           return condition.values.some((value) => value.value === item.rarity);
         }
-        case "Quality":
-        case "Sockets":
-        case "StackSize":
-        case "ItemLevel":
-        case "DropLevel":
-        case "AreaLevel":
-        case "GemLevel":
-        case "WaystoneTier":
-        case "MapTier":
-        case "UnidentifiedItemTier":
-        case "Height":
-        case "Width":
-        case "BaseArmour":
-        case "BaseEnergyShield":
-        case "BaseEvasion":
-        case "BaseWard": {
+        case ConditionType.Quality:
+        case ConditionType.Sockets:
+        case ConditionType.StackSize:
+        case ConditionType.ItemLevel:
+        case ConditionType.DropLevel:
+        case ConditionType.AreaLevel:
+        case ConditionType.GemLevel:
+        case ConditionType.WaystoneTier:
+        case ConditionType.MapTier:
+        case ConditionType.UnidentifiedItemTier:
+        case ConditionType.Height:
+        case ConditionType.Width:
+        case ConditionType.BaseArmour:
+        case ConditionType.BaseEnergyShield:
+        case ConditionType.BaseEvasion:
+        case ConditionType.BaseWard: {
           const prop =
             condition.condition.charAt(0).toLowerCase() +
             condition.condition.slice(1);
@@ -177,34 +178,34 @@ export class FilterRuleEngine {
               return false;
           }
         }
-        case "FracturedItem":
-        case "Mirrored":
-        case "Corrupted":
-        case "SynthesisedItem":
-        case "AnyEnchantment":
-        case "Identified": {
+        case ConditionType.FracturedItem:
+        case ConditionType.Mirrored:
+        case ConditionType.Corrupted:
+        case ConditionType.SynthesisedItem:
+        case ConditionType.AnyEnchantment:
+        case ConditionType.Identified: {
           const prop = condition.condition.replace(/Item$/, "").toLowerCase();
           return (
             item[prop as keyof FilterItem] ===
             (condition.values[0].value === "True")
           );
         }
-        case "AlternateQuality":
-        case "BlightedMap":
-        case "UberBlightedMap":
-        case "ElderItem":
-        case "ElderMap":
-        case "HasCruciblePassiveTree":
-        case "HasEnchantment":
-        case "Replica":
-        case "Scourged":
-        case "ShaperItem":
-        case "ShapedMap":
-        case "TransfiguredGem":
-        case "TwiceCorrupted":
-        case "HasVaalUniqueMod":
-        case "IsVaalUnique":
-        case "AlwaysShow": {
+        case ConditionType.AlternateQuality:
+        case ConditionType.BlightedMap:
+        case ConditionType.UberBlightedMap:
+        case ConditionType.ElderItem:
+        case ConditionType.ElderMap:
+        case ConditionType.HasCruciblePassiveTree:
+        case ConditionType.HasEnchantment:
+        case ConditionType.Replica:
+        case ConditionType.Scourged:
+        case ConditionType.ShaperItem:
+        case ConditionType.ShapedMap:
+        case ConditionType.TransfiguredGem:
+        case ConditionType.TwiceCorrupted:
+        case ConditionType.HasVaalUniqueMod:
+        case ConditionType.IsVaalUnique:
+        case ConditionType.AlwaysShow: {
           const prop =
             condition.condition.charAt(0).toLowerCase() +
             condition.condition.slice(1);
@@ -213,13 +214,12 @@ export class FilterRuleEngine {
             (condition.values[0].value === "True")
           );
         }
-        case "CorruptedMods":
-        case "EnchantmentPassiveNum":
-        case "HasEaterOfWorldsImplicit":
-        case "HasSearingExarchImplicit":
-        case "BaseDefencePercentile":
-        case "BaseWard":
-        case "LinkedSockets": {
+        case ConditionType.CorruptedMods:
+        case ConditionType.EnchantmentPassiveNum:
+        case ConditionType.HasEaterOfWorldsImplicit:
+        case ConditionType.HasSearingExarchImplicit:
+        case ConditionType.BaseDefencePercentile:
+        case ConditionType.LinkedSockets: {
           const prop =
             condition.condition.charAt(0).toLowerCase() +
             condition.condition.slice(1);
@@ -244,12 +244,12 @@ export class FilterRuleEngine {
               return false;
           }
         }
-        case "ArchnemesisMod":
-        case "EnchantmentPassiveNode":
-        case "HasExplicitMod":
-        case "HasImplicitMod":
-        case "HasInfluence":
-        case "GemQualityType": {
+        case ConditionType.ArchnemesisMod:
+        case ConditionType.EnchantmentPassiveNode:
+        case ConditionType.HasExplicitMod:
+        case ConditionType.HasImplicitMod:
+        case ConditionType.HasInfluence:
+        case ConditionType.GemQualityType: {
           //   const prop =
           //     condition.condition.charAt(0).toLowerCase() +
           //     condition.condition.slice(1);
@@ -261,21 +261,34 @@ export class FilterRuleEngine {
           // report a false conflict. These are recognized keywords, so no error.
           return false;
         }
-        case "SocketGroup": {
+        case ConditionType.SocketGroup: {
           //   const itemValue = item.socketGroup;
           //   if (!itemValue) return false;
           //   return condition.values.some((value) => value === itemValue);
           return false;
         }
         default:
-          // Every known ConditionType is handled above. Reaching here means a
-          // genuinely unknown/new condition keyword - report it once (not once
-          // per block-pair, which floods on large filters) so it gets proper
-          // support instead of being silently ignored.
-          this.warnUnknownCondition(condition.condition);
-          return false;
+          // Compile-time exhaustiveness guard: every ConditionType must be
+          // handled above. If a new one is added without a case, `condition`
+          // here is no longer `never` and this call fails to type-check -
+          // forcing it to be handled instead of silently ignored.
+          return this.reportUnknownCondition(condition.condition);
       }
     });
+  }
+
+  /**
+   * Exhaustiveness guard for {@link evaluateItemAgainstBlock}'s condition switch.
+   *
+   * The `never` parameter makes adding a new {@link ConditionType} without a
+   * matching `case` a compile error. At runtime it also defends against data
+   * that doesn't match the static types (e.g. parser error-recovery nodes),
+   * surfacing the keyword once and treating it as "does not match" so we never
+   * report a false conflict.
+   */
+  private reportUnknownCondition(condition: never): boolean {
+    this.warnUnknownCondition(condition as string);
+    return false;
   }
 
   /**
