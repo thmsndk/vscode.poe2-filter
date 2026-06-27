@@ -1,4 +1,5 @@
 import * as assert from "assert";
+import { TextEdit } from "vscode-languageserver";
 import { TextDocument } from "vscode-languageserver-textdocument";
 import { CompletionProvider } from "../language-server/providers/completionProvider";
 import { GameDataService } from "../services/gameDataService";
@@ -38,9 +39,44 @@ suite("Completion Provider Test Suite", () => {
     assert.ok(result.includes("SetTextColor"));
   });
 
+  test("ranks common keywords like BaseType above niche ones", () => {
+    const items = completeAtEnd("    Bas");
+    const baseItems = items.filter((item) => item.label.startsWith("Base"));
+    const ordered = [...baseItems]
+      .sort((a, b) => (a.sortText ?? "").localeCompare(b.sortText ?? ""))
+      .map((item) => item.label);
+    assert.ok(baseItems.length > 1, "expected several Base* keywords");
+    assert.strictEqual(ordered[0], "BaseType");
+  });
+
   test("suggests Rarity values", () => {
     assert.deepStrictEqual(labels("    Rarity "), [
       "Normal",
+      "Magic",
+      "Rare",
+      "Unique",
+    ]);
+  });
+
+  test("orders Rarity values by rarity via sortText", () => {
+    const items = completeAtEnd("    Rarity ");
+    const ordered = [...items]
+      .sort((a, b) => (a.sortText ?? "").localeCompare(b.sortText ?? ""))
+      .map((item) => item.label);
+    assert.deepStrictEqual(ordered, ["Normal", "Magic", "Rare", "Unique"]);
+  });
+
+  test("omits Rarity values already present on the line", () => {
+    assert.deepStrictEqual(labels("    Rarity Normal "), [
+      "Magic",
+      "Rare",
+      "Unique",
+    ]);
+  });
+
+  test("still suggests the Rarity value currently being typed", () => {
+    // "Normal" is already present; "Rare" is mid-typing and must stay offered.
+    assert.deepStrictEqual(labels("    Rarity Normal Rare"), [
       "Magic",
       "Rare",
       "Unique",
@@ -64,18 +100,51 @@ suite("Completion Provider Test Suite", () => {
     assert.deepStrictEqual(labels("    SetTextColor "), []);
   });
 
-  test("completes BaseType names from game data inside a quote", () => {
+  test("completes BaseType names inside a quote and closes it", () => {
     const items = completeAtEnd('    BaseType "Ex', buildGameData());
     const exalted = items.find((item) => item.label === "Exalted Orb");
     assert.ok(exalted);
-    // Only the fragment after the quote is replaced.
-    assert.strictEqual(exalted?.textEdit?.newText, "Exalted Orb");
+    // The fragment is replaced and the value is closed with a trailing space so
+    // the next value can be typed immediately.
+    assert.strictEqual(exalted?.textEdit?.newText, 'Exalted Orb" ');
+  });
+
+  test("consumes an auto-inserted closing quote so the cursor ends after it", () => {
+    const provider = new CompletionProvider(buildGameData());
+    // `    BaseType "Ex"` with the cursor between `Ex` and the closing quote.
+    const document = TextDocument.create(
+      "file:///test.filter",
+      "poe2-filter",
+      1,
+      '    BaseType "Ex"'
+    );
+    const items = provider.provideCompletions(document, {
+      textDocument: { uri: "file:///test.filter" },
+      position: { line: 0, character: 16 },
+    });
+    const exalted = items.find((item) => item.label === "Exalted Orb");
+    assert.ok(exalted);
+    assert.strictEqual(exalted?.textEdit?.newText, 'Exalted Orb" ');
+    const range = (exalted?.textEdit as TextEdit).range;
+    // Replace range starts at the fragment and consumes the closing quote.
+    assert.strictEqual(range.start.character, 14);
+    assert.strictEqual(range.end.character, 17);
+  });
+
+  test("omits BaseType values already present on the line", () => {
+    const items = completeAtEnd('    BaseType "Exalted Orb" "', buildGameData());
+    const result = items.map((item) => item.label);
+    assert.ok(
+      !result.includes("Exalted Orb"),
+      "should not re-suggest an existing BaseType"
+    );
+    assert.ok(result.includes("Chaos Orb"));
   });
 
   test("wraps Class names in quotes when not already quoted", () => {
     const items = completeAtEnd("    Class ", buildGameData());
     const currency = items.find((item) => item.label === "Currency");
-    assert.strictEqual(currency?.insertText, '"Currency"');
+    assert.strictEqual(currency?.insertText, '"Currency" ');
   });
 
   test("offers no keyword/value completions inside comments", () => {

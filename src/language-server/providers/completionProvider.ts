@@ -20,6 +20,37 @@ const FILTER_EXTENSIONS = new Set([".filter"]);
 type CompletionContextKind = "import" | "sound";
 
 /**
+ * Hand-picked ordering for the most commonly written keywords so they surface
+ * first (e.g. `BaseType` above `BaseArmour`). Anything not listed falls back to
+ * alphabetical order after these.
+ */
+const KEYWORD_PRIORITY: string[] = [
+  // Blocks
+  "Show",
+  "Hide",
+  "Minimal",
+  // Common conditions
+  "BaseType",
+  "Class",
+  "Rarity",
+  "ItemLevel",
+  "AreaLevel",
+  "StackSize",
+  "Quality",
+  "Sockets",
+  "WaystoneTier",
+  // Common actions
+  "SetTextColor",
+  "SetBorderColor",
+  "SetBackgroundColor",
+  "SetFontSize",
+  "PlayAlertSound",
+  "MinimapIcon",
+  "PlayEffect",
+  "Continue",
+];
+
+/**
  * Provides completions for filter files:
  *  - file names inside `Import "..."` / `CustomAlertSound "..."` quotes,
  *  - block/condition/action keywords at the start of a line,
@@ -38,11 +69,22 @@ export class CompletionProvider {
     const text = document.getText();
     const lineStart = text.lastIndexOf("\n", offset - 1) + 1;
     const linePrefix = text.slice(lineStart, offset);
+    const nextNewline = text.indexOf("\n", offset);
+    const lineSuffix = text.slice(
+      offset,
+      nextNewline === -1 ? text.length : nextNewline
+    );
 
     // 1. File path completions inside Import/CustomAlertSound quotes.
     const fileKind = this.getContextKind(linePrefix);
     if (fileKind) {
-      return this.getFilePathCompletions(document, position, linePrefix, fileKind);
+      return this.getFilePathCompletions(
+        document,
+        position,
+        linePrefix,
+        lineSuffix,
+        fileKind
+      );
     }
 
     const afterIndent = linePrefix.replace(/^\s*/, "");
@@ -67,6 +109,7 @@ export class CompletionProvider {
       keywordMatch[1],
       afterIndent.slice(keywordMatch[0].length),
       linePrefix,
+      lineSuffix,
       position
     );
   }
@@ -80,6 +123,7 @@ export class CompletionProvider {
         kind: CompletionItemKind.Keyword,
         detail: "Block",
         documentation: `Start a ${block} block`,
+        sortText: this.keywordSortText(block),
       });
     }
 
@@ -89,6 +133,7 @@ export class CompletionProvider {
         kind: CompletionItemKind.Property,
         detail: "Condition",
         documentation: ConditionSyntaxMap[condition]?.description,
+        sortText: this.keywordSortText(condition),
       });
     }
 
@@ -98,22 +143,37 @@ export class CompletionProvider {
         kind: CompletionItemKind.Function,
         detail: "Action",
         documentation: ActionSyntaxMap[action]?.description,
+        sortText: this.keywordSortText(action),
       });
     }
 
     return items;
   }
 
+  /**
+   * Sort key that floats hand-picked common keywords to the top (in their
+   * listed order) and orders everything else alphabetically after them.
+   */
+  private keywordSortText(label: string): string {
+    const priority = KEYWORD_PRIORITY.indexOf(label);
+    if (priority !== -1) {
+      return `0${String(priority).padStart(3, "0")}`;
+    }
+    return `1${label.toLowerCase()}`;
+  }
+
   private getValueCompletions(
     keyword: string,
     afterKeyword: string,
     linePrefix: string,
+    lineSuffix: string,
     position: { line: number; character: number }
   ): CompletionItem[] {
     if (keyword in ConditionType) {
       return this.getConditionValueCompletions(
         keyword as ConditionType,
         linePrefix,
+        lineSuffix,
         position
       );
     }
@@ -128,6 +188,7 @@ export class CompletionProvider {
   private getConditionValueCompletions(
     condition: ConditionType,
     linePrefix: string,
+    lineSuffix: string,
     position: { line: number; character: number }
   ): CompletionItem[] {
     const syntax = ConditionSyntaxMap[condition];
@@ -136,7 +197,12 @@ export class CompletionProvider {
     }
 
     if (syntax.valueType === "rarity") {
-      return this.enumItems(Object.values(RarityValue), CompletionItemKind.EnumMember);
+      // Rarity accepts a list of values, so drop any already on the line.
+      const present = this.otherValuesOnLine(linePrefix, lineSuffix);
+      const available = Object.values(RarityValue).filter(
+        (value) => !present.has(value)
+      );
+      return this.enumItems(available, CompletionItemKind.EnumMember);
     }
 
     if (syntax.valueType === "boolean") {
@@ -144,7 +210,12 @@ export class CompletionProvider {
     }
 
     if (condition === ConditionType.BaseType || condition === ConditionType.Class) {
-      return this.getGameDataValueCompletions(condition, linePrefix, position);
+      return this.getGameDataValueCompletions(
+        condition,
+        linePrefix,
+        lineSuffix,
+        position
+      );
     }
 
     return [];
@@ -183,12 +254,14 @@ export class CompletionProvider {
 
   /**
    * Completes BaseType/Class names from game data. When the cursor is inside an
-   * open quote only the name fragment is replaced; otherwise the name is
-   * inserted wrapped in quotes.
+   * open quote the name fragment (and any auto-inserted closing quote) is
+   * replaced so the cursor ends up after the closing quote, ready for the next
+   * value; otherwise the name is inserted wrapped in quotes.
    */
   private getGameDataValueCompletions(
     condition: ConditionType,
     linePrefix: string,
+    lineSuffix: string,
     position: { line: number; character: number }
   ): CompletionItem[] {
     if (!this.gameData) {
@@ -202,6 +275,14 @@ export class CompletionProvider {
 
     const uniqueNames = [...new Set(names)];
     const openQuote = /"([^"]*)$/.exec(linePrefix);
+    // Don't re-suggest values already listed on the line (e.g. avoid
+    // `BaseType "Exalted Orb" "Exalted Orb"`).
+    const present = this.quotedValuesOnLine(
+      linePrefix,
+      lineSuffix,
+      openQuote !== null
+    );
+    const availableNames = uniqueNames.filter((name) => !present.has(name));
     const kind =
       condition === ConditionType.BaseType
         ? CompletionItemKind.Value
@@ -209,28 +290,85 @@ export class CompletionProvider {
 
     if (openQuote) {
       const fragment = openQuote[1];
+      // Consume an existing closing quote (e.g. one auto-inserted by the
+      // editor) so we don't leave the cursor trapped before it.
+      const hasClosingQuote = lineSuffix.startsWith('"');
+      const rest = hasClosingQuote ? lineSuffix.slice(1) : lineSuffix;
+      // Leave a trailing space so the next value can be typed immediately,
+      // unless one is already there.
+      const trailingSpace = rest.startsWith(" ") ? "" : " ";
       const replaceRange = Range.create(
         position.line,
         position.character - fragment.length,
         position.line,
-        position.character
+        position.character + (hasClosingQuote ? 1 : 0)
       );
-      return uniqueNames.map((name) => ({
+      return availableNames.map((name) => ({
         label: name,
         kind,
-        textEdit: TextEdit.replace(replaceRange, name),
+        textEdit: TextEdit.replace(replaceRange, `${name}"${trailingSpace}`),
       }));
     }
 
-    return uniqueNames.map((name) => ({
+    return availableNames.map((name) => ({
       label: name,
       kind,
-      insertText: `"${name}"`,
+      insertText: `"${name}" `,
     }));
   }
 
+  /**
+   * The fully-quoted values already present on the line. When the cursor sits
+   * inside an open quote (`hasActiveQuote`), that value is excluded so the one
+   * being edited is still offered.
+   */
+  private quotedValuesOnLine(
+    linePrefix: string,
+    lineSuffix: string,
+    hasActiveQuote: boolean
+  ): Set<string> {
+    const fullLine = linePrefix + lineSuffix;
+
+    let scan = fullLine;
+    if (hasActiveQuote) {
+      const activeOpen = linePrefix.lastIndexOf('"');
+      const closeRel = lineSuffix.indexOf('"');
+      const activeEnd =
+        closeRel === -1 ? fullLine.length : linePrefix.length + closeRel + 1;
+      scan = fullLine.slice(0, activeOpen) + fullLine.slice(activeEnd);
+    }
+
+    const values = new Set<string>();
+    const quoted = /"([^"]*)"/g;
+    let match: RegExpExecArray | null;
+    while ((match = quoted.exec(scan)) !== null) {
+      values.add(match[1]);
+    }
+    return values;
+  }
+
   private enumItems(values: string[], kind: CompletionItemKind): CompletionItem[] {
-    return values.map((value) => ({ label: value, kind }));
+    // Preserve the declared order (e.g. Rarity: Normal, Magic, Rare, Unique)
+    // instead of letting the editor sort by label alphabetically.
+    return values.map((value, index) => ({
+      label: value,
+      kind,
+      sortText: String(index).padStart(4, "0"),
+    }));
+  }
+
+  /**
+   * The whitespace-separated values already present on the line, excluding the
+   * token currently under the cursor (so a value being edited is still offered).
+   */
+  private otherValuesOnLine(linePrefix: string, lineSuffix: string): Set<string> {
+    const activeLeft = /(\S*)$/.exec(linePrefix)?.[1] ?? "";
+    const activeRight = /^(\S*)/.exec(lineSuffix)?.[1] ?? "";
+    const rest =
+      linePrefix.slice(0, linePrefix.length - activeLeft.length) +
+      " " +
+      lineSuffix.slice(activeRight.length);
+    return new Set(rest.split(/\s+/).filter(Boolean));
   }
 
   /**
@@ -250,6 +388,7 @@ export class CompletionProvider {
     document: TextDocument,
     position: { line: number; character: number },
     linePrefix: string,
+    lineSuffix: string,
     kind: CompletionContextKind
   ): CompletionItem[] {
     // The partial path typed inside the still-open quote.
@@ -270,6 +409,16 @@ export class CompletionProvider {
       position.character - fragment.length,
       position.line,
       position.character
+    );
+
+    // For files we also close the quote and move the cursor past it (consuming
+    // an existing closing quote if the editor auto-inserted one).
+    const hasClosingQuote = lineSuffix.startsWith('"');
+    const fileReplaceRange = Range.create(
+      position.line,
+      position.character - fragment.length,
+      position.line,
+      position.character + (hasClosingQuote ? 1 : 0)
     );
 
     const baseDir = path.dirname(this.toFsPath(document.uri));
@@ -313,7 +462,7 @@ export class CompletionProvider {
       items.push({
         label: entry.name,
         kind: CompletionItemKind.File,
-        textEdit: TextEdit.replace(replaceRange, entry.name),
+        textEdit: TextEdit.replace(fileReplaceRange, entry.name + '"'),
       });
     }
 
