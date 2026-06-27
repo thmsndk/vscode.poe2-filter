@@ -24,7 +24,7 @@ Show
     assert.strictEqual(conflicts.length, 1);
     assert.strictEqual(
       conflicts[0].message,
-      'Rule may never trigger because it would be caught by an earlier rule with BaseType "Gold", StackSize >= 1000'
+      'This rule will never trigger because an earlier rule on line 2 already matches these items: BaseType "Gold", StackSize >= 1000'
     );
     assert.strictEqual((conflicts[0].node as BlockNode).line, 7);
   });
@@ -50,7 +50,7 @@ Hide
     assert.strictEqual(conflicts.length, 1);
     assert.strictEqual(
       conflicts[0].message,
-      'Rule may never trigger because it would be caught by an earlier rule with Class "Currency", BaseType "Scroll of Wisdom", AreaLevel > 10'
+      'This rule will never trigger because an earlier rule on line 2 already matches these items: Class "Currency", BaseType "Scroll of Wisdom", AreaLevel > 10'
     );
   });
 
@@ -72,7 +72,7 @@ Show
     assert.strictEqual(conflicts.length, 1);
     assert.strictEqual(
       conflicts[0].message,
-      "Rule may never trigger because it would be caught by an earlier rule with Rarity Normal"
+      "This rule will never trigger because an earlier rule on line 2 already matches these items: Rarity Normal"
     );
   });
 
@@ -191,11 +191,11 @@ Show # This should conflict as it's caught by the previous rule
     assert.strictEqual(conflicts.length, 1);
     assert.strictEqual(
       conflicts[0].message,
-      "Rule may never trigger because it would be caught by an earlier rule with ItemLevel >= 60"
+      "This rule will never trigger because an earlier rule on line 6 already matches these items: ItemLevel >= 60"
     );
   });
 
-  test("should detect conflict with combined conditions from Continue", () => {
+  test("should detect conflict caught by a non-Continue rule past a Continue rule", () => {
     const input = `
 Show
     BaseType "Chaos Orb"
@@ -205,7 +205,7 @@ Show
     ItemLevel >= 60
     SetFontSize 45
 
-Show # This should conflict as it matches both previous conditions
+Show # Caught by the (non-Continue) ItemLevel >= 60 rule above
     BaseType "Chaos Orb"
     ItemLevel >= 75
     SetFontSize 40`;
@@ -215,10 +215,13 @@ Show # This should conflict as it matches both previous conditions
     const engine = new FilterRuleEngine(ast);
     const conflicts = engine.detectConflicts();
 
+    // The Continue block does not add its conditions to later blocks. The third
+    // rule (any Chaos Orb with ItemLevel >= 75) is fully caught by the second
+    // rule (any item with ItemLevel >= 60), so that is the catching rule.
     assert.strictEqual(conflicts.length, 1);
     assert.strictEqual(
       conflicts[0].message,
-      'Rule may never trigger because it would be caught by an earlier rule with BaseType "Chaos Orb", ItemLevel >= 60'
+      "This rule will never trigger because an earlier rule on line 6 already matches these items: ItemLevel >= 60"
     );
   });
 
@@ -289,10 +292,14 @@ Show
     const engine = new FilterRuleEngine(ast);
     const conflicts = engine.detectConflicts();
 
+    // The commented `ItemLevel >= 75` on the first rule must be ignored, so the
+    // first rule matches *all* Chaos Orbs and the second rule (Chaos Orbs with
+    // ItemLevel >= 75) can never trigger. The message proves the comment was
+    // ignored: it only mentions BaseType, not ItemLevel.
+    assert.strictEqual(conflicts.length, 1);
     assert.strictEqual(
-      conflicts.length,
-      0,
-      "Rule with commented condition should not conflict"
+      conflicts[0].message,
+      'This rule will never trigger because an earlier rule on line 2 already matches these items: BaseType "Chaos Orb"'
     );
   });
 
@@ -320,7 +327,7 @@ Show # This should still conflict with first block
     assert.strictEqual(conflicts.length, 1);
     assert.strictEqual(
       conflicts[0].message,
-      'Rule may never trigger because it would be caught by an earlier rule with BaseType "Chaos Orb", ItemLevel >= 60'
+      'This rule will never trigger because an earlier rule on line 2 already matches these items: BaseType "Chaos Orb", ItemLevel >= 60'
     );
   });
 });

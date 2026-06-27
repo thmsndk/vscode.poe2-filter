@@ -20,16 +20,22 @@ export class FilterRuleEngine {
   constructor(private ast: RootNode) {}
 
   /**
-   * Flattens blocks with Continue into separate blocks
-   * This is used to combine Continue blocks into blocks that matches the same item for the live preivew
+   * Returns the active (non-commented) blocks with their own active body items,
+   * deduplicated by condition/action type.
+   *
+   * Note: a previous implementation *inherited* the conditions of a preceding
+   * `Continue` block into the following blocks. That made an otherwise broad
+   * rule (e.g. `ItemLevel >= 60`) look artificially narrow (gaining the
+   * `Continue` block's `BaseType`), which both hid real "unreachable rule"
+   * conflicts and produced misleading conflict messages. `Continue` only means
+   * "keep evaluating later blocks"; it does not add conditions to them, so each
+   * block is normalized on its own here.
    */
   private flattenBlocks(): BlockNode[] {
     const blocks = this.ast.children.filter(
       (n): n is BlockNode => n.type in BlockType
     );
-    const flattenedBlocks: BlockNode[] = [];
-
-    let inheritedBodyMap = new Map<string, BlockNodeBodyType>();
+    const normalizedBlocks: BlockNode[] = [];
 
     for (const block of blocks) {
       if (block.commented) {
@@ -37,9 +43,8 @@ export class FilterRuleEngine {
         continue;
       }
 
-      let hasContinue = false;
+      const bodyMap = new Map<string, BlockNodeBodyType>();
 
-      // Update the inherited body map with the current block's items
       for (const item of block.body) {
         if (item.commented) {
           // Skip commented items
@@ -53,40 +58,20 @@ export class FilterRuleEngine {
             break;
           case "Action":
             key = `${item.action}`;
-            if (item.action === "Continue") {
-              hasContinue = true;
-            }
             break;
           default:
             continue;
         }
-        inheritedBodyMap.set(key, item);
+        bodyMap.set(key, item);
       }
 
-      // TODO: Continue has a potential effect on the rules below it, so stopping the Continue inheritance when finding a new block is wrong, I think we need to evaluate all previous Continue blocks if they would match the current block to apply it this means generating an item
-      // Also the are two rules in play here, the one without inheritance, and the one with
-
-      // If current block does not have Continue, we need to remove the Continue items from the inherited body map
-      if (!hasContinue) {
-        inheritedBodyMap.delete("Continue");
-      }
-
-      // Create new block with combined and overridden items
-      const combinedBlock: BlockNode = {
+      normalizedBlocks.push({
         ...block,
-        body: Array.from(inheritedBodyMap.values()),
-      };
-
-      flattenedBlocks.push(combinedBlock);
-
-      // If this block has Continue, store its body for the next block
-      if (!hasContinue) {
-        // Reset the inherited body map for the next block
-        inheritedBodyMap = new Map<string, BlockNodeBodyType>();
-      }
+        body: Array.from(bodyMap.values()),
+      });
     }
 
-    return flattenedBlocks;
+    return normalizedBlocks;
   }
 
   /**
@@ -317,7 +302,6 @@ export class FilterRuleEngine {
           continue;
         }
 
-        // Check for mismatched conditions
         const currentConditions = currentBlock.body.filter(
           (n) => n.type === "Condition"
         ) as ConditionNode[];
@@ -325,22 +309,13 @@ export class FilterRuleEngine {
           (n) => n.type === "Condition"
         ) as ConditionNode[];
 
-        const currentTypes = new Set(currentConditions.map((c) => c.condition));
-        const previousTypes = new Set(
-          previousConditions.map((c) => c.condition)
-        );
-
-        const hasMismatchedConditions =
-          [...currentTypes].some((type) => !previousTypes.has(type)) ||
-          [...previousTypes].some((type) => !currentTypes.has(type));
-
-        if (hasMismatchedConditions) {
-          // Double-check: generate item from previous rule and test against current rule
-          const previousItem = generateItemFromBlock(previousBlock);
-          if (!this.evaluateItemAgainstBlock(previousItem, currentBlock)) {
-            continue; // No real conflict if items don't match both ways
-          }
-        }
+        // The current rule is unreachable only if every condition of the
+        // (broader) previous rule is implied by a condition of the current
+        // rule. Extra conditions on the current rule only make it *narrower*,
+        // so they never prevent it from being caught by the previous rule -
+        // that is exactly what `allPreviousConditionsSatisfied` below verifies.
+        // (A previous bidirectional item check incorrectly suppressed these
+        // narrower-subset conflicts.)
 
         // Check for overlapping conditions e.g. StackSize >= 1000 and StackSize >= 2000 is overlapping
         const allPreviousConditionsSatisfied = previousConditions.every(
@@ -509,6 +484,6 @@ export class FilterRuleEngine {
       })
       .join(", ");
 
-    return `Rule may never trigger because it would be caught by an earlier rule with ${conditions}`;
+    return `This rule will never trigger because an earlier rule on line ${previousBlock.line} already matches these items: ${conditions}`;
   }
 }
