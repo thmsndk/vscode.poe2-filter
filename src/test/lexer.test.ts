@@ -72,57 +72,6 @@ Show # Basic currency
     });
   });
 
-  // TODO: We want more explicit tests for commented code also this belongs in the Comment Handling suite
-  test("should tokenize commented code correctly", () => {
-    const input = `
-Show
-    BaseType "Mirror"
-    # BaseType "Chaos"    # Commented condition with inline comment
-# Show                    # Commented block with inline comment
-#     BaseType "Scroll"   # Part of commented block
-#     SetTextColor 0 0 0  # Part of commented block
-`;
-
-    const lexer = new Lexer(input);
-    const tokens = [];
-    let token;
-
-    do {
-      token = lexer.nextToken();
-      tokens.push(token);
-    } while (token.type !== "EOF");
-
-    assert.deepStrictEqual(
-      tokens.map((t) => t.type),
-      [
-        "NEWLINE",
-        "SHOW",
-        "NEWLINE",
-        "CONDITION",
-        "QUOTED_STRING",
-        "NEWLINE",
-        "COMMENTED_CONDITION",
-        "QUOTED_STRING",
-        "INLINE_COMMENT",
-        "NEWLINE",
-        "COMMENTED_BLOCK",
-        "INLINE_COMMENT",
-        "NEWLINE",
-        "COMMENTED_CONDITION",
-        "QUOTED_STRING",
-        "INLINE_COMMENT",
-        "NEWLINE",
-        "COMMENTED_ACTION",
-        "NUMBER",
-        "NUMBER",
-        "NUMBER",
-        "INLINE_COMMENT",
-        "NEWLINE",
-        "EOF",
-      ]
-    );
-  });
-
   test("should tokenize special values correctly", () => {
     const input = `
 Show
@@ -239,6 +188,95 @@ Show
 });
 
 suite("Comment Handling Test Suite", () => {
+  /** Tokenizes `input` and returns the token type stream (including EOF). */
+  const tokenTypes = (input: string): string[] => {
+    const lexer = new Lexer(input);
+    const types: string[] = [];
+    let token;
+    do {
+      token = lexer.nextToken();
+      types.push(token.type);
+    } while (token.type !== "EOF");
+    return types;
+  };
+
+  test("should tokenize a single commented-out condition", () => {
+    assert.deepStrictEqual(tokenTypes(`# BaseType "Chaos"`), [
+      "COMMENTED_CONDITION",
+      "QUOTED_STRING",
+      "EOF",
+    ]);
+  });
+
+  test("should tokenize a single commented-out action", () => {
+    assert.deepStrictEqual(tokenTypes(`# SetFontSize 40`), [
+      "COMMENTED_ACTION",
+      "NUMBER",
+      "EOF",
+    ]);
+  });
+
+  test("should tokenize a single commented-out block keyword", () => {
+    assert.deepStrictEqual(tokenTypes(`# Show`), ["COMMENTED_BLOCK", "EOF"]);
+  });
+
+  test("should keep the trailing inline comment on a commented-out line", () => {
+    assert.deepStrictEqual(
+      tokenTypes(`# BaseType "Chaos"   # why this is disabled`),
+      ["COMMENTED_CONDITION", "QUOTED_STRING", "INLINE_COMMENT", "EOF"]
+    );
+  });
+
+  test("should tokenize commented code correctly", () => {
+    const input = `
+Show
+    BaseType "Mirror"
+    # BaseType "Chaos"    # Commented condition with inline comment
+# Show                    # Commented block with inline comment
+#     BaseType "Scroll"   # Part of commented block
+#     SetTextColor 0 0 0  # Part of commented block
+`;
+
+    const lexer = new Lexer(input);
+    const tokens = [];
+    let token;
+
+    do {
+      token = lexer.nextToken();
+      tokens.push(token);
+    } while (token.type !== "EOF");
+
+    assert.deepStrictEqual(
+      tokens.map((t) => t.type),
+      [
+        "NEWLINE",
+        "SHOW",
+        "NEWLINE",
+        "CONDITION",
+        "QUOTED_STRING",
+        "NEWLINE",
+        "COMMENTED_CONDITION",
+        "QUOTED_STRING",
+        "INLINE_COMMENT",
+        "NEWLINE",
+        "COMMENTED_BLOCK",
+        "INLINE_COMMENT",
+        "NEWLINE",
+        "COMMENTED_CONDITION",
+        "QUOTED_STRING",
+        "INLINE_COMMENT",
+        "NEWLINE",
+        "COMMENTED_ACTION",
+        "NUMBER",
+        "NUMBER",
+        "NUMBER",
+        "INLINE_COMMENT",
+        "NEWLINE",
+        "EOF",
+      ]
+    );
+  });
+
   test("should handle single line comments as markdown headers", () => {
     const input = `# Just a comment`;
     const lexer = new Lexer(input);
