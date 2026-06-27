@@ -349,6 +349,8 @@ export class Lexer {
         return this.createToken("HIDE", value, value.length);
       case "Minimal":
         return this.createToken("MINIMAL", value, value.length);
+      case "Import":
+        return this.createToken("IMPORT", value, value.length);
     }
 
     // Check for special values

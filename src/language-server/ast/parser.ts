@@ -14,6 +14,7 @@ import {
   ActionNode,
   CommentNode,
   HeaderNode,
+  ImportNode,
   BlockType,
   BlockNodeBodyType,
   NodeValue,
@@ -67,6 +68,9 @@ export class Parser {
           break;
         case "COMMENTED_BLOCK":
           children.push(this.parseCommentedBlock());
+          break;
+        case "IMPORT":
+          children.push(this.parseImport());
           break;
         case "HEADER":
           children.push(this.parseHeader());
@@ -208,6 +212,77 @@ export class Parser {
     const block = this.parseBlock();
     block.commented = true;
     return block;
+  }
+
+  private parseImport(): ImportNode {
+    const start = this.currentToken.start;
+    const line = this.currentToken.line;
+    const columnStart = this.currentToken.columnStart;
+    const columnEnd = this.currentToken.columnEnd;
+
+    this.advance(); // Consume Import keyword
+
+    let importPath: NodeValue | undefined;
+    let optional = false;
+    let inlineComment: string | undefined;
+
+    while (this.shouldContinueParsing()) {
+      switch (this.currentToken.type) {
+        case "QUOTED_STRING":
+          if (!importPath) {
+            importPath = {
+              value: this.currentToken.value as string,
+              columnStart: this.currentToken.columnStart,
+              columnEnd: this.currentToken.columnEnd,
+            };
+          } else {
+            this.addError(
+              `Unexpected token in Import: ${this.currentToken.type}`,
+              this.currentToken
+            );
+          }
+          break;
+
+        case "WORD":
+          if ((this.currentToken.value as string) === "Optional") {
+            optional = true;
+          } else {
+            this.addError(
+              `Unexpected value in Import: ${this.currentToken.value}`,
+              this.currentToken
+            );
+          }
+          break;
+
+        case "INLINE_COMMENT":
+          inlineComment = this.consumeInlineComment();
+          continue;
+
+        default:
+          this.addError(
+            `Unexpected token in Import: ${this.currentToken.type}`,
+            this.currentToken
+          );
+      }
+      this.advance();
+    }
+
+    if (!importPath) {
+      this.addError("Expected a quoted file path for Import", this.previousToken);
+      importPath = { value: "", columnStart, columnEnd };
+    }
+
+    return {
+      type: "Import",
+      path: importPath,
+      optional,
+      inlineComment,
+      start,
+      end: this.currentToken.start,
+      line,
+      columnStart,
+      columnEnd,
+    };
   }
 
   private parseCondition(): ConditionNode {

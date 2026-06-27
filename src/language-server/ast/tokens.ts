@@ -16,6 +16,9 @@ export type TokenType =
   | "MINIMAL"
   | "CONTINUE"
 
+  // Top-level statements
+  | "IMPORT" // Import "file" [Optional]
+
   // Commands
   | "CONDITION" // BaseType, Class, ItemLevel, etc.
   | "ACTION" // SetTextColor, PlayAlertSound, etc.

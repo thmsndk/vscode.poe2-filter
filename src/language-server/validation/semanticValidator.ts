@@ -6,6 +6,7 @@ import {
   ActionNode,
   BlockNode,
   ErrorNode,
+  ImportNode,
   BlockType,
   NodeValue,
 } from "../ast/nodes";
@@ -121,6 +122,9 @@ export class SemanticValidator {
         break;
       case "Action":
         this.validateAction(node as ActionNode);
+        break;
+      case "Import":
+        this.validateImport(node as ImportNode);
         break;
       case "Root":
         // Visit all children of root node
@@ -526,6 +530,65 @@ export class SemanticValidator {
         columnEnd: valueStart + value.length,
       });
     }
+  }
+
+  /**
+   * Warns when a non-Optional `Import "file"` references a file that does not
+   * exist (resolved relative to the current document, as the game does).
+   * Optional imports are skipped because they are allowed to be absent.
+   * Severity is a warning rather than an error since in-game imports may
+   * resolve from the game's filter folder, which can differ from the edited
+   * file's location.
+   */
+  private validateImport(node: ImportNode): void {
+    if (node.optional) {
+      return;
+    }
+
+    const filePath = node.path.value;
+    if (typeof filePath !== "string" || filePath.length === 0) {
+      return;
+    }
+
+    // Skip validation if we don't have document context
+    if (!this.documentUri) {
+      return;
+    }
+
+    const documentPath = this.toFsPath(this.documentUri);
+    const resolved = path.isAbsolute(filePath)
+      ? filePath
+      : path.join(path.dirname(documentPath), filePath);
+
+    if (fs.existsSync(resolved)) {
+      return;
+    }
+
+    this.diagnostics.push({
+      message: `Imported filter not found: ${filePath}. Add "Optional" if the file may be absent.`,
+      severity: "warning",
+      line: node.line,
+      columnStart: node.path.columnStart,
+      columnEnd: node.path.columnEnd,
+    });
+  }
+
+  /**
+   * Converts a document URI (e.g. `file:///c%3A/dir/filter.filter`) into a
+   * filesystem path. Falls back to returning the input unchanged when it is
+   * not a `file:` URI.
+   */
+  private toFsPath(uri: string): string {
+    if (!uri.startsWith("file:")) {
+      return uri;
+    }
+
+    let p = decodeURIComponent(uri.replace(/^file:\/\//, ""));
+    // Windows file URIs look like `/c:/dir/...`; drop the leading slash.
+    if (/^\/[a-zA-Z]:/.test(p)) {
+      p = p.slice(1);
+    }
+    return p;
   }
 
   private validateBaseTypeOrClass(

@@ -9,6 +9,7 @@ export type Node =
   | ActionNode
   | CommentNode
   | HeaderNode
+  | ImportNode
   | ErrorNode;
 
 export interface BaseNode {
@@ -87,6 +88,17 @@ export interface ActionNode extends BaseNode {
 export interface CommentNode extends BaseNode {
   type: "Comment" | "InlineComment";
   value: string;
+}
+
+// A top-level `Import "file" [Optional]` statement
+export interface ImportNode extends BaseNode {
+  type: "Import";
+  path: NodeValue;
+  optional: boolean;
+}
+
+export function isImportNode(node: Node): node is ImportNode {
+  return node.type === "Import";
 }
 
 export interface ErrorNode extends BaseNode {

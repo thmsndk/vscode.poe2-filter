@@ -1,4 +1,5 @@
 import * as assert from "assert";
+import * as path from "path";
 import { Parser } from "../language-server/ast/parser";
 import { SemanticValidator } from "../language-server/validation/semanticValidator";
 import { GameDataService } from "../services/gameDataService";
@@ -329,5 +330,45 @@ Show
         columnEnd: 29,
       }
     );
+  });
+});
+
+suite("Import Validation", () => {
+  test("warns when a non-Optional import is missing", () => {
+    const input = `Import "definitely-missing-xyz.filter"\n`;
+    const parser = new Parser(input);
+    const ast = parser.parse();
+
+    const validator = new SemanticValidator(mockGameData, __filename);
+    validator.validate(ast);
+
+    assert.strictEqual(validator.diagnostics.length, 1);
+    assert.match(
+      validator.diagnostics[0].message,
+      /Imported filter not found/
+    );
+    assert.strictEqual(validator.diagnostics[0].severity, "warning");
+  });
+
+  test("does not warn for Optional imports", () => {
+    const input = `Import "definitely-missing-xyz.filter" Optional\n`;
+    const parser = new Parser(input);
+    const ast = parser.parse();
+
+    const validator = new SemanticValidator(mockGameData, __filename);
+    validator.validate(ast);
+
+    assert.strictEqual(validator.diagnostics.length, 0);
+  });
+
+  test("does not warn when the imported file exists", () => {
+    const input = `Import "${path.basename(__filename)}"\n`;
+    const parser = new Parser(input);
+    const ast = parser.parse();
+
+    const validator = new SemanticValidator(mockGameData, __filename);
+    validator.validate(ast);
+
+    assert.strictEqual(validator.diagnostics.length, 0);
   });
 });

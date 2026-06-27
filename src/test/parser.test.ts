@@ -7,6 +7,7 @@ import {
   ConditionNode,
   ActionNode,
   ErrorNode,
+  ImportNode,
 } from "../language-server/ast/nodes";
 
 suite("Parser Test Suite", () => {
@@ -420,5 +421,57 @@ Show # Weapons
     const block2 = ast.children[1] as BlockNode;
     assert.strictEqual(block2.commented, true);
     assert.strictEqual(block2.body.length, 1);
+  });
+});
+
+suite("Import Statement", () => {
+  test("should parse a top-level Import as an ImportNode", () => {
+    const input = `Import "other.filter"\n`;
+    const parser = new Parser(input);
+    const ast = parser.parse();
+
+    assert.strictEqual(ast.children.length, 1);
+    const node = ast.children[0] as ImportNode;
+    assert.strictEqual(node.type, "Import");
+    assert.strictEqual(node.path.value, "other.filter");
+    assert.strictEqual(node.optional, false);
+    assert.strictEqual(
+      parser.diagnostics.length,
+      0,
+      "Import should parse without diagnostics"
+    );
+  });
+
+  test("should parse an Optional Import", () => {
+    const input = `Import "maybe.filter" Optional\n`;
+    const parser = new Parser(input);
+    const ast = parser.parse();
+
+    const node = ast.children[0] as ImportNode;
+    assert.strictEqual(node.type, "Import");
+    assert.strictEqual(node.path.value, "maybe.filter");
+    assert.strictEqual(node.optional, true);
+    assert.strictEqual(parser.diagnostics.length, 0);
+  });
+
+  test("should error when Import has no path", () => {
+    const input = `Import\n`;
+    const parser = new Parser(input);
+    parser.parse();
+
+    assert.ok(
+      parser.diagnostics.some((d) => /file path/i.test(d.message)),
+      "Should report a missing file path"
+    );
+  });
+
+  test("should keep parsing blocks after an Import", () => {
+    const input = `Import "base.filter"\n\nShow\n    BaseType "Mirror"\n`;
+    const parser = new Parser(input);
+    const ast = parser.parse();
+
+    assert.strictEqual(ast.children.length, 2);
+    assert.strictEqual(ast.children[0].type, "Import");
+    assert.strictEqual(ast.children[1].type, "Show");
   });
 });
