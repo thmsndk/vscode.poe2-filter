@@ -754,19 +754,110 @@ suite("CustomAlertSound Validation", () => {
       return validator.diagnostics;
     };
 
-    test("warns on a duplicate condition (only the first is evaluated)", () => {
+    test("does not warn on a numeric range bracket (conditions compound/AND)", () => {
+      // FilterBlade routinely brackets a band like this; both bounds apply.
+      const diagnostics = validate(`
+Show
+    ItemLevel >= 65
+    ItemLevel <= 81
+    SetFontSize 40
+`);
+      assert.deepStrictEqual(diagnostics, []);
+    });
+
+    test("errors on a numeric range that can never match", () => {
+      const diagnostics = validate(`
+Show
+    ItemLevel >= 80
+    ItemLevel <= 10
+    SetFontSize 40
+`);
+      assert.strictEqual(diagnostics.length, 1);
+      assert.strictEqual(diagnostics[0].severity, "error");
+      assert.strictEqual(diagnostics[0].line, 4);
+      assert.strictEqual(
+        diagnostics[0].message,
+        "This block can never match: its ItemLevel conditions contradict each other (no value satisfies all of them)"
+      );
+    });
+
+    test("errors on mutually exclusive Rarity conditions", () => {
+      const diagnostics = validate(`
+Show
+    Rarity Normal
+    Rarity Magic
+    SetFontSize 40
+`);
+      assert.strictEqual(diagnostics.length, 1);
+      assert.strictEqual(diagnostics[0].severity, "error");
+      assert.strictEqual(
+        diagnostics[0].message,
+        "This block can never match: its Rarity conditions contradict each other (no value satisfies all of them)"
+      );
+    });
+
+    test("does not warn on a valid Rarity range (>= and <=)", () => {
+      const diagnostics = validate(`
+Show
+    Rarity >= Magic
+    Rarity <= Rare
+    SetFontSize 40
+`);
+      assert.deepStrictEqual(diagnostics, []);
+    });
+
+    test("errors on contradictory boolean conditions", () => {
+      const diagnostics = validate(`
+Show
+    Corrupted True
+    Corrupted False
+    SetFontSize 40
+`);
+      assert.strictEqual(diagnostics.length, 1);
+      assert.strictEqual(diagnostics[0].severity, "error");
+      assert.strictEqual(
+        diagnostics[0].message,
+        "This block can never match: its Corrupted conditions contradict each other (no value satisfies all of them)"
+      );
+    });
+
+    test("warns on a redundant condition that does not narrow the others", () => {
       const diagnostics = validate(`
 Show
     ItemLevel >= 60
-    ItemLevel <= 70
+    ItemLevel >= 70
     SetFontSize 40
 `);
       assert.strictEqual(diagnostics.length, 1);
       assert.strictEqual(diagnostics[0].severity, "warning");
-      assert.strictEqual(diagnostics[0].line, 4);
+      assert.strictEqual(diagnostics[0].line, 3);
       assert.strictEqual(
         diagnostics[0].message,
-        'Duplicate condition "ItemLevel": only the first ItemLevel in a block is evaluated'
+        "Redundant ItemLevel condition: another ItemLevel condition in this block already covers it"
+      );
+      assert.deepStrictEqual(diagnostics[0].tags, ["unnecessary"]);
+    });
+
+    test("errors on two different exact BaseTypes (an item has one base)", () => {
+      const gameData = new GameDataService();
+      gameData.baseItemTypes = [
+        { Id: "Exalted Orb", Name: "Exalted Orb", ItemClass: 0, DropLevel: 1 },
+        { Id: "Chaos Orb", Name: "Chaos Orb", ItemClass: 0, DropLevel: 1 },
+      ];
+      const ast = new Parser(`
+Show
+    BaseType == "Exalted Orb"
+    BaseType == "Chaos Orb"
+    SetFontSize 40
+`).parse();
+      const validator = new SemanticValidator(gameData);
+      validator.validate(ast);
+
+      assert.strictEqual(validator.diagnostics.length, 1);
+      assert.strictEqual(validator.diagnostics[0].severity, "error");
+      assert.strictEqual(
+        validator.diagnostics[0].message,
+        "This block can never match: its BaseType conditions contradict each other (no value satisfies all of them)"
       );
     });
 
@@ -836,11 +927,11 @@ Show
       assert.deepStrictEqual(diagnostics[0].tags, ["unnecessary"]);
     });
 
-    test("tags ignored duplicate conditions as unnecessary", () => {
+    test("tags redundant duplicate conditions as unnecessary", () => {
       const diagnostics = validate(`
 Show
     ItemLevel >= 60
-    ItemLevel <= 70
+    ItemLevel >= 70
     SetFontSize 40
 `);
       assert.strictEqual(diagnostics.length, 1);

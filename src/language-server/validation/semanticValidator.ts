@@ -53,6 +53,65 @@ export interface SemanticDiagnostic {
   data?: ClassBaseTypeFixData;
 }
 
+/**
+ * The set of values a single condition occurrence allows, used to reason about
+ * duplicate conditions of the same type (which COMPOUND/AND in-game). Numeric
+ * conditions are modelled as an interval; enum/boolean conditions as a small
+ * discrete set of ordinals.
+ */
+type DupConstraint =
+  | { kind: "interval"; lo: number; loEx: boolean; hi: number; hiEx: boolean }
+  | { kind: "set"; values: Set<number> };
+
+function intersectConstraint(a: DupConstraint, b: DupConstraint): DupConstraint {
+  if (a.kind === "interval" && b.kind === "interval") {
+    const lo = Math.max(a.lo, b.lo);
+    const loEx = (a.lo === lo && a.loEx) || (b.lo === lo && b.loEx);
+    const hi = Math.min(a.hi, b.hi);
+    const hiEx = (a.hi === hi && a.hiEx) || (b.hi === hi && b.hiEx);
+    return { kind: "interval", lo, loEx, hi, hiEx };
+  }
+  if (a.kind === "set" && b.kind === "set") {
+    const values = new Set<number>();
+    for (const v of a.values) {
+      if (b.values.has(v)) {
+        values.add(v);
+      }
+    }
+    return { kind: "set", values };
+  }
+  // Mismatched kinds never occur (a group shares one condition type), but keep
+  // the type checker happy by returning an empty set.
+  return { kind: "set", values: new Set() };
+}
+
+function constraintIsEmpty(c: DupConstraint): boolean {
+  if (c.kind === "interval") {
+    return c.lo > c.hi || (c.lo === c.hi && (c.loEx || c.hiEx));
+  }
+  return c.values.size === 0;
+}
+
+function constraintEquals(a: DupConstraint, b: DupConstraint): boolean {
+  if (a.kind === "interval" && b.kind === "interval") {
+    return (
+      a.lo === b.lo && a.loEx === b.loEx && a.hi === b.hi && a.hiEx === b.hiEx
+    );
+  }
+  if (a.kind === "set" && b.kind === "set") {
+    if (a.values.size !== b.values.size) {
+      return false;
+    }
+    for (const v of a.values) {
+      if (!b.values.has(v)) {
+        return false;
+      }
+    }
+    return true;
+  }
+  return false;
+}
+
 export class SemanticValidator {
   public diagnostics: SemanticDiagnostic[] = [];
 
@@ -114,10 +173,19 @@ export class SemanticValidator {
         // or actions in this block can never apply.
         const blockNode = node as BlockNode;
         let afterContinue = false;
-        // Track active (non-commented) conditions/actions to flag duplicates:
-        // PoE only evaluates the first condition of each type and only applies
-        // the last action of each type, so the others are dead code.
+        // Collect active (non-commented) conditions/actions per type.
+        //
+        // Conditions of the same type COMPOUND (AND) in-game - confirmed in
+        // PoE2 and relied upon by FilterBlade filters, which routinely bracket
+        // a numeric range with two conditions (e.g. `ItemLevel >= 65` plus
+        // `ItemLevel <= 81`). So repeated conditions are only a problem when
+        // they contradict each other (never match) or are redundant; that is
+        // handled by validateDuplicateConditionGroup below.
+        //
+        // Actions of the same type behave differently: only the LAST one is
+        // applied, so earlier duplicates are genuine dead code (see below).
         const firstConditionByType = new Map<string, ConditionNode>();
+        const conditionsByType = new Map<ConditionType, ConditionNode[]>();
         const actionsByType = new Map<string, ActionNode[]>();
         for (const child of blockNode.body) {
           const isCommented =
@@ -142,16 +210,11 @@ export class SemanticValidator {
 
           if (!isCommented && child.type === "Condition") {
             const conditionNode = child as ConditionNode;
-            if (firstConditionByType.has(conditionNode.condition)) {
-              this.diagnostics.push({
-                message: `Duplicate condition "${conditionNode.condition}": only the first ${conditionNode.condition} in a block is evaluated`,
-                severity: "warning",
-                line: conditionNode.line,
-                columnStart: conditionNode.columnStart,
-                columnEnd: conditionNode.columnEnd,
-                tags: ["unnecessary"],
-              });
-            } else {
+            const occurrences =
+              conditionsByType.get(conditionNode.condition) ?? [];
+            occurrences.push(conditionNode);
+            conditionsByType.set(conditionNode.condition, occurrences);
+            if (!firstConditionByType.has(conditionNode.condition)) {
               firstConditionByType.set(conditionNode.condition, conditionNode);
             }
           }
@@ -170,6 +233,12 @@ export class SemanticValidator {
           }
 
           this.visitNode(child, node);
+        }
+
+        for (const occurrences of conditionsByType.values()) {
+          if (occurrences.length > 1) {
+            this.validateDuplicateConditionGroup(occurrences);
+          }
         }
 
         this.validateClassBaseTypeCombination(firstConditionByType);
@@ -821,6 +890,252 @@ export class SemanticValidator {
       p = p.slice(1);
     }
     return p;
+  }
+
+  /**
+   * Analyses a group of same-type conditions in one block. Because conditions
+   * compound (AND), repetition is idiomatic (range brackets). We only flag:
+   *   - contradictions: the conditions can never be satisfied together, so the
+   *     whole block can never match (error); and
+   *   - redundancy: a condition that does not narrow the others at all (hint
+   *     rendered as faded/unnecessary).
+   */
+  private validateDuplicateConditionGroup(occurrences: ConditionNode[]): void {
+    const condition = occurrences[0].condition;
+    const syntax = ConditionSyntaxMap[condition];
+    if (!syntax) {
+      return;
+    }
+
+    switch (syntax.valueType) {
+      case "number":
+        this.analyzeConstraintGroup(occurrences, (occ) =>
+          this.numericConstraint(occ)
+        );
+        return;
+      case "rarity":
+        this.analyzeConstraintGroup(occurrences, (occ) =>
+          this.rarityConstraint(occ, syntax.valueSyntax.enumValues)
+        );
+        return;
+      case "boolean":
+        this.analyzeConstraintGroup(occurrences, (occ) =>
+          this.booleanConstraint(occ)
+        );
+        return;
+      default:
+        this.validateStringDuplicates(occurrences);
+    }
+  }
+
+  /**
+   * Generic contradiction/redundancy analysis over a group of conditions once
+   * each has been reduced to the set of values it allows. Occurrences that
+   * cannot be reduced (e.g. still being typed) are ignored.
+   */
+  private analyzeConstraintGroup(
+    occurrences: ConditionNode[],
+    toConstraint: (occ: ConditionNode) => DupConstraint | undefined
+  ): void {
+    const items: { occ: ConditionNode; constraint: DupConstraint }[] = [];
+    for (const occ of occurrences) {
+      const constraint = toConstraint(occ);
+      if (constraint) {
+        items.push({ occ, constraint });
+      }
+    }
+    if (items.length < 2) {
+      return;
+    }
+
+    const total = items
+      .map((i) => i.constraint)
+      .reduce((a, b) => intersectConstraint(a, b));
+    if (constraintIsEmpty(total)) {
+      this.reportContradiction(occurrences);
+      return;
+    }
+
+    // Greedily drop conditions that do not narrow the rest; each such condition
+    // is redundant. Doing it one at a time keeps a single member of an
+    // identical pair (removing both would change the result).
+    const active = items.slice();
+    let removed = true;
+    while (active.length > 1 && removed) {
+      removed = false;
+      for (let i = 0; i < active.length; i++) {
+        const others = active
+          .filter((_, j) => j !== i)
+          .map((a) => a.constraint)
+          .reduce((a, b) => intersectConstraint(a, b));
+        const withCurrent = intersectConstraint(others, active[i].constraint);
+        if (constraintEquals(others, withCurrent)) {
+          this.reportRedundant(active[i].occ);
+          active.splice(i, 1);
+          removed = true;
+          break;
+        }
+      }
+    }
+  }
+
+  private numericConstraint(occ: ConditionNode): DupConstraint | undefined {
+    const raw = occ.values[0]?.value;
+    if (occ.values.length === 0) {
+      return undefined;
+    }
+    const value = typeof raw === "number" ? raw : Number(raw);
+    if (!Number.isFinite(value)) {
+      return undefined;
+    }
+    const op = occ.operator?.trim() || "==";
+    switch (op) {
+      case "==":
+        return { kind: "interval", lo: value, loEx: false, hi: value, hiEx: false };
+      case ">=":
+        return { kind: "interval", lo: value, loEx: false, hi: Infinity, hiEx: false };
+      case ">":
+        return { kind: "interval", lo: value, loEx: true, hi: Infinity, hiEx: false };
+      case "<=":
+        return { kind: "interval", lo: -Infinity, loEx: false, hi: value, hiEx: false };
+      case "<":
+        return { kind: "interval", lo: -Infinity, loEx: false, hi: value, hiEx: true };
+      default:
+        return undefined;
+    }
+  }
+
+  private rarityConstraint(
+    occ: ConditionNode,
+    enumValues: Record<string, number> | undefined
+  ): DupConstraint | undefined {
+    if (!enumValues || occ.values.length === 0) {
+      return undefined;
+    }
+    const domain = Object.values(enumValues);
+    const op = occ.operator?.trim();
+
+    // No operator => space-separated list of exact rarities (OR).
+    if (!op || op === "==") {
+      const values = new Set<number>();
+      for (const nodeValue of occ.values) {
+        const ord = enumValues[String(nodeValue.value)];
+        if (ord !== undefined) {
+          values.add(ord);
+        }
+      }
+      return values.size > 0 ? { kind: "set", values } : undefined;
+    }
+
+    const ord = enumValues[String(occ.values[0].value)];
+    if (ord === undefined) {
+      return undefined;
+    }
+    const values = new Set<number>();
+    for (const d of domain) {
+      const keep =
+        (op === ">=" && d >= ord) ||
+        (op === ">" && d > ord) ||
+        (op === "<=" && d <= ord) ||
+        (op === "<" && d < ord);
+      if (keep) {
+        values.add(d);
+      }
+    }
+    return { kind: "set", values };
+  }
+
+  private booleanConstraint(occ: ConditionNode): DupConstraint | undefined {
+    let value: boolean;
+    if (occ.values.length === 0) {
+      value = true; // a bare boolean condition (e.g. `Corrupted`) means True
+    } else {
+      const raw = occ.values[0].value;
+      if (raw === true || raw === "True" || raw === "true") {
+        value = true;
+      } else if (raw === false || raw === "False" || raw === "false") {
+        value = false;
+      } else {
+        return undefined;
+      }
+    }
+    if (occ.negated) {
+      value = !value;
+    }
+    return { kind: "set", values: new Set([value ? 1 : 0]) };
+  }
+
+  /**
+   * String/list conditions (BaseType, Class, ...). They compound (AND), but
+   * substring matching makes contradictions undecidable in general. We only
+   * prove "never matches" for single-valued item properties (BaseType, Class)
+   * matched exactly, and otherwise just flag identical repeats as redundant.
+   */
+  private validateStringDuplicates(occurrences: ConditionNode[]): void {
+    const condition = occurrences[0].condition;
+
+    const singleValued =
+      condition === ConditionType.BaseType || condition === ConditionType.Class;
+    const allExact = occurrences.every((o) => o.operator?.trim() === "==");
+    if (singleValued && allExact) {
+      let intersection: Set<string> | undefined;
+      let usable = true;
+      for (const occ of occurrences) {
+        const set = new Set<string>();
+        for (const nodeValue of occ.values) {
+          if (typeof nodeValue.value === "string") {
+            set.add(nodeValue.value);
+          }
+        }
+        if (set.size === 0) {
+          usable = false;
+          break;
+        }
+        intersection = intersection
+          ? new Set([...intersection].filter((v) => set.has(v)))
+          : set;
+      }
+      if (usable && intersection && intersection.size === 0) {
+        this.reportContradiction(occurrences);
+        return;
+      }
+    }
+
+    const seen = new Set<string>();
+    for (const occ of occurrences) {
+      const key =
+        (occ.operator?.trim() ?? "") +
+        "|" +
+        occ.values.map((v) => String(v.value)).join("\u0000");
+      if (seen.has(key)) {
+        this.reportRedundant(occ);
+      } else {
+        seen.add(key);
+      }
+    }
+  }
+
+  private reportContradiction(occurrences: ConditionNode[]): void {
+    const condition = occurrences[0].condition;
+    const last = occurrences[occurrences.length - 1];
+    this.diagnostics.push({
+      message: `This block can never match: its ${condition} conditions contradict each other (no value satisfies all of them)`,
+      severity: "error",
+      line: last.line,
+      columnStart: last.columnStart,
+      columnEnd: last.columnEnd,
+    });
+  }
+
+  private reportRedundant(occ: ConditionNode): void {
+    this.diagnostics.push({
+      message: `Redundant ${occ.condition} condition: another ${occ.condition} condition in this block already covers it`,
+      severity: "warning",
+      line: occ.line,
+      columnStart: occ.columnStart,
+      columnEnd: occ.columnEnd,
+      tags: ["unnecessary"],
+    });
   }
 
   /**
