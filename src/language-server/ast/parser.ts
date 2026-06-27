@@ -873,7 +873,10 @@ export class Parser {
     return (
       this.currentToken.type !== "EOF" &&
       this.currentToken.type !== "NEWLINE" &&
-      // TODO: What actually happens if we have a Continue in the middle of a block? i'd assume we have to keep parsing until we hit a new block or header
+      // A new statement keyword ends the current statement's value list. A
+      // Continue appearing mid-block is therefore parsed as its own action; the
+      // semantic validator then flags any conditions/actions that follow it,
+      // since they never apply once a block hands control to later blocks.
       !["CONDITION", "ACTION", "SHOW", "HIDE", "CONTINUE"].includes(
         this.currentToken.type
       )

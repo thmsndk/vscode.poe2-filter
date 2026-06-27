@@ -126,7 +126,6 @@ Show
   });
 
   test("should parse Continue action correctly", () => {
-    // TODO: What actually happens if we have a Continue in the middle of a block?
     const input = `
 Show
     BaseType "Mirror"
@@ -144,6 +143,33 @@ Show
     assert.strictEqual(continueAction.action, ActionType.Continue);
     assert.strictEqual(continueAction.values.length, 0);
     assert.strictEqual(continueAction.inlineComment, "Keep checking rules");
+  });
+
+  test("should parse a Continue in the middle of a block as its own action", () => {
+    // A mid-block Continue is parsed without error; statements that follow it
+    // are kept as separate nodes (the semantic validator flags them instead).
+    const input = `
+Show
+    BaseType "Mirror"
+    Continue
+    SetFontSize 40
+`;
+    const parser = new Parser(input);
+    const ast = parser.parse();
+
+    assert.strictEqual(parser.diagnostics.length, 0);
+
+    const block = ast.children[0] as BlockNode;
+    assert.deepStrictEqual(
+      block.body.map((node) =>
+        node.type === "Action"
+          ? `Action:${(node as ActionNode).action}`
+          : node.type === "Condition"
+          ? `Condition:${(node as ConditionNode).condition}`
+          : node.type
+      ),
+      ["Condition:BaseType", "Action:Continue", "Action:SetFontSize"]
+    );
   });
 
   test("should error on Continue at root level", () => {
