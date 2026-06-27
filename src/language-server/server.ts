@@ -7,6 +7,7 @@ import {
   InitializeResult,
   Diagnostic,
   DiagnosticSeverity,
+  DiagnosticTag,
   Range,
   Position,
   TextDocumentPositionParams,
@@ -177,6 +178,12 @@ function convertToLSPDiagnostic(
   source: string = "poe-filter-ls"
 ): Diagnostic {
   try {
+    const tags = diagnostic.tags?.map((tag) =>
+      tag === "deprecated"
+        ? DiagnosticTag.Deprecated
+        : DiagnosticTag.Unnecessary
+    );
+
     return {
       severity:
         diagnostic.severity === "error"
@@ -194,6 +201,7 @@ function convertToLSPDiagnostic(
       ),
       message: diagnostic.message,
       source: source,
+      ...(tags && tags.length > 0 ? { tags } : {}),
     };
   } catch (error: any) {
     connection.console.error(

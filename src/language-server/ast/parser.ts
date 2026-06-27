@@ -28,6 +28,7 @@ export interface ParserDiagnostic {
   line: number;
   columnStart: number;
   columnEnd: number;
+  tags?: ("unnecessary" | "deprecated")[];
 }
 
 export class Parser {

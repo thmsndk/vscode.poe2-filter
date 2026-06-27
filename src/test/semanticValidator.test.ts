@@ -692,4 +692,46 @@ Show
       assert.deepStrictEqual(diagnostics, []);
     });
   });
+
+  suite("Dead-code tags", () => {
+    const validate = (input: string) => {
+      const ast = new Parser(input).parse();
+      const validator = new SemanticValidator(mockGameData);
+      validator.validate(ast);
+      return validator.diagnostics;
+    };
+
+    test("tags statements after Continue as unnecessary", () => {
+      const diagnostics = validate(`
+Show
+    Quality > 0
+    Continue
+    SetFontSize 40
+`);
+      assert.strictEqual(diagnostics.length, 1);
+      assert.match(diagnostics[0].message, /after Continue/);
+      assert.deepStrictEqual(diagnostics[0].tags, ["unnecessary"]);
+    });
+
+    test("tags overridden duplicate actions as unnecessary", () => {
+      const diagnostics = validate(`
+Show
+    SetFontSize 30
+    SetFontSize 40
+`);
+      assert.strictEqual(diagnostics.length, 1);
+      assert.deepStrictEqual(diagnostics[0].tags, ["unnecessary"]);
+    });
+
+    test("tags ignored duplicate conditions as unnecessary", () => {
+      const diagnostics = validate(`
+Show
+    ItemLevel >= 60
+    ItemLevel <= 70
+    SetFontSize 40
+`);
+      assert.strictEqual(diagnostics.length, 1);
+      assert.deepStrictEqual(diagnostics[0].tags, ["unnecessary"]);
+    });
+  });
 });

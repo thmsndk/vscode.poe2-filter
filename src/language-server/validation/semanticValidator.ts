@@ -22,12 +22,19 @@ import {
 } from "../../utils/stringUtils";
 import { GameDataService } from "../../services/gameDataService";
 
+/**
+ * Optional rendering hints mirroring VS Code's DiagnosticTag: "unnecessary"
+ * fades the range (dead/unreachable code) and "deprecated" strikes it through.
+ */
+export type DiagnosticTagKind = "unnecessary" | "deprecated";
+
 export interface SemanticDiagnostic {
   message: string;
   severity: "error" | "warning";
   line: number;
   columnStart: number;
   columnEnd: number;
+  tags?: DiagnosticTagKind[];
 }
 
 export class SemanticValidator {
@@ -112,6 +119,7 @@ export class SemanticValidator {
               line: child.line,
               columnStart: child.columnStart,
               columnEnd: child.columnEnd,
+              tags: ["unnecessary"],
             });
             continue;
           }
@@ -125,6 +133,7 @@ export class SemanticValidator {
                 line: conditionNode.line,
                 columnStart: conditionNode.columnStart,
                 columnEnd: conditionNode.columnEnd,
+                tags: ["unnecessary"],
               });
             } else {
               firstConditionByType.set(conditionNode.condition, conditionNode);
@@ -159,6 +168,7 @@ export class SemanticValidator {
               line: overridden.line,
               columnStart: overridden.columnStart,
               columnEnd: overridden.columnEnd,
+              tags: ["unnecessary"],
             });
           }
         }
