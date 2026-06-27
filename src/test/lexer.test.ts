@@ -396,4 +396,70 @@ Show
     const commentToken = tokens.find((t) => t.type === "INLINE_COMMENT");
     assert.strictEqual(commentToken?.value, "Salvageable Quality Normal items");
   });
+
+  test("should treat an inline comment starting with a keyword as a comment", () => {
+    // The first word of the inline comment ("Quality") is a condition keyword,
+    // but because the comment is inline (after `Show`) it must not be lexed as a
+    // commented-out condition.
+    const input = `Show # Quality and Stack Size
+    Quality >= 20
+`;
+
+    const lexer = new Lexer(input);
+    const tokens = [];
+    let token;
+
+    do {
+      token = lexer.nextToken();
+      tokens.push(token);
+    } while (token.type !== "EOF");
+
+    assert.deepStrictEqual(
+      tokens.map((t) => t.type),
+      [
+        "SHOW",
+        "INLINE_COMMENT",
+        "NEWLINE",
+        "CONDITION",
+        "OPERATOR",
+        "NUMBER",
+        "NEWLINE",
+        "EOF",
+      ]
+    );
+
+    const commentToken = tokens.find((t) => t.type === "INLINE_COMMENT");
+    assert.strictEqual(commentToken?.value, "Quality and Stack Size");
+  });
+
+  test("should treat a multi-# section header starting with a keyword as a header", () => {
+    // Multiple leading '#'s denote a section header, not commented-out code -
+    // even when the header text starts with a condition keyword ("Rarity").
+    const input = `##### Rarity Items ##################
+Show
+    Rarity Unique
+`;
+
+    const lexer = new Lexer(input);
+    const tokens = [];
+    let token;
+
+    do {
+      token = lexer.nextToken();
+      tokens.push(token);
+    } while (token.type !== "EOF");
+
+    assert.deepStrictEqual(
+      tokens.map((t) => t.type),
+      [
+        "HEADER",
+        "SHOW",
+        "NEWLINE",
+        "CONDITION",
+        "RARITY",
+        "NEWLINE",
+        "EOF",
+      ]
+    );
+  });
 });

@@ -123,7 +123,21 @@ export class Lexer {
     const words = trimmedLine.split(/\s/);
     const firstWord = words[0];
 
-    if (firstWord in BlockType) {
+    // Only a comment that starts the line can be a commented-out block/
+    // condition/action. An inline comment (something precedes the '#' on the
+    // line) is always a plain comment, even when its first word happens to be a
+    // keyword like "Quality" - otherwise e.g. `Show # Quality and Stack Size`
+    // would be misread as a commented Quality condition.
+    //
+    // Additionally, only a *single* leading '#' marks commented-out code.
+    // Multiple consecutive '#'s denote a section/markdown header (e.g.
+    // "##### Rarity Items #####"), which must not be treated as a commented
+    // "Rarity" condition just because its text starts with a keyword.
+    const atLineStart = this.isLineStart(start);
+    const leadingHashes = line.match(/^#+/)?.[0].length ?? 0;
+    const isCommentedCodeCandidate = atLineStart && leadingHashes <= 1;
+
+    if (isCommentedCodeCandidate && firstWord in BlockType) {
       const end = this.position + leadingCharacters + firstWord.length;
       this.advanceToPosition(end);
 
@@ -136,7 +150,7 @@ export class Lexer {
         columnStart: startColumn,
         columnEnd: this.column,
       };
-    } else if (this.isCondition(firstWord)) {
+    } else if (isCommentedCodeCandidate && this.isCondition(firstWord)) {
       const end = this.position + leadingCharacters + firstWord.length;
       this.advanceToPosition(end);
 
@@ -149,7 +163,7 @@ export class Lexer {
         columnStart: startColumn,
         columnEnd: this.column,
       };
-    } else if (this.isAction(firstWord)) {
+    } else if (isCommentedCodeCandidate && this.isAction(firstWord)) {
       const end = this.position + leadingCharacters + firstWord.length;
       this.advanceToPosition(end);
 
