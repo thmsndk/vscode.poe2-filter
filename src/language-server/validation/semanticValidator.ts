@@ -28,6 +28,21 @@ import { GameDataService } from "../../services/gameDataService";
  */
 export type DiagnosticTagKind = "unnecessary" | "deprecated";
 
+/**
+ * Quick-fix metadata for an impossible Class/BaseType combination, carried on
+ * the diagnostic's `data` so the code action provider can offer fixes without
+ * re-deriving game data. Positions are 0-based (LSP) and ready to use directly.
+ */
+export interface ClassBaseTypeFixData {
+  fix: "class-basetype-mismatch";
+  /** The offending BaseType value (without quotes), e.g. "Adherent Cuffs". */
+  baseType: string;
+  /** The base's actual class name(s), e.g. ["Gloves"] - what to add to Class. */
+  addClasses: string[];
+  /** Where to insert the new class value (end of the last Class value). */
+  classInsert: { line: number; character: number };
+}
+
 export interface SemanticDiagnostic {
   message: string;
   severity: "error" | "warning";
@@ -35,6 +50,7 @@ export interface SemanticDiagnostic {
   columnStart: number;
   columnEnd: number;
   tags?: DiagnosticTagKind[];
+  data?: ClassBaseTypeFixData;
 }
 
 export class SemanticValidator {
@@ -845,10 +861,6 @@ export class SemanticValidator {
       return;
     }
 
-    const allowedClassNames = [
-      ...new Set(classMatches.map((match) => `"${match.item.Name}"`)),
-    ].join(", ");
-
     const baseExact = baseTypeNode.operator === "==";
 
     for (const nodeValue of baseTypeNode.values) {
@@ -879,16 +891,34 @@ export class SemanticValidator {
             .map((match) => this.gameData?.findClassByIndex(match.item.ItemClass)?.Name)
             .filter((name): name is string => Boolean(name))
         ),
-      ].join(", ");
-      const actualPart = actualClassNames ? ` (a ${actualClassNames})` : "";
+      ];
+      const actualPart =
+        actualClassNames.length > 0 ? ` (${actualClassNames.join(", ")})` : "";
+
+      // Carry fix metadata so the code action provider can offer "add the
+      // actual class" / "remove this BaseType" without re-querying game data.
+      const lastClassValue = classNode.values[classNode.values.length - 1];
+      const data: ClassBaseTypeFixData | undefined =
+        lastClassValue && actualClassNames.length > 0
+          ? {
+              fix: "class-basetype-mismatch",
+              baseType: value,
+              addClasses: actualClassNames,
+              classInsert: {
+                line: classNode.line - 1,
+                character: lastClassValue.columnEnd - 1,
+              },
+            }
+          : undefined;
 
       this.diagnostics.push({
-        message: `Class/BaseType combination never matches: BaseType "${value}"${actualPart} does not belong to Class ${allowedClassNames}`,
+        message: `BaseType "${value}"${actualPart} does not match this block's Class condition`,
         severity: "warning",
         line: baseTypeNode.line,
         columnStart: nodeValue.columnStart,
         columnEnd: nodeValue.columnEnd,
         tags: ["unnecessary"],
+        ...(data ? { data } : {}),
       });
     }
   }

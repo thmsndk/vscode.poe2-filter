@@ -235,6 +235,9 @@ function convertToLSPDiagnostic(
       message: diagnostic.message,
       source: source,
       ...(tags && tags.length > 0 ? { tags } : {}),
+      ...("data" in diagnostic && diagnostic.data
+        ? { data: diagnostic.data }
+        : {}),
     };
   } catch (error: any) {
     connection.console.error(

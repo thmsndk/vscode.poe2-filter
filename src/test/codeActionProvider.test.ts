@@ -143,4 +143,57 @@ suite("Code Action Provider Test Suite", () => {
       assert.ok(actions.some((a) => a.title === "Uncomment this line"));
     });
   });
+
+  suite("Class/BaseType mismatch fixes", () => {
+    // Line 1 ends the Class condition; line 2 holds the BaseType value.
+    const text =
+      'Show\n    Class == "Currency"\n    BaseType == "Sapphire Ring"\n';
+    const classLineEnd = text.split("\n")[1].length;
+    const baseTypeStart = text.split("\n")[2].indexOf('"Sapphire Ring"');
+    const baseTypeEnd = baseTypeStart + '"Sapphire Ring"'.length;
+
+    const mismatchDiagnostic = (): Diagnostic => ({
+      source: "poe-filter-ls-semanticValidator",
+      tags: [DiagnosticTag.Unnecessary],
+      message:
+        'BaseType "Sapphire Ring" (Rings) does not match this block\'s Class condition',
+      range: Range.create(2, baseTypeStart, 2, baseTypeEnd),
+      data: {
+        fix: "class-basetype-mismatch",
+        baseType: "Sapphire Ring",
+        addClasses: ["Rings"],
+        classInsert: { line: 1, character: classLineEnd },
+      },
+    });
+
+    test("adds the actual class to the Class condition", () => {
+      const document = makeDocument(text);
+      const actions = getActions(document, Range.create(2, baseTypeStart, 2, baseTypeStart), [
+        mismatchDiagnostic(),
+      ]);
+      const add = actions.find((a) => a.title === 'Add "Rings" to Class');
+
+      assert.ok(add, "expected an 'Add ... to Class' action");
+      assert.strictEqual(
+        applyAction(document, add),
+        'Show\n    Class == "Currency" "Rings"\n    BaseType == "Sapphire Ring"\n'
+      );
+    });
+
+    test("removes the offending BaseType value (no double space)", () => {
+      const document = makeDocument(text);
+      const actions = getActions(document, Range.create(2, baseTypeStart, 2, baseTypeStart), [
+        mismatchDiagnostic(),
+      ]);
+      const remove = actions.find(
+        (a) => a.title === 'Remove BaseType "Sapphire Ring"'
+      );
+
+      assert.ok(remove, "expected a 'Remove BaseType' action");
+      assert.strictEqual(
+        applyAction(document, remove),
+        'Show\n    Class == "Currency"\n    BaseType ==\n'
+      );
+    });
+  });
 });

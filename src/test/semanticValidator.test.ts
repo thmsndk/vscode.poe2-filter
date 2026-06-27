@@ -385,9 +385,28 @@ Show
     assert.strictEqual(diagnostics[0].line, 4);
     assert.strictEqual(
       diagnostics[0].message,
-      'Class/BaseType combination never matches: BaseType "Sapphire Ring" (a Rings) does not belong to Class "Currency"'
+      'BaseType "Sapphire Ring" (Rings) does not match this block\'s Class condition'
     );
     assert.deepStrictEqual(diagnostics[0].tags, ["unnecessary"]);
+  });
+
+  test("attaches fix metadata for the impossible combination", () => {
+    const diagnostics = validate(`
+Show
+    Class == "Currency"
+    BaseType == "Sapphire Ring"
+    SetFontSize 40
+`);
+    const data = diagnostics[0].data;
+    if (!data) {
+      assert.fail("expected fix metadata on the diagnostic");
+      return;
+    }
+    assert.strictEqual(data.fix, "class-basetype-mismatch");
+    assert.strictEqual(data.baseType, "Sapphire Ring");
+    assert.deepStrictEqual(data.addClasses, ["Rings"]);
+    // 0-based line of `    Class == "Currency"`.
+    assert.strictEqual(data.classInsert.line, 2);
   });
 
   test("does not warn when the BaseType belongs to the Class", () => {

@@ -10,6 +10,7 @@ import {
 } from "vscode-languageserver";
 import { TextDocument } from "vscode-languageserver-textdocument";
 import { Lexer } from "../ast/lexer";
+import { ClassBaseTypeFixData } from "../validation/semanticValidator";
 
 const SEMANTIC_SOURCE = "poe-filter-ls-semanticValidator";
 
@@ -74,6 +75,12 @@ export class CodeActionProvider {
       if (this.isRemovableDeadCode(document, diagnostic)) {
         actions.push(this.makeRemoveLineAction(document, diagnostic));
       }
+
+      // Class/BaseType mismatch: offer to add the actual class or drop the value.
+      const fixData = diagnostic.data as ClassBaseTypeFixData | undefined;
+      if (fixData?.fix === "class-basetype-mismatch") {
+        actions.push(...this.makeClassBaseTypeFixes(document, diagnostic, fixData));
+      }
     }
 
     // "Uncomment" for commented-out code at the cursor/selection.
@@ -126,6 +133,79 @@ export class CodeActionProvider {
         },
       },
     };
+  }
+
+  /**
+   * Builds the two fixes for an impossible Class/BaseType combination:
+   *  - add the base's actual class to the block's Class condition, or
+   *  - remove the offending BaseType value.
+   */
+  private makeClassBaseTypeFixes(
+    document: TextDocument,
+    diagnostic: Diagnostic,
+    data: ClassBaseTypeFixData
+  ): CodeAction[] {
+    const actions: CodeAction[] = [];
+
+    if (data.addClasses.length > 0) {
+      const label = data.addClasses.map((name) => `"${name}"`).join(", ");
+      const insertText = data.addClasses
+        .map((name) => ` "${name}"`)
+        .join("");
+      actions.push({
+        title: `Add ${label} to Class`,
+        kind: CodeActionKind.QuickFix,
+        diagnostics: [diagnostic],
+        isPreferred: true,
+        edit: {
+          changes: {
+            [document.uri]: [
+              TextEdit.insert(
+                Position.create(
+                  data.classInsert.line,
+                  data.classInsert.character
+                ),
+                insertText
+              ),
+            ],
+          },
+        },
+      });
+    }
+
+    actions.push({
+      title: `Remove BaseType "${data.baseType}"`,
+      kind: CodeActionKind.QuickFix,
+      diagnostics: [diagnostic],
+      edit: {
+        changes: {
+          [document.uri]: [
+            TextEdit.del(this.expandToAdjacentSpace(document, diagnostic.range)),
+          ],
+        },
+      },
+    });
+
+    return actions;
+  }
+
+  /**
+   * Grows a value range to swallow one adjacent space, so removing an item from
+   * a space-separated list does not leave a double space behind. Prefers the
+   * leading space, falling back to a trailing one.
+   */
+  private expandToAdjacentSpace(document: TextDocument, range: Range): Range {
+    const lineText = this.getLineText(document, range.start.line);
+    const startChar = range.start.character;
+    const endChar = range.end.character;
+
+    if (startChar > 0 && lineText[startChar - 1] === " ") {
+      return Range.create(range.start.line, startChar - 1, range.end.line, endChar);
+    }
+    if (lineText[endChar] === " ") {
+      return Range.create(range.start.line, startChar, range.end.line, endChar + 1);
+    }
+    return range;
   }
 
   /**
