@@ -30,8 +30,15 @@ export class SymbolProvider {
 
     for (const node of ast.children) {
       if (isHeaderNode(node)) {
+        // Divider-only comments (e.g. `# ====`) carry no text, which would
+        // produce a falsy symbol name and make the client reject the whole
+        // documentSymbol response ("name must not be falsy").
+        const headerName =
+          node.text.trim() ||
+          (node.style.border ? node.style.border.repeat(8) : "Section");
+
         const header = DocumentSymbol.create(
-          node.text,
+          headerName,
           "",
           SymbolKind.String,
           Range.create(
@@ -72,10 +79,10 @@ export class SymbolProvider {
             ? SymbolKind.Event
             : SymbolKind.Variable;
 
-        const displayName = `${node.type} - ${this.getBlockDescription(
-          node,
-          conditions
-        )}`;
+        const description = this.getBlockDescription(node, conditions);
+        const displayName = description
+          ? `${node.type} - ${description}`
+          : node.type;
         const detail = `${conditions.length} conditions, ${actions.length} actions`;
 
         const block = DocumentSymbol.create(
