@@ -1,19 +1,31 @@
-import * as vscode from "vscode";
+export interface FilterFormatterOptions {
+  insertSpaces?: boolean;
+  tabSize?: number;
+}
+
+/**
+ * Minimal document shape the formatter needs. Both `vscode.TextDocument` and
+ * the language server's `TextDocument` satisfy this, so the formatter can run
+ * on either side without depending on the `vscode` module.
+ */
+export interface FormattableDocument {
+  getText(): string;
+}
 
 export class FilterFormatter {
   private indentationString: string;
 
-  constructor() {
-    // Get editor configuration for the current file
-    const config = vscode.workspace.getConfiguration("editor");
-    const insertSpaces = config.get<boolean>("insertSpaces", true);
-    const tabSize = config.get<number>("tabSize", 4);
+  constructor(options: FilterFormatterOptions = {}) {
+    // Indentation is driven by the editor / formatting options. Default to the
+    // VS Code defaults (4 spaces) when nothing is provided.
+    const insertSpaces = options.insertSpaces ?? true;
+    const tabSize = options.tabSize ?? 4;
 
     // Use tabs or spaces based on editor configuration
     this.indentationString = insertSpaces ? " ".repeat(tabSize) : "\t";
   }
 
-  async format(document: vscode.TextDocument): Promise<string> {
+  async format(document: FormattableDocument): Promise<string> {
     const lines = document.getText().split("\n");
     let result = "";
     let lastLineWasBlock = false;

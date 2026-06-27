@@ -1,15 +1,12 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
-import { FilterFormatter } from "./formatter/formatter";
 import { MinimapIconDecorator } from "./decorations/minimapIconDecorator";
 import { FilterPreviewEditor } from "./preview/FilterPreviewEditor";
 
-import { CodelensProvider } from "./CodelensProvider";
 import { SoundPlayer } from "./utils/soundPlayer";
 import path from "path";
 import { GameDataService } from "./services/gameDataService";
-import { FilterDecorationProvider } from "./providers/filterDecorationProvider";
 import {
   LanguageClient,
   ServerOptions,
@@ -59,41 +56,9 @@ export async function activate(context: vscode.ExtensionContext) {
 
   // Hover (BaseType/Class matching items) is now provided by the language server.
 
-  // Initialize and register decoration provider
-  const decorationProvider = new FilterDecorationProvider();
-
-  // Update decorations when active editor changes
-  vscode.window.onDidChangeActiveTextEditor(
-    (editor) => {
-      if (editor && editor.document.languageId === "poe2-filter") {
-        decorationProvider.updateDecorations(editor, gameData);
-      }
-    },
-    null,
-    context.subscriptions
-  );
-
-  // Update decorations when document changes
-  vscode.workspace.onDidChangeTextDocument(
-    (event) => {
-      if (event.document.languageId === "poe2-filter") {
-        const editor = vscode.window.activeTextEditor;
-        if (editor && editor.document === event.document) {
-          decorationProvider.updateDecorations(editor, gameData);
-        }
-      }
-    },
-    null,
-    context.subscriptions
-  );
-
-  // Initial decoration update
-  if (vscode.window.activeTextEditor) {
-    decorationProvider.updateDecorations(
-      vscode.window.activeTextEditor,
-      gameData
-    );
-  }
+  // BaseType/Class match-count hints (the "N·" markers) are now provided by the
+  // language server via inlay hints (see inlayHintsProvider); the old
+  // client-side decoration provider has been removed to avoid duplicate UI.
 
   // Document symbols (outline/breadcrumbs) are now provided by the language server.
 
@@ -103,25 +68,8 @@ export async function activate(context: vscode.ExtensionContext) {
   // Path completion inside Import / CustomAlertSound quotes is now provided by
   // the language server.
 
-  // Register the formatter
-  const formatter = new FilterFormatter();
-  const formattingProvider =
-    vscode.languages.registerDocumentFormattingEditProvider("poe2-filter", {
-      async provideDocumentFormattingEdits(
-        document: vscode.TextDocument
-      ): Promise<vscode.TextEdit[]> {
-        const formattedText = await formatter.format(document);
-
-        const fullRange = new vscode.Range(
-          document.positionAt(0),
-          document.positionAt(document.getText().length)
-        );
-
-        return [vscode.TextEdit.replace(fullRange, formattedText)];
-      },
-    });
-
-  context.subscriptions.push(formattingProvider);
+  // Document formatting is now provided by the language server
+  // (see src/language-server/server.ts onDocumentFormatting).
 
   // Create the minimap icon decorator (it will register itself with the context)
   new MinimapIconDecorator(context);
@@ -135,13 +83,9 @@ export async function activate(context: vscode.ExtensionContext) {
 
   // Code actions (quick fixes) are now provided by the language server.
 
-  // Register code lens
-  context.subscriptions.push(
-    vscode.languages.registerCodeLensProvider(
-      "poe2-filter",
-      new CodelensProvider()
-    )
-  );
+  // Sound "Play" code lenses are now provided by the language server; the
+  // commands they invoke (below) still run client-side where audio playback
+  // and file-system access live.
 
   // Register command
   context.subscriptions.push(

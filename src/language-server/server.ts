@@ -19,6 +19,7 @@ import {
   ColorPresentationParams,
   DocumentSymbol,
   SymbolKind,
+  TextEdit,
 } from "vscode-languageserver/node";
 import { TextDocument } from "vscode-languageserver-textdocument";
 import { Parser, ParserDiagnostic } from "./ast/parser";
@@ -47,8 +48,15 @@ import { ActionSyntaxMap, ActionType, ActionSyntax } from "./ast/actions";
 import { SymbolProvider } from "./providers/symbolProvider";
 import { CodeActionProvider } from "./providers/codeActionProvider";
 import { CompletionProvider } from "./providers/completionProvider";
-import { CompletionParams, DocumentLinkParams } from "vscode-languageserver";
+import {
+  CompletionParams,
+  DocumentLinkParams,
+  DocumentFormattingParams,
+} from "vscode-languageserver";
 import { DocumentLinkProvider } from "./providers/documentLinkProvider";
+import { CodeLensProvider } from "./providers/codeLensProvider";
+import { CodeLensParams } from "vscode-languageserver";
+import { FilterFormatter } from "../formatter/formatter";
 
 // Create a connection for the server
 const connection = createConnection(ProposedFeatures.all);
@@ -127,6 +135,10 @@ connection.onInitialize(
           triggerCharacters: ['"', "/"],
         },
         documentLinkProvider: {
+          resolveProvider: false,
+        },
+        documentFormattingProvider: true,
+        codeLensProvider: {
           resolveProvider: false,
         },
       },
@@ -430,6 +442,39 @@ connection.onDocumentLinks((params: DocumentLinkParams) => {
   }
   return documentLinkProvider.provideDocumentLinks(ast, params.textDocument.uri);
 });
+
+const codeLensProvider = new CodeLensProvider();
+
+connection.onCodeLens((params: CodeLensParams) => {
+  const ast = documents.getAst(params.textDocument.uri);
+  if (!ast) {
+    return [];
+  }
+  return codeLensProvider.provideCodeLenses(ast, params.textDocument.uri);
+});
+
+connection.onDocumentFormatting(
+  async (params: DocumentFormattingParams): Promise<TextEdit[]> => {
+    const document = documents.get(params.textDocument.uri);
+    if (!document) {
+      return [];
+    }
+
+    const formatter = new FilterFormatter({
+      insertSpaces: params.options.insertSpaces,
+      tabSize: params.options.tabSize,
+    });
+    const formattedText = await formatter.format(document);
+
+    // Replace the whole document with the formatted text.
+    const fullRange = Range.create(
+      Position.create(0, 0),
+      document.positionAt(document.getText().length)
+    );
+
+    return [TextEdit.replace(fullRange, formattedText)];
+  }
+);
 
 documents.listen(connection);
 connection.listen();
