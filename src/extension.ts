@@ -10,7 +10,6 @@ import { SoundPlayer } from "./utils/soundPlayer";
 import path from "path";
 import { GameDataService } from "./services/gameDataService";
 import { FilterDecorationProvider } from "./providers/filterDecorationProvider";
-import { FilterDocumentLinkProvider } from "./providers/filterDocumentLinkProvider";
 import {
   LanguageClient,
   ServerOptions,
@@ -98,13 +97,8 @@ export async function activate(context: vscode.ExtensionContext) {
 
   // Document symbols (outline/breadcrumbs) are now provided by the language server.
 
-  // Register document link provider so Import "file" paths are clickable
-  context.subscriptions.push(
-    vscode.languages.registerDocumentLinkProvider(
-      "poe2-filter",
-      new FilterDocumentLinkProvider()
-    )
-  );
+  // Clickable Import / CustomAlertSound path links are now provided by the
+  // language server.
 
   // Path completion inside Import / CustomAlertSound quotes is now provided by
   // the language server.

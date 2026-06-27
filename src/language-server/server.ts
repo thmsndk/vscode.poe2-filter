@@ -47,7 +47,8 @@ import { ActionSyntaxMap, ActionType, ActionSyntax } from "./ast/actions";
 import { SymbolProvider } from "./providers/symbolProvider";
 import { CodeActionProvider } from "./providers/codeActionProvider";
 import { CompletionProvider } from "./providers/completionProvider";
-import { CompletionParams } from "vscode-languageserver";
+import { CompletionParams, DocumentLinkParams } from "vscode-languageserver";
+import { DocumentLinkProvider } from "./providers/documentLinkProvider";
 
 // Create a connection for the server
 const connection = createConnection(ProposedFeatures.all);
@@ -124,6 +125,9 @@ connection.onInitialize(
         codeActionProvider: true,
         completionProvider: {
           triggerCharacters: ['"', "/"],
+        },
+        documentLinkProvider: {
+          resolveProvider: false,
         },
       },
     };
@@ -415,6 +419,16 @@ connection.onCompletion((params: CompletionParams) => {
     return [];
   }
   return completionProvider.provideCompletions(document, params);
+});
+
+const documentLinkProvider = new DocumentLinkProvider();
+
+connection.onDocumentLinks((params: DocumentLinkParams) => {
+  const ast = documents.getAst(params.textDocument.uri);
+  if (!ast) {
+    return [];
+  }
+  return documentLinkProvider.provideDocumentLinks(ast, params.textDocument.uri);
 });
 
 documents.listen(connection);
