@@ -327,7 +327,7 @@ Show # Second block
     assert.strictEqual(block2.inlineComment, "Second block");
   });
 
-  test("should handle empty lines and comments between blocks", () => {
+  test("should keep comments between blocks out of the block bodies", () => {
     const input = `
 Show
     BaseType "Mirror"
@@ -341,14 +341,29 @@ Show
 `;
     const parser = new Parser(input);
     const ast = parser.parse();
-    // TODO: This should result in 2 blocks seperated by two comments
 
-    assert.strictEqual(ast.children.length, 2);
-    const block1 = ast.children[0] as BlockNode;
+    // Comments between two blocks are their own top-level nodes (the blocks are
+    // separated by the comments), not absorbed into the preceding block's body.
+    const blocks = ast.children.filter(
+      (c): c is BlockNode =>
+        c.type === "Show" || c.type === "Hide" || c.type === "Minimal"
+    );
+    assert.strictEqual(blocks.length, 2, "Should have exactly 2 blocks");
+
     assert.strictEqual(
-      block1.body.length,
-      3,
-      "Should include empty lines and comments"
+      blocks[0].body.length,
+      1,
+      "First block keeps only its own condition"
+    );
+    assert.strictEqual(
+      blocks[1].body.length,
+      1,
+      "Second block keeps only its own condition"
+    );
+
+    assert.ok(
+      ast.children.length > blocks.length,
+      "Comments between blocks are preserved as top-level nodes"
     );
   });
 

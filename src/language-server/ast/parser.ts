@@ -55,6 +55,27 @@ export class Parser {
     });
   }
 
+  /**
+   * Adds a diagnostic at an explicit position instead of at a token. Useful for
+   * errors that describe a whole statement (e.g. a wrong parameter count) and
+   * should point at the action/condition keyword rather than at the current
+   * token, which - after a value loop - is the trailing NEWLINE whose `line`
+   * already belongs to the next source line.
+   */
+  private addErrorAt(
+    message: string,
+    position: { line: number; columnStart: number; columnEnd: number },
+    severity: "error" | "warning" = "error"
+  ) {
+    this.diagnostics.push({
+      message,
+      severity,
+      line: position.line,
+      columnStart: position.columnStart,
+      columnEnd: position.columnEnd,
+    });
+  }
+
   public parse(): RootNode {
     const start = 0;
     const children: Node[] = [];
@@ -176,6 +197,41 @@ export class Parser {
         case "NEWLINE":
           this.advance();
           break;
+        case "WORD": {
+          // A bare word where a condition or action is expected is an
+          // unknown/misspelled command. Emit a single Error node for it - the
+          // semantic validator turns this into an "Unknown action/condition"
+          // message with "Did you mean ...?" suggestions - and consume the rest
+          // of the line so the command's arguments don't each produce their own
+          // "Unexpected token" noise.
+          const commandToken = this.currentToken;
+          body.push({
+            type: "Error",
+            token: commandToken,
+            start: commandToken.start,
+            end: commandToken.end,
+            line: commandToken.line,
+            columnStart: commandToken.columnStart,
+            columnEnd: commandToken.columnEnd,
+          });
+          this.advance();
+          const statementEndTypes: TokenType[] = [
+            "EOF",
+            "NEWLINE",
+            "INLINE_COMMENT",
+            "CONDITION",
+            "ACTION",
+            "SHOW",
+            "HIDE",
+            "MINIMAL",
+            "COMMENTED_BLOCK",
+            "HEADER",
+          ];
+          while (!statementEndTypes.includes(this.currentToken.type)) {
+            this.advance();
+          }
+          break;
+        }
         default:
           // Handle unexpected tokens like in root parse
           body.push({
@@ -455,10 +511,11 @@ export class Parser {
     }
 
     if (syntax?.valueSyntax.multiValue === false && values.length !== 1) {
-      this.addError(
-        `Expected exactly one value for condition: ${condition}`,
-        this.currentToken
-      );
+      this.addErrorAt(`Expected exactly one value for condition: ${condition}`, {
+        line,
+        columnStart,
+        columnEnd,
+      });
     }
 
     return {
@@ -516,12 +573,14 @@ export class Parser {
               receivedType = "sound-id";
             }
 
-            this.validateTokenType(
-              parameter?.type ?? "",
-              receivedType,
-              `parameter ${parameter?.name}`,
-              this.currentToken
-            );
+            if (parameter) {
+              this.validateTokenType(
+                parameter.type,
+                receivedType,
+                `parameter ${parameter.name}`,
+                this.currentToken
+              );
+            }
             const num = this.currentToken.value as number;
             values.push({
               value: num,
@@ -532,12 +591,14 @@ export class Parser {
           break;
 
         case "BOOLEAN":
-          this.validateTokenType(
-            parameter?.type ?? "",
-            "boolean",
-            `parameter ${parameter?.name}`,
-            this.currentToken
-          );
+          if (parameter) {
+            this.validateTokenType(
+              parameter.type,
+              "boolean",
+              `parameter ${parameter.name}`,
+              this.currentToken
+            );
+          }
           values.push({
             value: this.currentToken.value as boolean,
             columnStart: this.currentToken.columnStart,
@@ -546,12 +607,14 @@ export class Parser {
           break;
 
         case "QUOTED_STRING":
-          this.validateTokenType(
-            parameter?.type ?? "",
-            "string",
-            `parameter ${parameter?.name}`,
-            this.currentToken
-          );
+          if (parameter) {
+            this.validateTokenType(
+              parameter.type,
+              "string",
+              `parameter ${parameter.name}`,
+              this.currentToken
+            );
+          }
           values.push({
             value: this.currentToken.value as string,
             columnStart: this.currentToken.columnStart,
@@ -566,12 +629,14 @@ export class Parser {
               receivedType = "sound-id";
             }
 
-            this.validateTokenType(
-              parameter?.type ?? "",
-              receivedType,
-              `parameter ${parameter?.name}`,
-              this.currentToken
-            );
+            if (parameter) {
+              this.validateTokenType(
+                parameter.type,
+                receivedType,
+                `parameter ${parameter.name}`,
+                this.currentToken
+              );
+            }
             values.push({
               value: this.currentToken.value as string,
               columnStart: this.currentToken.columnStart,
@@ -581,12 +646,14 @@ export class Parser {
           break;
 
         case "COLOR":
-          this.validateTokenType(
-            parameter?.type ?? "",
-            "color",
-            `parameter ${parameter?.name}`,
-            this.currentToken
-          );
+          if (parameter) {
+            this.validateTokenType(
+              parameter.type,
+              "color",
+              `parameter ${parameter.name}`,
+              this.currentToken
+            );
+          }
 
           values.push({
             value: this.currentToken.value as ColorValue,
@@ -597,12 +664,14 @@ export class Parser {
           break;
 
         case "SHAPE":
-          this.validateTokenType(
-            parameter?.type ?? "",
-            "shape",
-            `parameter ${parameter?.name}`,
-            this.currentToken
-          );
+          if (parameter) {
+            this.validateTokenType(
+              parameter.type,
+              "shape",
+              `parameter ${parameter.name}`,
+              this.currentToken
+            );
+          }
 
           values.push({
             value: this.currentToken.value as ShapeValue,
@@ -627,21 +696,23 @@ export class Parser {
       parameterIndex++;
     }
 
-    // Validate required parameters
+    // Validate required parameters. Point at the action keyword itself: by the
+    // time the value loop ends, `currentToken` is the trailing NEWLINE whose
+    // line already belongs to the next source line.
     const requiredCount =
       syntax?.parameters.filter((p) => p.required).length ?? 0;
     if (values.length < requiredCount) {
-      this.addError(
+      this.addErrorAt(
         `Action ${action} requires at least ${requiredCount} parameters, got ${values.length}`,
-        this.currentToken
+        { line, columnStart, columnEnd }
       );
     }
 
     // Validate maximum parameters
     if (values.length > (syntax?.parameters.length ?? 0)) {
-      this.addError(
+      this.addErrorAt(
         `Too many parameters for action ${action}. Expected ${syntax?.parameters.length}, got ${values.length}`,
-        this.currentToken
+        { line, columnStart, columnEnd }
       );
     }
 
