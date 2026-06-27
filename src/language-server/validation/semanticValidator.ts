@@ -283,6 +283,27 @@ export class SemanticValidator {
       return;
     }
 
+    // Actions such as PlayAlertSound/PlayEffect/MinimapIcon can be disabled
+    // with a sentinel value ("None" or -1). When that sentinel is supplied the
+    // action is disabled and its parameters are intentionally not validated.
+    if (
+      syntax.disabledValue !== undefined &&
+      node.values.length >= 1 &&
+      node.values[0].value === syntax.disabledValue
+    ) {
+      return;
+    }
+
+    // CustomAlertSound takes a file path (or "None" to disable, or a list of
+    // semicolon-separated paths). Its existence check does not fit the generic
+    // parameter loop, so it is handled separately.
+    if (
+      node.action === ActionType.CustomAlertSound ||
+      node.action === ActionType.CustomAlertSoundOptional
+    ) {
+      this.validateCustomAlertSound(node);
+    }
+
     for (let index = 0; index < node.values.length; index++) {
       const value = node.values[index].value;
       const parameter = syntax.parameters[index];
@@ -605,6 +626,51 @@ export class SemanticValidator {
       columnStart: node.operatorColumnStart ?? node.columnStart,
       columnEnd: first.columnEnd,
     });
+  }
+
+  /**
+   * Validates that the file(s) referenced by CustomAlertSound exist. "None"
+   * disables the sound and is skipped; multiple files may be given as
+   * semicolon-separated paths (the game plays a random one). Missing files are
+   * an error for CustomAlertSound and a warning for CustomAlertSoundOptional.
+   */
+  private validateCustomAlertSound(node: ActionNode): void {
+    if (!this.documentUri) {
+      return;
+    }
+
+    const first = node.values[0];
+    if (!first || typeof first.value !== "string" || first.value === "None") {
+      return;
+    }
+
+    const isOptional = node.action === "CustomAlertSoundOptional";
+    const documentPath = this.toFsPath(this.documentUri);
+
+    const soundFiles = first.value.split(";").filter((f) => f.length > 0);
+    for (const soundFile of soundFiles) {
+      const cleanPath = soundFile.replace(/^"(.*)"$/, "$1");
+      const possiblePaths = [
+        cleanPath,
+        path.join(path.dirname(documentPath), cleanPath),
+      ];
+
+      if (possiblePaths.some((p) => fs.existsSync(p))) {
+        continue;
+      }
+
+      const message = isOptional
+        ? `Sound file not found: ${cleanPath}. File is optional but should exist when used.`
+        : `Sound file not found: ${cleanPath}. File must exist for CustomAlertSound (use CustomAlertSoundOptional if the file is optional)`;
+
+      this.diagnostics.push({
+        message,
+        severity: isOptional ? "warning" : "error",
+        line: node.line,
+        columnStart: first.columnStart,
+        columnEnd: first.columnEnd,
+      });
+    }
   }
 
   /**

@@ -458,3 +458,76 @@ suite("HasExplicitMod Validation", () => {
     assert.strictEqual(parser.diagnostics.length, 0);
   });
 });
+
+suite("Disabled-value Actions", () => {
+  test('does not validate parameters for "PlayAlertSound None"', () => {
+    const input = `\nShow\n    PlayAlertSound None\n`;
+    const parser = new Parser(input);
+    const ast = parser.parse();
+
+    const validator = new SemanticValidator(mockGameData);
+    validator.validate(ast);
+
+    assert.strictEqual(validator.diagnostics.length, 0);
+  });
+
+  test('does not validate parameters for "PlayEffect None"', () => {
+    const input = `\nShow\n    PlayEffect None\n`;
+    const parser = new Parser(input);
+    const ast = parser.parse();
+
+    const validator = new SemanticValidator(mockGameData);
+    validator.validate(ast);
+
+    assert.strictEqual(validator.diagnostics.length, 0);
+  });
+});
+
+suite("CustomAlertSound Validation", () => {
+  test("errors when a CustomAlertSound file is missing", () => {
+    const input = `\nShow\n    CustomAlertSound "definitely-missing-xyz.wav"\n`;
+    const parser = new Parser(input);
+    const ast = parser.parse();
+
+    const validator = new SemanticValidator(mockGameData, __filename);
+    validator.validate(ast);
+
+    assert.strictEqual(validator.diagnostics.length, 1);
+    assert.match(validator.diagnostics[0].message, /Sound file not found/);
+    assert.strictEqual(validator.diagnostics[0].severity, "error");
+  });
+
+  test("warns (not errors) for a missing CustomAlertSoundOptional file", () => {
+    const input = `\nShow\n    CustomAlertSoundOptional "definitely-missing-xyz.wav"\n`;
+    const parser = new Parser(input);
+    const ast = parser.parse();
+
+    const validator = new SemanticValidator(mockGameData, __filename);
+    validator.validate(ast);
+
+    assert.strictEqual(validator.diagnostics.length, 1);
+    assert.strictEqual(validator.diagnostics[0].severity, "warning");
+  });
+
+  test('skips validation when the sound is disabled with "None"', () => {
+    const input = `\nShow\n    CustomAlertSound None\n`;
+    const parser = new Parser(input);
+    const ast = parser.parse();
+
+    const validator = new SemanticValidator(mockGameData, __filename);
+    validator.validate(ast);
+
+    assert.strictEqual(validator.diagnostics.length, 0);
+  });
+
+  test("does not warn when the sound file exists", () => {
+    const input = `\nShow\n    CustomAlertSound "${path.basename(__filename)}"\n`;
+    const parser = new Parser(input);
+    const ast = parser.parse();
+
+    const validator = new SemanticValidator(mockGameData, __filename);
+    validator.validate(ast);
+
+    assert.strictEqual(validator.diagnostics.length, 0);
+  });
+});
