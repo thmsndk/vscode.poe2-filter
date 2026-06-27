@@ -96,6 +96,35 @@ Show
     );
   });
 
+  test("should accept numeric conditions without an operator (implicit ==)", () => {
+    // PoE2 allows omitting the operator on numeric conditions; FilterBlade /
+    // NeverSink filters use this form heavily (e.g. "GemLevel 19", "Sockets 0").
+    const input = `
+Show
+    GemLevel 19
+    Sockets 0
+    Quality 0
+    BaseArmour 0
+    BaseEvasion 0
+    BaseEnergyShield 0
+    SetFontSize 18
+`;
+    const parser = new Parser(input);
+    const ast = parser.parse();
+
+    assert.strictEqual(
+      parser.diagnostics.length,
+      0,
+      "Operator-less numeric conditions should not produce diagnostics"
+    );
+
+    const block = ast.children[0] as BlockNode;
+    const gemLevel = block.body[0] as ConditionNode;
+    assert.strictEqual(gemLevel.condition, ConditionType.GemLevel);
+    assert.strictEqual(gemLevel.operator, undefined);
+    assert.strictEqual(gemLevel.values[0].value, 19);
+  });
+
   test("should parse Continue action correctly", () => {
     // TODO: What actually happens if we have a Continue in the middle of a block?
     const input = `
