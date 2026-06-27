@@ -77,6 +77,30 @@
           "group": "navigation"
         }
       ]
+    },
+    "semanticTokenTypes": [
+      {
+        "id": "commentedCode",
+        "description": "Commented-out filter code (disabled Show/Hide blocks, conditions, and actions)"
+      }
+    ],
+    "semanticTokenScopes": [
+      {
+        "language": "poe2-filter",
+        "scopes": {
+          "commentedCode": ["comment.block.poe2-filter"]
+        }
+      }
+    ],
+    "configurationDefaults": {
+      "editor.semanticTokenColorCustomizations": {
+        "rules": {
+          "commentedCode": {
+            "foreground": "#808a99",
+            "italic": true
+          }
+        }
+      }
     }
   },
   "scripts": {

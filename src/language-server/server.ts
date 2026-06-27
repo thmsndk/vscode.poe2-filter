@@ -50,6 +50,10 @@ import { CodeActionProvider } from "./providers/codeActionProvider";
 import { CompletionProvider } from "./providers/completionProvider";
 import { SignatureHelpProvider } from "./providers/signatureHelpProvider";
 import {
+  SemanticTokensProvider,
+  semanticTokensLegend,
+} from "./providers/semanticTokensProvider";
+import {
   CompletionParams,
   SignatureHelpParams,
   DocumentLinkParams,
@@ -146,6 +150,10 @@ connection.onInitialize(
         documentFormattingProvider: true,
         codeLensProvider: {
           resolveProvider: false,
+        },
+        semanticTokensProvider: {
+          legend: semanticTokensLegend,
+          full: true,
         },
       },
     };
@@ -457,6 +465,16 @@ connection.onSignatureHelp((params: SignatureHelpParams) => {
     return null;
   }
   return signatureHelpProvider.provideSignatureHelp(document, params);
+});
+
+const semanticTokensProvider = new SemanticTokensProvider();
+
+connection.languages.semanticTokens.on((params) => {
+  const document = documents.get(params.textDocument.uri);
+  if (!document) {
+    return { data: [] };
+  }
+  return semanticTokensProvider.provideSemanticTokens(document);
 });
 
 const documentLinkProvider = new DocumentLinkProvider();
