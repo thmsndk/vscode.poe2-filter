@@ -17,7 +17,16 @@ export interface RuleConflict {
 }
 
 export class FilterRuleEngine {
-  constructor(private ast: RootNode) {}
+  // Conditions we have already warned about this run, so a genuinely unknown
+  // keyword is reported once instead of once per block-pair comparison.
+  private warnedUnknownConditions = new Set<string>();
+
+  constructor(
+    private ast: RootNode,
+    // Injectable so tests (and the server) can capture/redirect the warning.
+    private logUnknownCondition: (message: string) => void = (message) =>
+      console.error(message)
+  ) {}
 
   /**
    * Returns the active (non-commented) blocks with their own active body items,
@@ -136,6 +145,8 @@ export class FilterRuleEngine {
         case "AreaLevel":
         case "GemLevel":
         case "WaystoneTier":
+        case "MapTier":
+        case "UnidentifiedItemTier":
         case "Height":
         case "Width":
         case "BaseArmour":
@@ -189,7 +200,11 @@ export class FilterRuleEngine {
         case "Scourged":
         case "ShaperItem":
         case "ShapedMap":
-        case "TransfiguredGem": {
+        case "TransfiguredGem":
+        case "TwiceCorrupted":
+        case "HasVaalUniqueMod":
+        case "IsVaalUnique":
+        case "AlwaysShow": {
           const prop =
             condition.condition.charAt(0).toLowerCase() +
             condition.condition.slice(1);
@@ -241,22 +256,41 @@ export class FilterRuleEngine {
           //   const itemValue = item[prop as keyof FilterItem] as string[];
           //   if (!itemValue) return false;
           //   return condition.values.some((value) => itemValue.includes(value));
-          console.error(`${condition.condition} not implemented`);
+          // Known mod/influence conditions whose overlap we can't determine
+          // (we don't model item mods). Treat as "does not match" so we never
+          // report a false conflict. These are recognized keywords, so no error.
           return false;
         }
         case "SocketGroup": {
           //   const itemValue = item.socketGroup;
           //   if (!itemValue) return false;
           //   return condition.values.some((value) => value === itemValue);
-          console.error(`${condition.condition} not implemented`);
           return false;
         }
         default:
-          //   const _exhaustiveCheck: never = condition.condition;
-          console.error(`${condition.condition} not implemented`);
+          // Every known ConditionType is handled above. Reaching here means a
+          // genuinely unknown/new condition keyword - report it once (not once
+          // per block-pair, which floods on large filters) so it gets proper
+          // support instead of being silently ignored.
+          this.warnUnknownCondition(condition.condition);
           return false;
       }
     });
+  }
+
+  /**
+   * Logs an unknown/unsupported condition keyword exactly once per analysis run.
+   * Known conditions are all handled in {@link evaluateItemAgainstBlock}; this
+   * only fires for genuinely new or misspelled keywords so they get noticed.
+   */
+  private warnUnknownCondition(condition: string): void {
+    if (this.warnedUnknownConditions.has(condition)) {
+      return;
+    }
+    this.warnedUnknownConditions.add(condition);
+    this.logUnknownCondition(
+      `Rule conflict analysis: unsupported condition "${condition}"`
+    );
   }
 
   /**

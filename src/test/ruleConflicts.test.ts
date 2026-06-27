@@ -331,3 +331,70 @@ Show # This should still conflict with first block
     );
   });
 });
+
+suite("Rule Conflict Detection - Condition coverage", () => {
+  test("does not log errors for known but conflict-unmodeled conditions", () => {
+    const input = `
+Show
+    UnidentifiedItemTier <= 3
+    MapTier >= 5
+    TwiceCorrupted True
+    HasVaalUniqueMod True
+    IsVaalUnique True
+    AlwaysShow True
+    SetFontSize 18
+
+Show
+    UnidentifiedItemTier <= 3
+    SetFontSize 15
+`;
+
+    const errors: string[] = [];
+    const ast = new Parser(input).parse();
+    new FilterRuleEngine(ast, (msg) => errors.push(msg)).detectConflicts();
+
+    assert.deepStrictEqual(
+      errors,
+      [],
+      "recognized conditions must not be reported as unknown"
+    );
+  });
+
+  test("reports a genuinely unknown condition exactly once", () => {
+    const mkBlock = (): BlockNode =>
+      ({
+        type: "Show",
+        commented: false,
+        line: 1,
+        columnStart: 1,
+        columnEnd: 5,
+        body: [
+          {
+            type: "Condition",
+            condition: "TotallyMadeUp",
+            operator: undefined,
+            values: [{ value: "X", columnStart: 1, columnEnd: 2 }],
+            commented: false,
+            line: 1,
+            columnStart: 1,
+            columnEnd: 5,
+          },
+        ],
+      }) as unknown as BlockNode;
+
+    const ast = {
+      type: "Root",
+      children: [mkBlock(), mkBlock(), mkBlock()],
+    } as never;
+
+    const errors: string[] = [];
+    new FilterRuleEngine(ast, (msg) => errors.push(msg)).detectConflicts();
+
+    assert.strictEqual(
+      errors.length,
+      1,
+      "an unknown condition should be logged once, not per comparison"
+    );
+    assert.match(errors[0], /unsupported condition "TotallyMadeUp"/);
+  });
+});
