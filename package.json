@@ -2,8 +2,15 @@
   "name": "poe2-filter",
   "publisher": "thmsn",
   "displayName": "Path of Exile 2 Filter",
-  "description": "A Visual Studio Code extension for Path of Exile 2 item filter files",
+  "description": "IntelliSense, live validation, quick fixes, and an in-editor preview for Path of Exile 2 item filters.",
   "version": "0.0.29",
+  "license": "MIT",
+  "homepage": "https://github.com/thmsndk/vscode.poe2-filter#readme",
+  "icon": "images/icon.png",
+  "galleryBanner": {
+    "color": "#1a1410",
+    "theme": "dark"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/thmsndk/vscode.poe2-filter"
@@ -18,6 +25,16 @@
     "Programming Languages",
     "Formatters",
     "Other"
+  ],
+  "keywords": [
+    "poe2",
+    "path of exile 2",
+    "path of exile",
+    "poe",
+    "loot filter",
+    "item filter",
+    "filterblade",
+    "neversink"
   ],
   "activationEvents": [],
   "main": "./dist/extension.js",
