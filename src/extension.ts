@@ -3,10 +3,6 @@
 import * as vscode from "vscode";
 import { FilterFormatter } from "./formatter/formatter";
 import { FilterSymbolProvider } from "./outline/filterSymbolProvider";
-import {
-  registerDiagnostics,
-  validateDocument,
-} from "./diagnostics/filterDiagnostics";
 import { FilterCodeActionProvider } from "./diagnostics/filterCodeActions";
 import { MinimapIconDecorator } from "./decorations/minimapIconDecorator";
 import { FilterPreviewEditor } from "./preview/FilterPreviewEditor";
@@ -212,8 +208,9 @@ export async function activate(context: vscode.ExtensionContext) {
     })
   );
 
-  // Register diagnostics
-  registerDiagnostics(context, gameData);
+  // Diagnostics (validation + rule-conflict detection) are now provided by the
+  // language server (see src/language-server). The old client-side
+  // registerDiagnostics/filterConflicts registration has been removed.
 
   // Register code actions
   context.subscriptions.push(
