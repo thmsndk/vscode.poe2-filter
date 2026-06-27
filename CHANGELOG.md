@@ -2,6 +2,17 @@
 
 All notable changes to the "poe2-filter" extension will be documented in this file.
 
+## [1.0.0](https://github.com/thmsndk/vscode.poe2-filter/compare/v0.0.29...v1.0.0) (2026-06-27)
+
+
+### ⚠ BREAKING CHANGES
+
+* rebuild Path of Exile 2 Filter on a language server ([#136](https://github.com/thmsndk/vscode.poe2-filter/issues/136))
+
+### ### Added
+
+* rebuild Path of Exile 2 Filter on a language server ([#136](https://github.com/thmsndk/vscode.poe2-filter/issues/136)) ([3682cba](https://github.com/thmsndk/vscode.poe2-filter/commit/3682cba8152a69983ecc068a74c8c611ce5f08a7))
+
 ## [0.0.29](https://github.com/thmsndk/vscode.poe2-filter/compare/v0.0.28...v0.0.29) (2026-06-26)
 
 
