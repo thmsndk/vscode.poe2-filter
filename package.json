@@ -29,6 +29,7 @@
           "filter",
           ".filter"
         ],
+        "firstLine": "^(#\\s?Online Item Filter\\b|\\s*(Show|Hide|Minimal)\\b)",
         "aliases": [
           "filter",
           ".filter",
