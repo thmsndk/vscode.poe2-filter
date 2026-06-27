@@ -144,31 +144,86 @@ export class CompletionProvider {
         detail: "Condition",
         documentation: ConditionSyntaxMap[condition]?.description,
         sortText: this.keywordSortText(condition),
-        // Accepting a condition adds the trailing space and reopens suggest so
-        // its value list (Rarity values, True/False, ...) shows immediately.
-        insertText: `${condition} `,
-        command: TRIGGER_SUGGEST,
+        ...this.conditionKeywordAffordance(condition),
       });
     }
 
     for (const action of Object.values(ActionType)) {
-      const takesValue =
-        (ActionSyntaxMap[action]?.parameters.length ?? 0) > 0;
       items.push({
         label: action,
         kind: CompletionItemKind.Function,
         detail: "Action",
         documentation: ActionSyntaxMap[action]?.description,
         sortText: this.keywordSortText(action),
-        // Same convenience for actions that take a value (skip parameterless
-        // ones like Continue, which should stay on their own).
-        ...(takesValue
-          ? { insertText: `${action} `, command: TRIGGER_SUGGEST }
-          : {}),
+        ...this.actionKeywordAffordance(action),
       });
     }
 
     return items;
+  }
+
+  /**
+   * How a condition keyword behaves once accepted. All conditions take a value,
+   * so we always add the trailing space, but only reopen suggest when there is
+   * an actual value list to show (Rarity values, True/False, BaseType/Class
+   * names). For numeric conditions reopening would only surface document-word
+   * noise, so we leave the cursor on the space for the user to type a number.
+   */
+  private conditionKeywordAffordance(
+    condition: ConditionType
+  ): Partial<CompletionItem> {
+    const syntax = ConditionSyntaxMap[condition];
+    const opensPicker =
+      syntax?.valueType === "rarity" ||
+      syntax?.valueType === "boolean" ||
+      condition === ConditionType.BaseType ||
+      condition === ConditionType.Class;
+    return {
+      insertText: `${condition} `,
+      ...(opensPicker ? { command: TRIGGER_SUGGEST } : {}),
+    };
+  }
+
+  /**
+   * How an action keyword behaves once accepted:
+   * - parameterless actions (Continue, ...) are inserted as-is;
+   * - sound-path actions drop in a pair of quotes with the cursor between them
+   *   and open the file/folder picker straight away;
+   * - actions whose first parameter has a value list (colour, shape, boolean,
+   *   keyword, MinimapIcon size) add the space and reopen suggest;
+   * - everything else (numeric/sound-id params) just adds the space.
+   */
+  private actionKeywordAffordance(action: ActionType): Partial<CompletionItem> {
+    const parameters = ActionSyntaxMap[action]?.parameters ?? [];
+    if (parameters.length === 0) {
+      return {};
+    }
+
+    if (
+      action === ActionType.CustomAlertSound ||
+      action === ActionType.CustomAlertSoundOptional
+    ) {
+      // Just add the space and reopen suggest (like Class). The file picker
+      // inserts the quotes itself, so we don't pre-insert any quote here - a
+      // pre-inserted quote both trips path-completion extensions and gets in
+      // the way of the picker's own quote handling.
+      return {
+        insertText: `${action} `,
+        command: TRIGGER_SUGGEST,
+      };
+    }
+
+    const firstType = parameters[0]?.type;
+    const opensPicker =
+      action === ActionType.MinimapIcon ||
+      firstType === "color" ||
+      firstType === "shape" ||
+      firstType === "boolean" ||
+      firstType === "keyword";
+    return {
+      insertText: `${action} `,
+      ...(opensPicker ? { command: TRIGGER_SUGGEST } : {}),
+    };
   }
 
   /**
@@ -223,10 +278,19 @@ export class CompletionProvider {
       const available = Object.values(RarityValue).filter(
         (value) => !present.has(value)
       );
-      return this.enumItems(available, CompletionItemKind.EnumMember);
+      // Rarity is a value list - reopen suggest so the next rarity can be added
+      // straight away (already-present ones are filtered out above). Only chain
+      // while more than one remains, otherwise picking the last value would
+      // retrigger into an empty list and surface word-based noise.
+      return this.enumItems(
+        available,
+        CompletionItemKind.EnumMember,
+        available.length > 1
+      );
     }
 
     if (syntax.valueType === "boolean") {
+      // Single value - no chaining.
       return this.enumItems(["True", "False"], CompletionItemKind.Value);
     }
 
@@ -263,17 +327,34 @@ export class CompletionProvider {
       return this.minimapSizeItems();
     }
 
+    // When more parameters follow, reopen suggest after a value is picked so the
+    // next argument's dropdown (e.g. MinimapIcon colour -> shape) chains along.
+    const hasNextParam = index < syntax.parameters.length - 1;
+
     switch (parameter.type) {
       case "color":
-        return this.enumItems(Object.values(ColorValue), CompletionItemKind.Color);
+        return this.enumItems(
+          Object.values(ColorValue),
+          CompletionItemKind.Color,
+          hasNextParam
+        );
       case "shape":
-        return this.enumItems(Object.values(ShapeValue), CompletionItemKind.EnumMember);
+        return this.enumItems(
+          Object.values(ShapeValue),
+          CompletionItemKind.EnumMember,
+          hasNextParam
+        );
       case "boolean":
-        return this.enumItems(["True", "False"], CompletionItemKind.Value);
+        return this.enumItems(
+          ["True", "False"],
+          CompletionItemKind.Value,
+          hasNextParam
+        );
       case "keyword":
         return this.enumItems(
           parameter.allowedValues ?? [],
-          CompletionItemKind.Keyword
+          CompletionItemKind.Keyword,
+          hasNextParam
         );
       default:
         return [];
@@ -316,6 +397,9 @@ export class CompletionProvider {
       openQuote !== null
     );
     const availableNames = uniqueNames.filter((name) => !present.has(name));
+    // Only chain to the next value while more than one remains, so picking the
+    // final value doesn't retrigger into an empty list (word-based noise).
+    const chain = availableNames.length > 1;
     const kind =
       condition === ConditionType.BaseType
         ? CompletionItemKind.Value
@@ -340,6 +424,8 @@ export class CompletionProvider {
         label: name,
         kind,
         textEdit: TextEdit.replace(replaceRange, `${name}"${trailingSpace}`),
+        // BaseType/Class accept a list, so reopen suggest for the next value.
+        ...(chain ? { command: TRIGGER_SUGGEST } : {}),
       }));
     }
 
@@ -347,6 +433,8 @@ export class CompletionProvider {
       label: name,
       kind,
       insertText: `"${name}" `,
+      // BaseType/Class accept a list, so reopen suggest for the next value.
+      ...(chain ? { command: TRIGGER_SUGGEST } : {}),
     }));
   }
 
@@ -400,13 +488,24 @@ export class CompletionProvider {
     }));
   }
 
-  private enumItems(values: string[], kind: CompletionItemKind): CompletionItem[] {
-    // Preserve the declared order (e.g. Rarity: Normal, Magic, Rare, Unique)
-    // instead of letting the editor sort by label alphabetically.
+  /**
+   * Builds value completions in their declared order (e.g. Rarity: Normal,
+   * Magic, Rare, Unique) instead of letting the editor sort alphabetically.
+   * Each value inserts a trailing space so the cursor advances past it; when
+   * `retrigger` is set the suggest widget reopens for the next value/argument
+   * (used for list conditions like Rarity and chained action parameters).
+   */
+  private enumItems(
+    values: string[],
+    kind: CompletionItemKind,
+    retrigger = false
+  ): CompletionItem[] {
     return values.map((value, index) => ({
       label: value,
       kind,
+      insertText: `${value} `,
       sortText: String(index).padStart(4, "0"),
+      ...(retrigger ? { command: TRIGGER_SUGGEST } : {}),
     }));
   }
 
@@ -444,8 +543,14 @@ export class CompletionProvider {
     lineSuffix: string,
     kind: CompletionContextKind
   ): CompletionItem[] {
-    // The partial path typed inside the still-open quote.
-    const partial = linePrefix.match(/"([^"]*)$/)?.[1] ?? "";
+    // Inside an open quote we complete the path typed so far; with no quote yet
+    // (triggered right after the keyword) the partial is the last token typed,
+    // and we insert the opening quote ourselves.
+    const hasOpenQuote = (linePrefix.match(/"/g) ?? []).length % 2 === 1;
+    const partial = hasOpenQuote
+      ? linePrefix.match(/"([^"]*)$/)?.[1] ?? ""
+      : linePrefix.match(/(\S*)$/)?.[1] ?? "";
+    const openPrefix = hasOpenQuote ? "" : '"';
 
     // Split the partial into the directory already typed and the fragment being
     // completed, so only the fragment is replaced.
@@ -508,7 +613,7 @@ export class CompletionProvider {
         items.push({
           label: entry.name,
           kind: CompletionItemKind.Folder,
-          textEdit: TextEdit.replace(replaceRange, entry.name + "/"),
+          textEdit: TextEdit.replace(replaceRange, `${openPrefix}${entry.name}/`),
           // Re-trigger so the user can keep drilling into folders.
           command: TRIGGER_SUGGEST,
         });
@@ -525,7 +630,7 @@ export class CompletionProvider {
       items.push({
         label: entry.name,
         kind: CompletionItemKind.File,
-        textEdit: TextEdit.replace(fileReplaceRange, entry.name + '"'),
+        textEdit: TextEdit.replace(fileReplaceRange, `${openPrefix}${entry.name}"`),
       });
     }
 
@@ -588,19 +693,32 @@ export class CompletionProvider {
   }
 
   private getContextKind(linePrefix: string): CompletionContextKind | null {
-    // Cursor must be inside an *unclosed* quote (odd number of quotes so far);
-    // otherwise a position after a finished value would also count as in-quote.
-    if ((linePrefix.match(/"/g) ?? []).length % 2 === 0) {
+    // Work out the path kind from the line's leading keyword, but only once we
+    // are in the value region (a space after the keyword) so typing the keyword
+    // itself still completes to keywords.
+    let kind: CompletionContextKind | null = null;
+    if (/^\s*Import\s+/.test(linePrefix)) {
+      kind = "import";
+    } else if (
+      /^\s*(CustomAlertSound|CustomAlertSoundOptional)\s+/.test(linePrefix)
+    ) {
+      kind = "sound";
+    }
+    if (!kind) {
       return null;
     }
-    if (/^\s*Import\b/.test(linePrefix)) {
-      return "import";
+
+    const quoteCount = (linePrefix.match(/"/g) ?? []).length;
+    // Inside an open quote: complete the path (drill into folders).
+    if (quoteCount % 2 === 1) {
+      return kind;
     }
-    // CustomAlertSound supports several semicolon-separated quoted files, so it
-    // is enough that we are inside an open quote on such a line.
-    if (/^\s*(CustomAlertSound|CustomAlertSoundOptional)\b/.test(linePrefix)) {
-      return "sound";
+    // No quote yet: offer the first level (the picker inserts the opening quote
+    // itself, so this works right after the keyword - like Class).
+    if (quoteCount === 0) {
+      return kind;
     }
+    // After a finished "..." value: nothing more to complete.
     return null;
   }
 

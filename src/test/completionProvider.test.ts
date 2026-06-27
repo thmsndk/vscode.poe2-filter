@@ -55,6 +55,59 @@ suite("Completion Provider Test Suite", () => {
     assert.strictEqual(item?.command, undefined);
   });
 
+  test("adds a space but does not reopen suggest after a numeric condition", () => {
+    const item = completeAtEnd("    ItemL").find((i) => i.label === "ItemLevel");
+    assert.ok(item);
+    assert.strictEqual(item?.insertText, "ItemLevel ");
+    assert.strictEqual(item?.command, undefined);
+  });
+
+  test("adds a space and reopens suggest after CustomAlertSound (no quote)", () => {
+    const item = completeAtEnd("    CustomAlert").find(
+      (i) => i.label === "CustomAlertSound"
+    );
+    assert.ok(item);
+    // No quote is inserted - the picker adds the quotes itself, like Class.
+    assert.strictEqual(item?.insertText, "CustomAlertSound ");
+    assert.strictEqual(item?.command?.command, "editor.action.triggerSuggest");
+  });
+
+  test("accepting a Rarity value adds a trailing space and reopens suggest for the next value", () => {
+    const item = completeAtEnd("    Rarity ").find((i) => i.label === "Normal");
+    assert.ok(item);
+    assert.strictEqual(item?.insertText, "Normal ");
+    assert.strictEqual(item?.command?.command, "editor.action.triggerSuggest");
+  });
+
+  test("does not reopen suggest when accepting the last remaining Rarity value", () => {
+    const item = completeAtEnd("    Rarity Normal Magic Rare ").find(
+      (i) => i.label === "Unique"
+    );
+    assert.ok(item);
+    assert.strictEqual(item?.command, undefined);
+  });
+
+  test("reopens suggest after a BaseType value so a list can be chained", () => {
+    const item = completeAtEnd("    BaseType ", buildGameData()).find(
+      (i) => i.label === "Exalted Orb"
+    );
+    assert.ok(item);
+    assert.strictEqual(item?.insertText, '"Exalted Orb" ');
+    assert.strictEqual(item?.command?.command, "editor.action.triggerSuggest");
+  });
+
+  test("chains MinimapIcon colour into the shape dropdown but stops at the last param", () => {
+    const colour = completeAtEnd("    MinimapIcon 1 ").find((i) => i.label === "Red");
+    assert.ok(colour);
+    assert.strictEqual(colour?.command?.command, "editor.action.triggerSuggest");
+
+    const shape = completeAtEnd("    MinimapIcon 1 Red ").find(
+      (i) => i.label === "Circle"
+    );
+    assert.ok(shape);
+    assert.strictEqual(shape?.command, undefined);
+  });
+
   test("ranks common keywords like BaseType above niche ones", () => {
     const items = completeAtEnd("    Bas");
     const baseItems = items.filter((item) => item.label.startsWith("Base"));
@@ -214,18 +267,27 @@ suite("Completion Provider Test Suite", () => {
       const fsPath = path.join(root, "test.filter");
       const uri = "file:///" + fsPath.replace(/\\/g, "/").replace(/^\//, "");
       const provider = new CompletionProvider();
-      const line = 'CustomAlertSound "';
-      const document = TextDocument.create(uri, "poe2-filter", 1, line);
-      const names = provider
-        .provideCompletions(document, {
+
+      const makeDoc = (line: string) =>
+        TextDocument.create(uri, "poe2-filter", 1, line);
+      const complete = (line: string) =>
+        provider.provideCompletions(makeDoc(line), {
           textDocument: { uri },
           position: { line: 0, character: line.length },
-        })
-        .map((item) => item.label);
+        });
 
+      const insideQuote = complete('CustomAlertSound "');
+      const names = insideQuote.map((item) => item.label);
       assert.ok(names.includes("sounds"), "lists folders containing sounds");
       assert.ok(!names.includes("empty"), "hides folders without sounds");
       assert.ok(!names.includes(".git"), "hides hidden folders");
+
+      // Triggered straight after the keyword (no quote yet) it still offers the
+      // folders and inserts the opening quote itself.
+      const noQuote = complete("CustomAlertSound ");
+      const folder = noQuote.find((item) => item.label === "sounds");
+      assert.ok(folder, "offers folders without a typed quote");
+      assert.strictEqual(folder?.textEdit?.newText, '"sounds/');
     } finally {
       fs.rmSync(root, { recursive: true, force: true });
     }
