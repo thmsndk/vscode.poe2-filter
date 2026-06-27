@@ -33,6 +33,10 @@ export class GameDataService {
   private baseItemTypeIndex?: Map<string, BaseItemType[]>;
   private baseItemTypeIndexSource?: BaseItemType[];
 
+  // Lazily-built `_index` -> ItemClass map, rebuilt when `itemClasses` changes.
+  private itemClassByIndex?: Map<number, ItemClass>;
+  private itemClassByIndexSource?: ItemClass[];
+
   private getBaseItemTypeIndex(): Map<string, BaseItemType[]> {
     if (
       !this.baseItemTypeIndex ||
@@ -163,6 +167,22 @@ export class GameDataService {
     });
 
     return matches;
+  }
+
+  /** Resolves an ItemClass from a BaseItemType's numeric `ItemClass` index. */
+  findClassByIndex(index: number): ItemClass | undefined {
+    if (
+      !this.itemClassByIndex ||
+      this.itemClassByIndexSource !== this.itemClasses
+    ) {
+      const map = new Map<number, ItemClass>();
+      for (const cls of this.itemClasses) {
+        map.set(cls._index, cls);
+      }
+      this.itemClassByIndex = map;
+      this.itemClassByIndexSource = this.itemClasses;
+    }
+    return this.itemClassByIndex.get(index);
   }
 
   findExactClass(name: string | string[]): Match<ItemClass>[] {

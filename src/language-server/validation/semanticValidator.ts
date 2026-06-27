@@ -147,6 +147,8 @@ export class SemanticValidator {
           this.visitNode(child, node);
         }
 
+        this.validateClassBaseTypeCombination(firstConditionByType);
+
         // The last action of each type wins; warn on the overridden earlier ones.
         for (const occurrences of actionsByType.values()) {
           for (let index = 0; index < occurrences.length - 1; index++) {
@@ -792,6 +794,91 @@ export class SemanticValidator {
       p = p.slice(1);
     }
     return p;
+  }
+
+  /**
+   * Warns about impossible Class/BaseType combinations within a block, e.g.
+   * `Class "Currency"` together with `BaseType "Sapphire Ring"` (a ring), which
+   * can never match any item. Only the first Class and first BaseType conditions
+   * are considered (the others are reported as duplicates). Combinations are
+   * skipped when either side is unknown (already reported as "not found") or
+   * matches across classes.
+   */
+  private validateClassBaseTypeCombination(
+    firstConditionByType: Map<string, ConditionNode>
+  ): void {
+    if (!this.gameData) {
+      return;
+    }
+
+    const classNode = firstConditionByType.get("Class");
+    const baseTypeNode = firstConditionByType.get("BaseType");
+    if (!classNode || !baseTypeNode) {
+      return;
+    }
+
+    const classValues = classNode.values
+      .map((v) => v.value)
+      .filter((v): v is string => typeof v === "string");
+
+    const classMatches =
+      classNode.operator === "=="
+        ? this.gameData.findExactClass(classValues)
+        : this.gameData.findMatchingClasses(classValues);
+
+    const allowedClassIndices = new Set(
+      classMatches.map((match) => match.item._index)
+    );
+    if (allowedClassIndices.size === 0) {
+      // Unknown class - already reported as "not found".
+      return;
+    }
+
+    const allowedClassNames = [
+      ...new Set(classMatches.map((match) => `"${match.item.Name}"`)),
+    ].join(", ");
+
+    const baseExact = baseTypeNode.operator === "==";
+
+    for (const nodeValue of baseTypeNode.values) {
+      const value = nodeValue.value;
+      if (typeof value !== "string") {
+        continue;
+      }
+
+      const baseMatches = baseExact
+        ? this.gameData.findExactBaseType(value)
+        : this.gameData.findMatchingBaseTypes(value);
+
+      if (baseMatches.length === 0) {
+        // Unknown base type - already reported as "not found".
+        continue;
+      }
+
+      const matchesAllowedClass = baseMatches.some((match) =>
+        allowedClassIndices.has(match.item.ItemClass)
+      );
+      if (matchesAllowedClass) {
+        continue;
+      }
+
+      const actualClassNames = [
+        ...new Set(
+          baseMatches
+            .map((match) => this.gameData?.findClassByIndex(match.item.ItemClass)?.Name)
+            .filter((name): name is string => Boolean(name))
+        ),
+      ].join(", ");
+      const actualPart = actualClassNames ? ` (a ${actualClassNames})` : "";
+
+      this.diagnostics.push({
+        message: `Class/BaseType combination never matches: BaseType "${value}"${actualPart} does not belong to Class ${allowedClassNames}`,
+        severity: "warning",
+        line: baseTypeNode.line,
+        columnStart: nodeValue.columnStart,
+        columnEnd: nodeValue.columnEnd,
+      });
+    }
   }
 
   private validateBaseTypeOrClass(

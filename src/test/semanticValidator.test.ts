@@ -352,6 +352,63 @@ Show
   });
 });
 
+suite("Class/BaseType Combination", () => {
+  const buildGameData = () => {
+    const gameData = new GameDataService();
+    gameData.itemClasses = [
+      { _index: 0, Id: "Currency", Name: "Currency" },
+      { _index: 1, Id: "Rings", Name: "Rings" },
+    ];
+    gameData.baseItemTypes = [
+      { Id: "Exalted Orb", Name: "Exalted Orb", ItemClass: 0, DropLevel: 1 },
+      { Id: "Sapphire Ring", Name: "Sapphire Ring", ItemClass: 1, DropLevel: 1 },
+    ];
+    return gameData;
+  };
+
+  const validate = (input: string) => {
+    const ast = new Parser(input).parse();
+    const validator = new SemanticValidator(buildGameData());
+    validator.validate(ast);
+    return validator.diagnostics;
+  };
+
+  test("warns on an impossible Class/BaseType combination", () => {
+    const diagnostics = validate(`
+Show
+    Class == "Currency"
+    BaseType == "Sapphire Ring"
+    SetFontSize 40
+`);
+    assert.strictEqual(diagnostics.length, 1);
+    assert.strictEqual(diagnostics[0].severity, "warning");
+    assert.strictEqual(diagnostics[0].line, 4);
+    assert.strictEqual(
+      diagnostics[0].message,
+      'Class/BaseType combination never matches: BaseType "Sapphire Ring" (a Rings) does not belong to Class "Currency"'
+    );
+  });
+
+  test("does not warn when the BaseType belongs to the Class", () => {
+    const diagnostics = validate(`
+Show
+    Class == "Currency"
+    BaseType == "Exalted Orb"
+    SetFontSize 40
+`);
+    assert.deepStrictEqual(diagnostics, []);
+  });
+
+  test("does not warn when only one of Class/BaseType is present", () => {
+    const diagnostics = validate(`
+Show
+    BaseType == "Sapphire Ring"
+    SetFontSize 40
+`);
+    assert.deepStrictEqual(diagnostics, []);
+  });
+});
+
 suite("Import Validation", () => {
   test("warns when a non-Optional import is missing", () => {
     const input = `Import "definitely-missing-xyz.filter"\n`;
