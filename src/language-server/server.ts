@@ -48,8 +48,10 @@ import { ActionSyntaxMap, ActionType, ActionSyntax } from "./ast/actions";
 import { SymbolProvider } from "./providers/symbolProvider";
 import { CodeActionProvider } from "./providers/codeActionProvider";
 import { CompletionProvider } from "./providers/completionProvider";
+import { SignatureHelpProvider } from "./providers/signatureHelpProvider";
 import {
   CompletionParams,
+  SignatureHelpParams,
   DocumentLinkParams,
   DocumentFormattingParams,
 } from "vscode-languageserver";
@@ -133,6 +135,10 @@ connection.onInitialize(
         codeActionProvider: true,
         completionProvider: {
           triggerCharacters: ['"', "/"],
+        },
+        signatureHelpProvider: {
+          triggerCharacters: [" "],
+          retriggerCharacters: [" "],
         },
         documentLinkProvider: {
           resolveProvider: false,
@@ -441,6 +447,16 @@ connection.onCompletion((params: CompletionParams) => {
     return [];
   }
   return completionProvider.provideCompletions(document, params);
+});
+
+const signatureHelpProvider = new SignatureHelpProvider();
+
+connection.onSignatureHelp((params: SignatureHelpParams) => {
+  const document = documents.get(params.textDocument.uri);
+  if (!document) {
+    return null;
+  }
+  return signatureHelpProvider.provideSignatureHelp(document, params);
 });
 
 const documentLinkProvider = new DocumentLinkProvider();
