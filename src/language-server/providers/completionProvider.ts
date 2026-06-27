@@ -17,6 +17,16 @@ import { GameDataService } from "../../services/gameDataService";
 const SOUND_EXTENSIONS = new Set([".mp3", ".wav", ".ogg"]);
 const FILTER_EXTENSIONS = new Set([".filter"]);
 
+/**
+ * Re-opens the suggest widget right after an item is accepted, so chained
+ * completions (keyword -> its value, size -> color, folder -> its contents)
+ * appear without the user pressing Ctrl+Space.
+ */
+const TRIGGER_SUGGEST = {
+  command: "editor.action.triggerSuggest",
+  title: "Suggest",
+};
+
 type CompletionContextKind = "import" | "sound";
 
 /**
@@ -134,16 +144,27 @@ export class CompletionProvider {
         detail: "Condition",
         documentation: ConditionSyntaxMap[condition]?.description,
         sortText: this.keywordSortText(condition),
+        // Accepting a condition adds the trailing space and reopens suggest so
+        // its value list (Rarity values, True/False, ...) shows immediately.
+        insertText: `${condition} `,
+        command: TRIGGER_SUGGEST,
       });
     }
 
     for (const action of Object.values(ActionType)) {
+      const takesValue =
+        (ActionSyntaxMap[action]?.parameters.length ?? 0) > 0;
       items.push({
         label: action,
         kind: CompletionItemKind.Function,
         detail: "Action",
         documentation: ActionSyntaxMap[action]?.description,
         sortText: this.keywordSortText(action),
+        // Same convenience for actions that take a value (skip parameterless
+        // ones like Continue, which should stay on their own).
+        ...(takesValue
+          ? { insertText: `${action} `, command: TRIGGER_SUGGEST }
+          : {}),
       });
     }
 
@@ -230,9 +251,16 @@ export class CompletionProvider {
       return [];
     }
 
-    const parameter = syntax.parameters[this.valueIndex(afterKeyword)];
+    const index = this.valueIndex(afterKeyword);
+    const parameter = syntax.parameters[index];
     if (!parameter) {
       return [];
+    }
+
+    // MinimapIcon's size is a small fixed set, so offer a labelled dropdown
+    // (the generic numeric branch below would offer nothing).
+    if (action === ActionType.MinimapIcon && index === 0) {
+      return this.minimapSizeItems();
     }
 
     switch (parameter.type) {
@@ -347,6 +375,26 @@ export class CompletionProvider {
     return values;
   }
 
+  /**
+   * The three usable MinimapIcon sizes, labelled and kept in size order. After
+   * a size is picked, suggest reopens for the icon colour.
+   */
+  private minimapSizeItems(): CompletionItem[] {
+    const sizes = [
+      { value: "0", detail: "Small" },
+      { value: "1", detail: "Medium" },
+      { value: "2", detail: "Large" },
+    ];
+    return sizes.map((size, index) => ({
+      label: size.value,
+      detail: size.detail,
+      kind: CompletionItemKind.Value,
+      insertText: `${size.value} `,
+      sortText: String(index).padStart(4, "0"),
+      command: TRIGGER_SUGGEST,
+    }));
+  }
+
   private enumItems(values: string[], kind: CompletionItemKind): CompletionItem[] {
     // Preserve the declared order (e.g. Rarity: Normal, Magic, Rare, Unique)
     // instead of letting the editor sort by label alphabetically.
@@ -439,15 +487,25 @@ export class CompletionProvider {
     const items: CompletionItem[] = [];
     for (const entry of entries) {
       if (entry.isDirectory()) {
+        // Skip VCS/editor/dependency noise and folders that hold nothing
+        // usable, so the picker only lists places worth drilling into.
+        if (entry.name.startsWith(".") || entry.name === "node_modules") {
+          continue;
+        }
+        if (
+          !this.directoryHasMatchingFile(
+            path.join(listDir, entry.name),
+            allowedExtensions
+          )
+        ) {
+          continue;
+        }
         items.push({
           label: entry.name,
           kind: CompletionItemKind.Folder,
           textEdit: TextEdit.replace(replaceRange, entry.name + "/"),
           // Re-trigger so the user can keep drilling into folders.
-          command: {
-            command: "editor.action.triggerSuggest",
-            title: "Suggest",
-          },
+          command: TRIGGER_SUGGEST,
         });
         continue;
       }
@@ -467,6 +525,61 @@ export class CompletionProvider {
     }
 
     return items;
+  }
+
+  /**
+   * Bounded search for any file with one of `extensions` somewhere under
+   * `rootDir`. Used to hide folders with nothing usable (e.g. a sound picker
+   * should not list `.git`). Skips hidden/`node_modules` dirs and caps how much
+   * it scans so completion stays responsive on large trees.
+   */
+  private directoryHasMatchingFile(
+    rootDir: string,
+    extensions: Set<string>
+  ): boolean {
+    const MAX_DIRS = 400;
+    const MAX_DEPTH = 6;
+    const stack: { dir: string; depth: number }[] = [
+      { dir: rootDir, depth: 0 },
+    ];
+    let scanned = 0;
+
+    while (stack.length > 0) {
+      const current = stack.pop();
+      if (!current) {
+        break;
+      }
+      if (scanned++ > MAX_DIRS) {
+        return false;
+      }
+
+      let entries: fs.Dirent[];
+      try {
+        entries = fs.readdirSync(current.dir, { withFileTypes: true });
+      } catch {
+        continue;
+      }
+
+      for (const entry of entries) {
+        if (entry.isFile()) {
+          if (extensions.has(path.extname(entry.name).toLowerCase())) {
+            return true;
+          }
+        } else if (
+          entry.isDirectory() &&
+          current.depth < MAX_DEPTH &&
+          !entry.name.startsWith(".") &&
+          entry.name !== "node_modules"
+        ) {
+          stack.push({
+            dir: path.join(current.dir, entry.name),
+            depth: current.depth + 1,
+          });
+        }
+      }
+    }
+
+    return false;
   }
 
   private getContextKind(linePrefix: string): CompletionContextKind | null {

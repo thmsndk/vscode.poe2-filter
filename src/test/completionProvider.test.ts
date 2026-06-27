@@ -1,4 +1,7 @@
 import * as assert from "assert";
+import * as os from "os";
+import * as fs from "fs";
+import * as path from "path";
 import { TextEdit } from "vscode-languageserver";
 import { TextDocument } from "vscode-languageserver-textdocument";
 import { CompletionProvider } from "../language-server/providers/completionProvider";
@@ -37,6 +40,19 @@ suite("Completion Provider Test Suite", () => {
     assert.ok(result.includes("Show"));
     assert.ok(result.includes("BaseType"));
     assert.ok(result.includes("SetTextColor"));
+  });
+
+  test("adds a trailing space and reopens suggest after a condition keyword", () => {
+    const item = completeAtEnd("    Rar").find((i) => i.label === "Rarity");
+    assert.strictEqual(item?.insertText, "Rarity ");
+    assert.strictEqual(item?.command?.command, "editor.action.triggerSuggest");
+  });
+
+  test("does not add a trailing space after a parameterless action", () => {
+    const item = completeAtEnd("    Cont").find((i) => i.label === "Continue");
+    assert.ok(item);
+    assert.strictEqual(item?.insertText, undefined);
+    assert.strictEqual(item?.command, undefined);
   });
 
   test("ranks common keywords like BaseType above niche ones", () => {
@@ -85,6 +101,13 @@ suite("Completion Provider Test Suite", () => {
 
   test("suggests True/False for boolean conditions", () => {
     assert.deepStrictEqual(labels("    Corrupted "), ["True", "False"]);
+  });
+
+  test("suggests labelled sizes for MinimapIcon's first parameter", () => {
+    assert.deepStrictEqual(labels("    MinimapIcon "), ["0", "1", "2"]);
+    const first = completeAtEnd("    MinimapIcon ")[0];
+    assert.strictEqual(first.detail, "Small");
+    assert.strictEqual(first.insertText, "0 ");
   });
 
   test("suggests colors then shapes for MinimapIcon parameters", () => {
@@ -149,5 +172,35 @@ suite("Completion Provider Test Suite", () => {
 
   test("offers no keyword/value completions inside comments", () => {
     assert.deepStrictEqual(labels("# just a comment "), []);
+  });
+
+  test("sound completions only list folders that actually contain sounds", () => {
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), "poe2-snd-"));
+    try {
+      fs.mkdirSync(path.join(root, "sounds"));
+      fs.writeFileSync(path.join(root, "sounds", "beep.wav"), "x");
+      fs.mkdirSync(path.join(root, "empty"));
+      fs.writeFileSync(path.join(root, "empty", "readme.txt"), "x");
+      fs.mkdirSync(path.join(root, ".git"));
+      fs.writeFileSync(path.join(root, ".git", "hook.wav"), "x");
+
+      const fsPath = path.join(root, "test.filter");
+      const uri = "file:///" + fsPath.replace(/\\/g, "/").replace(/^\//, "");
+      const provider = new CompletionProvider();
+      const line = 'CustomAlertSound "';
+      const document = TextDocument.create(uri, "poe2-filter", 1, line);
+      const names = provider
+        .provideCompletions(document, {
+          textDocument: { uri },
+          position: { line: 0, character: line.length },
+        })
+        .map((item) => item.label);
+
+      assert.ok(names.includes("sounds"), "lists folders containing sounds");
+      assert.ok(!names.includes("empty"), "hides folders without sounds");
+      assert.ok(!names.includes(".git"), "hides hidden folders");
+    } finally {
+      fs.rmSync(root, { recursive: true, force: true });
+    }
   });
 });
