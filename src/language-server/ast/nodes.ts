@@ -73,6 +73,8 @@ export interface ConditionNode extends BaseNode {
   type: "Condition";
   condition: ConditionType;
   operator?: string;
+  operatorColumnStart?: number;
+  operatorColumnEnd?: number;
   values: NodeValue[];
   negated?: boolean;
 }

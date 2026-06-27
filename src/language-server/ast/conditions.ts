@@ -551,9 +551,12 @@ export const ConditionSyntaxMap: Record<ConditionType, ConditionSyntax> = {
     type: ConditionType.HasExplicitMod,
     valueType: "string",
     operatorBehavior: {
+      // Bespoke form: HasExplicitMod [<op><count> | True] <mod> [<mod> ...].
+      // The operator/count is optional; when present the count uses an ordered
+      // comparison glued to the number (e.g. ">=6").
       allowed: true,
-      optional: false,
-      allowedOperators: ["=="],
+      optional: true,
+      allowedOperators: ["==", ">=", "<=", "<", ">"],
     },
     valueSyntax: {
       multiValue: true,

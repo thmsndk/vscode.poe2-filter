@@ -308,10 +308,19 @@ export class Parser {
 
     this.advance(); // Consume condition type
 
+    // HasExplicitMod has a bespoke "[<op><count> | True] <mod> ..." form whose
+    // value list (mod names, optional count) is not type-validated by main, so
+    // we skip generic value-type checks for it here too.
+    const validateValueTypes = condition !== ConditionType.HasExplicitMod;
+
     // Check for operator
     let operator: string | undefined;
+    let operatorColumnStart: number | undefined;
+    let operatorColumnEnd: number | undefined;
     if (this.currentToken.type === "OPERATOR") {
       operator = this.currentToken.value as string;
+      operatorColumnStart = this.currentToken.columnStart;
+      operatorColumnEnd = this.currentToken.columnEnd;
       // Equality operators (=, ==, !, !=) are accepted on any condition in
       // PoE2 (the "!" / "!=" forms both mean "not equal"). Only the ordered
       // comparison operators (<, >, <=, >=) are restricted by the condition's
@@ -350,12 +359,14 @@ export class Parser {
     while (this.shouldContinueParsing()) {
       switch (this.currentToken.type) {
         case "NUMBER":
-          this.validateTokenType(
-            syntax?.valueType ?? "",
-            "number",
-            `condition ${condition}`,
-            this.currentToken
-          );
+          if (validateValueTypes) {
+            this.validateTokenType(
+              syntax?.valueType ?? "",
+              "number",
+              `condition ${condition}`,
+              this.currentToken
+            );
+          }
           values.push({
             value: this.currentToken.value as number,
             columnStart: this.currentToken.columnStart,
@@ -364,12 +375,14 @@ export class Parser {
           break;
 
         case "BOOLEAN":
-          this.validateTokenType(
-            syntax?.valueType ?? "",
-            "boolean",
-            `condition ${condition}`,
-            this.currentToken
-          );
+          if (validateValueTypes) {
+            this.validateTokenType(
+              syntax?.valueType ?? "",
+              "boolean",
+              `condition ${condition}`,
+              this.currentToken
+            );
+          }
           values.push({
             value: this.currentToken.value as boolean,
             columnStart: this.currentToken.columnStart,
@@ -379,12 +392,14 @@ export class Parser {
 
         case "QUOTED_STRING":
         case "WORD":
-          this.validateTokenType(
-            syntax?.valueType ?? "",
-            "string",
-            `condition ${condition}`,
-            this.currentToken
-          );
+          if (validateValueTypes) {
+            this.validateTokenType(
+              syntax?.valueType ?? "",
+              "string",
+              `condition ${condition}`,
+              this.currentToken
+            );
+          }
           values.push({
             value: this.currentToken.value as string,
             columnStart: this.currentToken.columnStart,
@@ -395,12 +410,14 @@ export class Parser {
         case "RARITY":
         case "COLOR":
         case "SHAPE":
-          this.validateTokenType(
-            syntax?.valueType ?? "",
-            this.currentToken.type.toLowerCase(),
-            `condition ${condition}`,
-            this.currentToken
-          );
+          if (validateValueTypes) {
+            this.validateTokenType(
+              syntax?.valueType ?? "",
+              this.currentToken.type.toLowerCase(),
+              `condition ${condition}`,
+              this.currentToken
+            );
+          }
           values.push({
             value: this.currentToken.value as
               | string
@@ -448,6 +465,8 @@ export class Parser {
       type: "Condition",
       condition,
       operator,
+      operatorColumnStart,
+      operatorColumnEnd,
       values,
       inlineComment,
       commented: isCommented,

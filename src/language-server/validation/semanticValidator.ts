@@ -245,6 +245,14 @@ export class SemanticValidator {
       return;
     }
 
+    if (syntax.valueType === "boolean") {
+      this.validateBooleanNotEqual(node);
+    }
+
+    if (node.condition === "HasExplicitMod") {
+      this.validateHasExplicitMod(node);
+    }
+
     switch (node.condition) {
       case "BaseType":
       case "Class":
@@ -530,6 +538,73 @@ export class SemanticValidator {
         columnEnd: valueStart + value.length,
       });
     }
+  }
+
+  /**
+   * Flags the confusing "BooleanCondition != True/False" form and suggests the
+   * simpler inverted value (e.g. "Corrupted != True" -> "Corrupted False").
+   */
+  private validateBooleanNotEqual(node: ConditionNode): void {
+    const operator = node.operator;
+    if (operator !== "!" && operator !== "!=") {
+      return;
+    }
+
+    const first = node.values[0];
+    if (!first) {
+      return;
+    }
+
+    const value = first.value;
+    if (value !== "True" && value !== "False") {
+      return;
+    }
+
+    const inverted = value === "True" ? "False" : "True";
+
+    this.diagnostics.push({
+      message: `"${node.condition} ${operator} ${value}" is confusing. Use "${node.condition} ${inverted}" instead.`,
+      severity: "warning",
+      line: node.line,
+      columnStart: node.operatorColumnStart ?? node.columnStart,
+      columnEnd: first.columnEnd,
+    });
+  }
+
+  /**
+   * HasExplicitMod has a bespoke syntax (confirmed in-game, issue #11):
+   *   HasExplicitMod [<op><count> | True] <mod> [<mod> ...]
+   * The operator/count is optional but, when present, must be glued to the
+   * number ("HasExplicitMod >=6 ..."); the game rejects a space
+   * ("HasExplicitMod >= 6 ..."). Mod names are matched partially and may be
+   * unquoted, so the list itself isn't validated - we only flag the spacing.
+   */
+  private validateHasExplicitMod(node: ConditionNode): void {
+    const operator = node.operator;
+    if (
+      !operator ||
+      !["==", ">=", "<=", "<", ">"].includes(operator) ||
+      node.operatorColumnEnd === undefined
+    ) {
+      return;
+    }
+
+    const first = node.values[0];
+    if (
+      !first ||
+      typeof first.value !== "number" ||
+      first.columnStart === node.operatorColumnEnd
+    ) {
+      return;
+    }
+
+    this.diagnostics.push({
+      message: `HasExplicitMod requires no space between the operator and number. Use "${operator}${first.value}".`,
+      severity: "error",
+      line: node.line,
+      columnStart: node.operatorColumnStart ?? node.columnStart,
+      columnEnd: first.columnEnd,
+    });
   }
 
   /**

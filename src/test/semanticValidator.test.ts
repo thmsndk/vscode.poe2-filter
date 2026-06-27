@@ -372,3 +372,89 @@ suite("Import Validation", () => {
     assert.strictEqual(validator.diagnostics.length, 0);
   });
 });
+
+suite("Boolean Condition Hints", () => {
+  test('suggests the simpler form for "Corrupted != True"', () => {
+    const input = `\nShow\n    Corrupted != True\n`;
+    const parser = new Parser(input);
+    const ast = parser.parse();
+
+    const validator = new SemanticValidator(mockGameData);
+    validator.validate(ast);
+
+    assert.strictEqual(validator.diagnostics.length, 1);
+    assert.strictEqual(
+      validator.diagnostics[0].message,
+      '"Corrupted != True" is confusing. Use "Corrupted False" instead.'
+    );
+    assert.strictEqual(validator.diagnostics[0].severity, "warning");
+  });
+
+  test('suggests the simpler form for "Mirrored ! False"', () => {
+    const input = `\nShow\n    Mirrored ! False\n`;
+    const parser = new Parser(input);
+    const ast = parser.parse();
+
+    const validator = new SemanticValidator(mockGameData);
+    validator.validate(ast);
+
+    assert.strictEqual(validator.diagnostics.length, 1);
+    assert.strictEqual(
+      validator.diagnostics[0].message,
+      '"Mirrored ! False" is confusing. Use "Mirrored True" instead.'
+    );
+  });
+
+  test("does not warn for the plain boolean form", () => {
+    const input = `\nShow\n    Corrupted True\n`;
+    const parser = new Parser(input);
+    const ast = parser.parse();
+
+    const validator = new SemanticValidator(mockGameData);
+    validator.validate(ast);
+
+    assert.strictEqual(validator.diagnostics.length, 0);
+  });
+});
+
+suite("HasExplicitMod Validation", () => {
+  test("flags a space between the operator and count", () => {
+    const input = `\nShow\n    HasExplicitMod >= 6 "Mod"\n`;
+    const parser = new Parser(input);
+    const ast = parser.parse();
+
+    const validator = new SemanticValidator(mockGameData);
+    validator.validate(ast);
+
+    assert.strictEqual(validator.diagnostics.length, 1);
+    assert.strictEqual(
+      validator.diagnostics[0].message,
+      'HasExplicitMod requires no space between the operator and number. Use ">=6".'
+    );
+    assert.strictEqual(validator.diagnostics[0].severity, "error");
+  });
+
+  test("accepts the glued operator/count form", () => {
+    const input = `\nShow\n    HasExplicitMod >=6 "Mod"\n`;
+    const parser = new Parser(input);
+    const ast = parser.parse();
+
+    const validator = new SemanticValidator(mockGameData);
+    validator.validate(ast);
+
+    assert.strictEqual(validator.diagnostics.length, 0);
+    assert.strictEqual(parser.diagnostics.length, 0);
+  });
+
+  test("accepts a mod list with no count", () => {
+    const input = `\nShow\n    HasExplicitMod "Mod A" "Mod B"\n`;
+    const parser = new Parser(input);
+    const ast = parser.parse();
+
+    const validator = new SemanticValidator(mockGameData);
+    validator.validate(ast);
+
+    assert.strictEqual(validator.diagnostics.length, 0);
+    assert.strictEqual(parser.diagnostics.length, 0);
+  });
+});
