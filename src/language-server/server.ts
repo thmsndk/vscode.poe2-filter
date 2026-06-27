@@ -373,7 +373,9 @@ connection.languages.inlayHint.on(
 // Helper to identify color actions
 function isColorAction(actionType: ActionType): boolean {
   const syntax = ActionSyntaxMap[actionType];
-  if (!syntax) return false;
+  if (!syntax) {
+    return false;
+  }
 
   // Check if first 3 parameters are RGB values
   const [r, g, b] = syntax.parameters;
