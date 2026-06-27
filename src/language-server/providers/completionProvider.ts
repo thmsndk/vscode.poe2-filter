@@ -302,7 +302,12 @@ export class CompletionProvider {
         : this.gameData.itemClasses.map((item) => item.Name);
 
     const uniqueNames = [...new Set(names)];
-    const openQuote = /"([^"]*)$/.exec(linePrefix);
+    // Only treat the cursor as inside a quote when there is an UNCLOSED quote
+    // (odd number of quotes so far). Otherwise the closing quote of a previous
+    // value - e.g. `Class "Quarterstaves" |` - is mistaken for an opening one
+    // and the next value gets inserted without its own opening quote.
+    const insideQuote = (linePrefix.match(/"/g) ?? []).length % 2 === 1;
+    const openQuote = insideQuote ? /"([^"]*)$/.exec(linePrefix) : null;
     // Don't re-suggest values already listed on the line (e.g. avoid
     // `BaseType "Exalted Orb" "Exalted Orb"`).
     const present = this.quotedValuesOnLine(
@@ -583,8 +588,9 @@ export class CompletionProvider {
   }
 
   private getContextKind(linePrefix: string): CompletionContextKind | null {
-    // Cursor must be inside an unclosed quote on this line.
-    if (!/"[^"]*$/.test(linePrefix)) {
+    // Cursor must be inside an *unclosed* quote (odd number of quotes so far);
+    // otherwise a position after a finished value would also count as in-quote.
+    if ((linePrefix.match(/"/g) ?? []).length % 2 === 0) {
       return null;
     }
     if (/^\s*Import\b/.test(linePrefix)) {

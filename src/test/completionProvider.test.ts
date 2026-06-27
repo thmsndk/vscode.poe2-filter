@@ -170,6 +170,33 @@ suite("Completion Provider Test Suite", () => {
     assert.strictEqual(currency?.insertText, '"Currency" ');
   });
 
+  test("wraps a second value in its own quotes after a completed value", () => {
+    // Regression: the closing quote of the first value must not be treated as
+    // an opening quote, which produced `"Quarterstaves"Quarterstaves`.
+    const items = completeAtEnd('    Class "Quarterstaves" ', buildGameData());
+    const currency = items.find((item) => item.label === "Currency");
+    assert.strictEqual(currency?.insertText, '"Currency" ');
+    assert.strictEqual(currency?.textEdit, undefined);
+  });
+
+  test("omits a value already added when starting an unquoted second value", () => {
+    const result = completeAtEnd(
+      '    BaseType "Exalted Orb" ',
+      buildGameData()
+    ).map((item) => item.label);
+    assert.ok(!result.includes("Exalted Orb"));
+    assert.ok(result.includes("Chaos Orb"));
+  });
+
+  test("completes a second quoted value without duplicating the opening quote", () => {
+    const items = completeAtEnd(
+      '    BaseType "Exalted Orb" "Ch',
+      buildGameData()
+    );
+    const chaos = items.find((item) => item.label === "Chaos Orb");
+    assert.strictEqual(chaos?.textEdit?.newText, 'Chaos Orb" ');
+  });
+
   test("offers no keyword/value completions inside comments", () => {
     assert.deepStrictEqual(labels("# just a comment "), []);
   });
