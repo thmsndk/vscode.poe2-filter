@@ -10,7 +10,6 @@ import { CodelensProvider } from "./CodelensProvider";
 import { SoundPlayer } from "./utils/soundPlayer";
 import path from "path";
 import { GameDataService } from "./services/gameDataService";
-import { FilterHoverProvider } from "./providers/filterHoverProvider";
 import { FilterDecorationProvider } from "./providers/filterDecorationProvider";
 import { FilterDocumentLinkProvider } from "./providers/filterDocumentLinkProvider";
 import { FilterCompletionProvider } from "./providers/filterCompletionProvider";
@@ -61,13 +60,7 @@ export async function activate(context: vscode.ExtensionContext) {
   const gameData = new GameDataService();
   await gameData.loadData(context.extensionPath);
 
-  // Register hover provider
-  context.subscriptions.push(
-    vscode.languages.registerHoverProvider(
-      "poe2-filter",
-      new FilterHoverProvider(gameData)
-    )
-  );
+  // Hover (BaseType/Class matching items) is now provided by the language server.
 
   // Initialize and register decoration provider
   const decorationProvider = new FilterDecorationProvider();
