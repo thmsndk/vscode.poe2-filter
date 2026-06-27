@@ -6,7 +6,7 @@ settings:
 
 patchedDependencies:
   pathofexile-dat@14.0.0:
-    hash: rk5lsdxiwndgphsddbsob4a37e
+    hash: d09e06ef3d172cf51757a42d9290732f38bfa2fcbd4a35028991b493ecc2639f
     path: patches/pathofexile-dat@14.0.0.patch
 
 importers:
@@ -58,7 +58,7 @@ importers:
         version: 4.1.5
       pathofexile-dat:
         specifier: ^14.0.0
-        version: 14.0.0(patch_hash=rk5lsdxiwndgphsddbsob4a37e)
+        version: 14.0.0(patch_hash=d09e06ef3d172cf51757a42d9290732f38bfa2fcbd4a35028991b493ecc2639f)
       ts-node:
         specifier: ^10.9.2
         version: 10.9.2(@types/node@20.17.10)(typescript@5.7.2)
@@ -3963,7 +3963,7 @@ snapshots:
 
   pathofexile-dat-schema@8.0.0: {}
 
-  pathofexile-dat@14.0.0(patch_hash=rk5lsdxiwndgphsddbsob4a37e):
+  pathofexile-dat@14.0.0(patch_hash=d09e06ef3d172cf51757a42d9290732f38bfa2fcbd4a35028991b493ecc2639f):
     dependencies:
       ooz-wasm: 2.0.0
       pathofexile-dat-schema: 8.0.0
