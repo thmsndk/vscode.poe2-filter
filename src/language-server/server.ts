@@ -439,7 +439,7 @@ connection.onCodeAction((params: CodeActionParams) => {
   return codeActionProvider.provideCodeActions(document, params);
 });
 
-const completionProvider = new CompletionProvider();
+const completionProvider = new CompletionProvider(gameData);
 
 connection.onCompletion((params: CompletionParams) => {
   const document = documents.get(params.textDocument.uri);
