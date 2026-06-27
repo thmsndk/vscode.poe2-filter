@@ -20,6 +20,15 @@ export interface Match<T> {
   matchedBy: string;
 }
 
+/**
+ * Internal/dev game-data rows are tagged with a leading bracket marker such as
+ * `[DNT]` (Do Not Translate), `[UNUSED]`, or `[DNT-UNUSED]`. These are never
+ * shown to players, so we exclude them from the data we surface.
+ */
+export function isInternalGameName(name: string | undefined): boolean {
+  return /^\s*\[/.test(name ?? "");
+}
+
 export class GameDataService {
   public baseItemTypes: BaseItemType[] = [];
   public itemClasses: ItemClass[] = [];
@@ -89,8 +98,19 @@ export class GameDataService {
         fs.readFile(path.join(tablesPath, "ItemClasses.json"), "utf-8"),
       ]);
 
-      this.baseItemTypes = JSON.parse(baseItemTypesData);
-      this.itemClasses = JSON.parse(itemClassesData);
+      const baseItemTypes: BaseItemType[] = JSON.parse(baseItemTypesData);
+      const itemClasses: ItemClass[] = JSON.parse(itemClassesData);
+
+      // Drop internal/dev rows that leak from the extracted game data (e.g.
+      // "[DNT] Not Shown To Players", "[DNT-UNUSED] Axe Chop", "[UNUSED] ...").
+      // They are never visible to players, so they only add noise to
+      // completions, hovers, match counts, and validation.
+      this.baseItemTypes = baseItemTypes.filter(
+        (item) => !isInternalGameName(item.Name)
+      );
+      this.itemClasses = itemClasses.filter(
+        (cls) => !isInternalGameName(cls.Name)
+      );
     } catch (error) {
       console.error(
         `Failed to load game data for language ${this.language}:`,
