@@ -627,6 +627,10 @@ export class Parser {
             let receivedType = "string";
             if (parameter?.type === "sound-id") {
               receivedType = "sound-id";
+            } else if (parameter?.type === "keyword") {
+              // A bare word is an acceptable token shape for a keyword
+              // parameter; the exact literal is validated semantically.
+              receivedType = "keyword";
             }
 
             if (parameter) {

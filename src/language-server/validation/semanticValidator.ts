@@ -349,7 +349,40 @@ export class SemanticValidator {
             node.action === "CustomAlertSoundOptional"
           );
           break;
+        case "keyword":
+          this.validateKeyword(value, parameter.allowedValues, node, index);
+          break;
       }
+    }
+  }
+
+  /**
+   * Validates a `keyword` parameter (a fixed literal such as PlayEffect's
+   * `Temp`): the value must be one of `allowedValues`.
+   */
+  private validateKeyword(
+    value: string | number | boolean,
+    allowedValues: string[] | undefined,
+    node: ActionNode,
+    valueIndex: number
+  ): void {
+    if (!allowedValues || allowedValues.length === 0) {
+      return;
+    }
+
+    if (typeof value !== "string" || !allowedValues.includes(value)) {
+      const { columnStart, columnEnd } = this.valuePosition(node, valueIndex);
+      const expected = allowedValues.map((v) => `"${v}"`).join(", ");
+
+      this.diagnostics.push({
+        message: `Invalid value ${JSON.stringify(
+          value
+        )} for ${node.action}. Expected ${expected}`,
+        severity: "error",
+        line: node.line,
+        columnStart,
+        columnEnd,
+      });
     }
   }
 

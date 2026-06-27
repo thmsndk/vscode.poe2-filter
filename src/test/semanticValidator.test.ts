@@ -530,4 +530,30 @@ suite("CustomAlertSound Validation", () => {
 
     assert.strictEqual(validator.diagnostics.length, 0);
   });
+
+  suite("PlayEffect Temp keyword", () => {
+    const validate = (line: string) => {
+      const ast = new Parser(`\nShow\n    ${line}\n`).parse();
+      const validator = new SemanticValidator(mockGameData);
+      validator.validate(ast);
+      return validator.diagnostics;
+    };
+
+    test("accepts the literal Temp keyword", () => {
+      assert.deepStrictEqual(validate("PlayEffect Red Temp"), []);
+    });
+
+    test("accepts PlayEffect without the optional Temp keyword", () => {
+      assert.deepStrictEqual(validate("PlayEffect Red"), []);
+    });
+
+    test("rejects any other word in place of Temp", () => {
+      const diagnostics = validate("PlayEffect Red Foo");
+      assert.strictEqual(diagnostics.length, 1);
+      assert.strictEqual(
+        diagnostics[0].message,
+        'Invalid value "Foo" for PlayEffect. Expected "Temp"'
+      );
+    });
+  });
 });

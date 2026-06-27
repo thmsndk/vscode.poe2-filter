@@ -25,6 +25,7 @@ export type ParameterType =
   | "color"
   | "shape"
   | "sound-id" // Can be number or named sound
+  | "keyword" // A fixed literal token, e.g. PlayEffect's "Temp" (see allowedValues)
   | "filepath";
 
 export interface ActionSyntax {
@@ -34,6 +35,8 @@ export interface ActionSyntax {
     type: ParameterType;
     required: boolean;
     range?: { min: number; max: number };
+    /** The literal values accepted by a `keyword` parameter. */
+    allowedValues?: string[];
     defaultValue?: number | string;
     description: string;
   }[];
@@ -206,9 +209,11 @@ export const ActionSyntaxMap: Record<ActionType, ActionSyntax> = {
       },
       {
         name: "Temp",
-        type: "string", // TODO: this is wrong, the value is Temp
+        type: "keyword",
+        allowedValues: ["Temp"],
         required: false,
-        description: "Temporary effect",
+        description:
+          "Use the literal keyword Temp to play the effect only briefly when the item drops, instead of persistently",
       },
     ],
     disabledValue: "None",
