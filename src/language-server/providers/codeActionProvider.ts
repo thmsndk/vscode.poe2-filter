@@ -37,8 +37,15 @@ export class CodeActionProvider {
         continue;
       }
 
+      // LSP 3.18 widened Diagnostic.message to `string | MarkupContent`;
+      // our diagnostics are always plain strings, so normalize to text.
+      const messageText =
+        typeof diagnostic.message === "string"
+          ? diagnostic.message
+          : diagnostic.message.value;
+
       // "Did you mean: X, Y?" style suggestions.
-      const suggestions = this.extractSuggestions(diagnostic.message);
+      const suggestions = this.extractSuggestions(messageText);
       const rangeText = document.getText(diagnostic.range);
       const wasQuoted = rangeText.startsWith('"') && rangeText.endsWith('"');
 
@@ -56,7 +63,7 @@ export class CodeActionProvider {
       }
 
       // Confusing boolean form: "Corrupted != True" -> "Corrupted False".
-      if (/is confusing\. Use ".*" instead\./.test(diagnostic.message)) {
+      if (/is confusing\. Use ".*" instead\./.test(messageText)) {
         const inverted = this.invertBoolean(rangeText);
         if (inverted) {
           actions.push(
