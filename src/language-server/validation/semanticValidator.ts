@@ -42,6 +42,22 @@ export class SemanticValidator {
     this.visitNode(ast, undefined);
   }
 
+  /**
+   * Returns the source column span of a value at `valueIndex` on a Condition or
+   * Action node. Each parsed value carries its own column positions, so prefer
+   * those over fragile offset arithmetic; fall back to the node's own span.
+   */
+  private valuePosition(
+    node: Node,
+    valueIndex: number
+  ): { columnStart: number; columnEnd: number } {
+    const nodeValue = (node as ActionNode | ConditionNode).values?.[valueIndex];
+    return {
+      columnStart: nodeValue?.columnStart ?? node.columnStart,
+      columnEnd: nodeValue?.columnEnd ?? node.columnEnd,
+    };
+  }
+
   private validateNumberValue(
     value: number,
     range: { min: number; max?: number },
@@ -51,14 +67,7 @@ export class SemanticValidator {
   ): void {
     const { min, max } = range;
     if (value < min || (max !== undefined && value > max)) {
-      let valueStart = node.start;
-      const values = (node as ActionNode).values;
-
-      for (let i = 0; i < valueIndex; i++) {
-        valueStart += String(values[i]).length + 1;
-      }
-
-      const valueLength = String(value).length;
+      const { columnStart, columnEnd } = this.valuePosition(node, valueIndex);
 
       this.diagnostics.push({
         message: `Value ${value} out of range [${min},${
@@ -66,8 +75,8 @@ export class SemanticValidator {
         }] for ${context}`,
         severity: "error",
         line: node.line,
-        columnStart: valueStart,
-        columnEnd: valueStart + valueLength,
+        columnStart,
+        columnEnd,
       });
     }
   }
@@ -350,15 +359,7 @@ export class SemanticValidator {
     valueIndex: number
   ): void {
     if (typeof value !== "string") {
-      // works, but kinda does not make sense, our nodes should have children for values with correct column positions
-      let valueStart = node.columnEnd + 1;
-      const values = (node as ActionNode).values;
-
-      for (let i = 0; i < valueIndex; i++) {
-        valueStart += String(values[i]).length + 1;
-      }
-
-      const valueLength = String(value).length;
+      const { columnStart, columnEnd } = this.valuePosition(node, valueIndex);
 
       this.diagnostics.push({
         message: `Invalid color value: expected a named color, got ${JSON.stringify(
@@ -366,20 +367,15 @@ export class SemanticValidator {
         )}`,
         severity: "error",
         line: node.line,
-        columnStart: valueStart,
-        columnEnd: valueStart + String(value).length,
+        columnStart,
+        columnEnd,
       });
 
       return;
     }
 
     if (!(value in ColorValue)) {
-      let valueStart = node.columnEnd + 1;
-      const values = (node as ActionNode).values;
-
-      for (let i = 0; i < valueIndex; i++) {
-        valueStart += String(values[i]).length + 1;
-      }
+      const { columnStart, columnEnd } = this.valuePosition(node, valueIndex);
 
       this.diagnostics.push({
         message: `Invalid color name: "${value}". Valid colors are: ${Object.values(
@@ -387,8 +383,8 @@ export class SemanticValidator {
         ).join(", ")}`,
         severity: "error",
         line: node.line,
-        columnStart: valueStart,
-        columnEnd: valueStart + value.length,
+        columnStart,
+        columnEnd,
       });
     }
   }
@@ -400,14 +396,7 @@ export class SemanticValidator {
   ): void {
     // Only handle shape names
     if (typeof value !== "string") {
-      let valueStart = node.columnEnd + 1;
-      const values = (node as ActionNode).values;
-
-      for (let i = 0; i < valueIndex; i++) {
-        valueStart += String(values[i]).length + 1;
-      }
-
-      const valueLength = String(value).length;
+      const { columnStart, columnEnd } = this.valuePosition(node, valueIndex);
 
       this.diagnostics.push({
         message: `Invalid shape value: expected a shape name, got ${JSON.stringify(
@@ -415,19 +404,14 @@ export class SemanticValidator {
         )}`,
         severity: "error",
         line: node.line,
-        columnStart: valueStart,
-        columnEnd: valueStart + valueLength,
+        columnStart,
+        columnEnd,
       });
       return;
     }
 
     if (!(value in ShapeValue)) {
-      let valueStart = node.columnEnd + 1;
-      const values = (node as ActionNode).values;
-
-      for (let i = 0; i < valueIndex; i++) {
-        valueStart += String(values[i]).length + 1;
-      }
+      const { columnStart, columnEnd } = this.valuePosition(node, valueIndex);
 
       this.diagnostics.push({
         message: `Invalid shape name: "${value}". Valid shapes are: ${Object.values(
@@ -435,8 +419,8 @@ export class SemanticValidator {
         ).join(", ")}`,
         severity: "error",
         line: node.line,
-        columnStart: valueStart,
-        columnEnd: valueStart + value.length,
+        columnStart,
+        columnEnd,
       });
     }
   }
@@ -453,14 +437,7 @@ export class SemanticValidator {
     }
 
     if (typeof value !== "string") {
-      let valueStart = node.start;
-      const values = (node as ActionNode).values;
-
-      for (let i = 0; i < valueIndex; i++) {
-        valueStart += String(values[i]).length + 1;
-      }
-
-      const valueLength = String(value).length;
+      const { columnStart, columnEnd } = this.valuePosition(node, valueIndex);
 
       this.diagnostics.push({
         message: `Invalid sound value: expected a sound name or number, got ${JSON.stringify(
@@ -468,19 +445,14 @@ export class SemanticValidator {
         )}`,
         severity: "error",
         line: node.line,
-        columnStart: valueStart,
-        columnEnd: valueStart + valueLength,
+        columnStart,
+        columnEnd,
       });
       return;
     }
 
     if (!(value in SoundNameValue)) {
-      let valueStart = node.start;
-      const values = (node as ActionNode).values;
-
-      for (let i = 0; i < valueIndex; i++) {
-        valueStart += String(values[i]).length + 1;
-      }
+      const { columnStart, columnEnd } = this.valuePosition(node, valueIndex);
 
       this.diagnostics.push({
         message: `Invalid sound name: "${value}". Valid sounds are: ${Object.values(
@@ -488,8 +460,8 @@ export class SemanticValidator {
         ).join(", ")}`,
         severity: "error",
         line: node.line,
-        columnStart: valueStart,
-        columnEnd: valueStart + value.length,
+        columnStart,
+        columnEnd,
       });
     }
   }
@@ -501,14 +473,7 @@ export class SemanticValidator {
     isOptional: boolean = false
   ): void {
     if (typeof value !== "string") {
-      let valueStart = node.start;
-      const values = (node as ActionNode).values;
-
-      for (let i = 0; i < valueIndex; i++) {
-        valueStart += String(values[i]).length + 1;
-      }
-
-      const valueLength = String(value).length;
+      const { columnStart, columnEnd } = this.valuePosition(node, valueIndex);
 
       this.diagnostics.push({
         message: `Invalid file path: expected a string, got ${JSON.stringify(
@@ -516,8 +481,8 @@ export class SemanticValidator {
         )}`,
         severity: "error",
         line: node.line,
-        columnStart: valueStart,
-        columnEnd: valueStart + valueLength,
+        columnStart,
+        columnEnd,
       });
       return;
     }
@@ -539,12 +504,7 @@ export class SemanticValidator {
     const fileExists = possiblePaths.some((p) => fs.existsSync(p));
 
     if (!fileExists) {
-      let valueStart = node.start;
-      const values = (node as ActionNode).values;
-
-      for (let i = 0; i < valueIndex; i++) {
-        valueStart += String(values[i]).length + 1;
-      }
+      const { columnStart, columnEnd } = this.valuePosition(node, valueIndex);
 
       const severity = isOptional ? "warning" : "error";
       const message = isOptional
@@ -555,8 +515,8 @@ export class SemanticValidator {
         message,
         severity,
         line: node.line,
-        columnStart: valueStart,
-        columnEnd: valueStart + value.length,
+        columnStart,
+        columnEnd,
       });
     }
   }
