@@ -56,8 +56,8 @@ export class Lexer {
       return this.readWord();
     }
 
-    // Handle operators
-    if (/[=<>]/.test(char)) {
+    // Handle operators (including the not-equal "!" and "!=" operators)
+    if (/[=<>!]/.test(char)) {
       return this.readOperator();
     }
 

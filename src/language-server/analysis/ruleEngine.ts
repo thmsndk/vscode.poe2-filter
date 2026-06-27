@@ -165,7 +165,7 @@ export class FilterRuleEngine {
             return false;
           }
 
-          const conditionValue = Number(condition.values[0]);
+          const conditionValue = Number(condition.values[0].value);
           switch (condition.operator) {
             case ">=":
               return itemValue >= conditionValue;
@@ -228,7 +228,7 @@ export class FilterRuleEngine {
             return false;
           }
 
-          const conditionValue = Number(condition.values[0]);
+          const conditionValue = Number(condition.values[0].value);
           switch (condition.operator) {
             case ">=":
               return itemValue >= conditionValue;
@@ -410,13 +410,15 @@ export class FilterRuleEngine {
       }
 
       // Handle multiple values without operator
-      return prev.values.some((value) => current.values.includes(value));
+      return prev.values.some((prevValue) =>
+        current.values.some((curValue) => curValue.value === prevValue.value)
+      );
     }
 
     // For numeric comparisons
     if (prev.operator && current.operator) {
-      const prevValue = Number(prev.values[0]);
-      const currentValue = Number(current.values[0]);
+      const prevValue = Number(prev.values[0].value);
+      const currentValue = Number(current.values[0].value);
 
       switch (prev.operator) {
         case ">=":
@@ -462,8 +464,12 @@ export class FilterRuleEngine {
       }
     }
 
-    // For exact matches (BaseType, Class, etc)
-    return JSON.stringify(prev.values) === JSON.stringify(current.values);
+    // For exact matches (BaseType, Class, etc) compare the underlying values,
+    // not the NodeValue wrappers (which carry per-occurrence column positions).
+    return (
+      JSON.stringify(prev.values.map((v) => v.value)) ===
+      JSON.stringify(current.values.map((v) => v.value))
+    );
   }
 
   private generateConflictMessage(
@@ -481,20 +487,24 @@ export class FilterRuleEngine {
             const currentCondition = currentBlock.body.find(
               (c) => c.type === "Condition" && c.condition === node.condition
             ) as ConditionNode;
-            const currentValues = currentCondition?.values || [];
-
-            const overlapping = node.values.filter((type) =>
-              currentValues.includes(type)
+            const currentValues = (currentCondition?.values || []).map(
+              (v) => v.value
             );
+
+            const overlapping = node.values
+              .map((v) => v.value)
+              .filter((type) => currentValues.includes(type));
 
             return overlapping.length > 0
               ? `${node.condition} "${overlapping.join(", ")}"`
               : null;
           }
           case "Rarity":
-            return `Rarity ${node.values.join(" ")}`;
+            return `Rarity ${node.values.map((v) => v.value).join(" ")}`;
           default:
-            return `${node.condition} ${node.operator || ""} ${node.values[0]}`;
+            return `${node.condition} ${node.operator || ""} ${
+              node.values[0].value
+            }`;
         }
       })
       .join(", ");

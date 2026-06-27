@@ -122,6 +122,11 @@ Show
   });
 
   test("should report error for actions after Continue", () => {
+    const mockGameData = new GameDataService();
+    mockGameData.baseItemTypes = [
+      { Name: "Mirror", Id: "Mirror", ItemClass: 1, DropLevel: 1 },
+    ];
+
     const input = `
 Show
     BaseType "Mirror"
@@ -143,6 +148,11 @@ Show
   });
 
   test("should report error for conditions after Continue", () => {
+    const mockGameData = new GameDataService();
+    mockGameData.baseItemTypes = [
+      { Name: "Mirror", Id: "Mirror", ItemClass: 1, DropLevel: 1 },
+    ];
+
     const input = `
 Show
     BaseType "Mirror"

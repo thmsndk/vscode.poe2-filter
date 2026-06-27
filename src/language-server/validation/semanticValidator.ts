@@ -75,13 +75,44 @@ export class SemanticValidator {
     switch (node.type) {
       case "Show":
       case "Hide":
-      case "Minimal":
-        // Visit all nodes in the block's body
+      case "Minimal": {
+        // Visit all nodes in the block's body. Once a Continue is seen, the
+        // block has handed control to later blocks, so any further conditions
+        // or actions in this block can never apply.
         const blockNode = node as BlockNode;
+        let afterContinue = false;
         for (const child of blockNode.body) {
+          const isCommented =
+            (child.type === "Condition" || child.type === "Action") &&
+            (child as ConditionNode | ActionNode).commented === true;
+
+          if (
+            afterContinue &&
+            !isCommented &&
+            (child.type === "Condition" || child.type === "Action")
+          ) {
+            this.diagnostics.push({
+              message: `${child.type} not allowed after Continue statement`,
+              severity: "error",
+              line: child.line,
+              columnStart: child.columnStart,
+              columnEnd: child.columnEnd,
+            });
+            continue;
+          }
+
+          if (
+            !isCommented &&
+            child.type === "Action" &&
+            (child as ActionNode).action === "Continue"
+          ) {
+            afterContinue = true;
+          }
+
           this.visitNode(child, node);
         }
         break;
+      }
       case "Error":
         this.validateErrorNode(node as ErrorNode, parent);
         break;
