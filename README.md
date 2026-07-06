@@ -8,8 +8,9 @@
 
 [![Version](https://vsmarketplacebadges.dev/version-short/thmsn.poe2-filter.svg?label=Marketplace)](https://marketplace.visualstudio.com/items?itemName=thmsn.poe2-filter)
 [![Open VSX Version](https://img.shields.io/open-vsx/v/thmsn/poe2-filter?label=Open%20VSX)](https://open-vsx.org/extension/thmsn/poe2-filter)
-[![Installs](https://vsmarketplacebadges.dev/installs-short/thmsn.poe2-filter.svg)](https://marketplace.visualstudio.com/items?itemName=thmsn.poe2-filter)
-[![Rating](https://vsmarketplacebadges.dev/rating-star/thmsn.poe2-filter.svg)](https://marketplace.visualstudio.com/items?itemName=thmsn.poe2-filter&ssr=false#review-details)
+[![Marketplace Installs](https://vsmarketplacebadges.dev/installs-short/thmsn.poe2-filter.svg?label=Marketplace%20installs)](https://marketplace.visualstudio.com/items?itemName=thmsn.poe2-filter)
+[![Open VSX Downloads](https://img.shields.io/open-vsx/dt/thmsn/poe2-filter?label=Open%20VSX%20downloads)](https://open-vsx.org/extension/thmsn/poe2-filter)
+[![Marketplace Rating](https://vsmarketplacebadges.dev/rating-star/thmsn.poe2-filter.svg?label=Marketplace%20rating)](https://marketplace.visualstudio.com/items?itemName=thmsn.poe2-filter&ssr=false#review-details)
 
 ![Editing a filter with IntelliSense and live diagnostics](images/hero.gif)
 
