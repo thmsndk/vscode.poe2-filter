@@ -6,11 +6,16 @@
 
 > Write, validate, and preview Path of Exile 2 item filters without leaving your editor — IntelliSense, live error checking, quick fixes, and an in-editor visual preview.
 
-[![Version](https://vsmarketplacebadges.dev/version-short/thmsn.poe2-filter.svg?label=Marketplace)](https://marketplace.visualstudio.com/items?itemName=thmsn.poe2-filter)
-[![Open VSX Version](https://img.shields.io/open-vsx/v/thmsn/poe2-filter?label=Open%20VSX)](https://open-vsx.org/extension/thmsn/poe2-filter)
-[![Marketplace Installs](https://vsmarketplacebadges.dev/installs-short/thmsn.poe2-filter.svg?label=Marketplace%20installs)](https://marketplace.visualstudio.com/items?itemName=thmsn.poe2-filter)
-[![Open VSX Downloads](https://img.shields.io/open-vsx/dt/thmsn/poe2-filter?label=Open%20VSX%20downloads)](https://open-vsx.org/extension/thmsn/poe2-filter)
-[![Marketplace Rating](https://vsmarketplacebadges.dev/rating-star/thmsn.poe2-filter.svg?label=Marketplace%20rating)](https://marketplace.visualstudio.com/items?itemName=thmsn.poe2-filter&ssr=false#review-details)
+<p align="center">
+  <a href="https://marketplace.visualstudio.com/items?itemName=thmsn.poe2-filter"><img src="https://vsmarketplacebadges.dev/version-short/thmsn.poe2-filter.svg?label=VS%20Code" alt="VS Code Marketplace version" /></a>
+  <a href="https://marketplace.visualstudio.com/items?itemName=thmsn.poe2-filter"><img src="https://vsmarketplacebadges.dev/installs-short/thmsn.poe2-filter.svg?label=installs" alt="VS Code Marketplace installs" /></a>
+  <a href="https://marketplace.visualstudio.com/items?itemName=thmsn.poe2-filter&ssr=false#review-details"><img src="https://vsmarketplacebadges.dev/rating-star/thmsn.poe2-filter.svg?label=rating" alt="VS Code Marketplace rating" /></a>
+</p>
+<p align="center">
+  <a href="https://open-vsx.org/extension/thmsn/poe2-filter"><img src="https://img.shields.io/open-vsx/v/thmsn/poe2-filter?label=Open%20VSX" alt="Open VSX version" /></a>
+  <a href="https://open-vsx.org/extension/thmsn/poe2-filter"><img src="https://img.shields.io/open-vsx/dt/thmsn/poe2-filter?label=downloads" alt="Open VSX downloads" /></a>
+  <a href="https://open-vsx.org/extension/thmsn/poe2-filter"><img src="https://img.shields.io/open-vsx/rating/thmsn/poe2-filter?label=rating" alt="Open VSX rating" /></a>
+</p>
 
 ![Editing a filter with IntelliSense and live diagnostics](images/hero.gif)
 
