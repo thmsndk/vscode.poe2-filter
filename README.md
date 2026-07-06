@@ -358,10 +358,13 @@ This project uses [release-please](https://github.com/googleapis/release-please)
 
 ```bash
 pnpm install
-pnpm package
+pnpm run build
+pnpm run package
 ```
 
-`pnpm package` runs `vsce package --no-dependencies` and produces `poe2-filter.vsix`, which you can install locally via the Extensions view ("Install from VSIX...").
+Run `build` before `package` — `vsce` invokes npm for `vscode:prepublish`, which is awkward in a pnpm project and triggers noisy npm config warnings. CI and the publish scripts already build first.
+
+`pnpm run package` runs `vsce package --no-dependencies` and produces `poe2-filter.vsix`, which you can install locally via the Extensions view ("Install from VSIX...").
 
 ### Publishing
 
