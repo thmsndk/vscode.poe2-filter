@@ -83388,5 +83388,10 @@
     "_index": 16677,
     "Id": "TamedMonsterIncision",
     "Name": ""
+  },
+  {
+    "_index": 16678,
+    "Id": "MapEverUsedForFogBankOrigin",
+    "Name": ""
   }
 ]
