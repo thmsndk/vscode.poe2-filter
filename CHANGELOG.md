@@ -2,6 +2,34 @@
 
 All notable changes to the "poe2-filter" extension will be documented in this file.
 
+## [1.2.0](https://github.com/thmsndk/vscode.poe2-filter/compare/v1.1.0...v1.2.0) (2026-09-05)
+
+
+### ### Added
+
+* update PoE2 data to version 4.5.4.10 ([a3f1f11](https://github.com/thmsndk/vscode.poe2-filter/commit/a3f1f1115260e00262f37bb62894ce1499bcd18e))
+* update PoE2 data to version 4.5.4.10.2 ([9be48d6](https://github.com/thmsndk/vscode.poe2-filter/commit/9be48d6de770b4b7f0cf0417f3fcd5a9b3a3d3bb))
+* update PoE2 data to version 4.5.4.11 ([32facc8](https://github.com/thmsndk/vscode.poe2-filter/commit/32facc8ec477407aab84c6f4af9368312e6acf45))
+* update PoE2 data to version 4.5.4.4 ([e9fb024](https://github.com/thmsndk/vscode.poe2-filter/commit/e9fb0246ddebe8a77fed2d954d1c245867d465e8))
+* update PoE2 data to version 4.5.4.4.3 ([5cc5ff9](https://github.com/thmsndk/vscode.poe2-filter/commit/5cc5ff9f8ddaaba4eca62bcc06023f5dafbe0e63))
+* update PoE2 data to version 4.5.4.4.4 ([a8452d3](https://github.com/thmsndk/vscode.poe2-filter/commit/a8452d3d5959fc434294116781b099b9a9c209e9))
+* update PoE2 data to version 4.5.4.6 ([a64fd1b](https://github.com/thmsndk/vscode.poe2-filter/commit/a64fd1be0328c835dcc1c56dd723c471b02c50e1))
+* update PoE2 data to version 4.5.4.7 ([745f030](https://github.com/thmsndk/vscode.poe2-filter/commit/745f0309c9587ac99d7e868d68a6f36c7e70111e))
+* update PoE2 data to version 4.5.4.8 ([#149](https://github.com/thmsndk/vscode.poe2-filter/issues/149)) ([0166c78](https://github.com/thmsndk/vscode.poe2-filter/commit/0166c7847a3a3f716bcd5e4bad2b6dbcad2eafd4))
+* update PoE2 data to version 4.5.4.8.2 ([dd4a068](https://github.com/thmsndk/vscode.poe2-filter/commit/dd4a0685c5fb529695be5a8159510ff1be00a4eb))
+* update PoE2 data to version 4.5.4.9 ([4dfd4db](https://github.com/thmsndk/vscode.poe2-filter/commit/4dfd4db6d2ca5d38c9e7340c676a288a7b55a835))
+* update PoE2 data to version 4.5.5.1.5 ([#155](https://github.com/thmsndk/vscode.poe2-filter/issues/155)) ([a37eb8a](https://github.com/thmsndk/vscode.poe2-filter/commit/a37eb8a7b44a178e356286217f287d50c0b70249))
+
+
+### ### Fixed
+
+* 🔧 drop vscode:prepublish to silence vsce npm warnings ([4ddcac3](https://github.com/thmsndk/vscode.poe2-filter/commit/4ddcac35e942e4025de888557f9fbc5e75307a5b))
+
+
+### ### CI
+
+* 🚀 publish extension to Open VSX alongside VS Code Marketplace ([ff8a769](https://github.com/thmsndk/vscode.poe2-filter/commit/ff8a769c1f42441428b45259ab74cfdfd2058a6e))
+
 ## [1.1.0](https://github.com/thmsndk/vscode.poe2-filter/compare/v1.0.0...v1.1.0) (2026-07-03)
 
 
