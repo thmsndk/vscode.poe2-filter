@@ -196,391 +196,396 @@
   },
   {
     "_index": 39,
+    "Id": "AtlasCurrency",
+    "Name": "Map Fragments"
+  },
+  {
+    "_index": 40,
     "Id": "HideoutDoodad",
     "Name": "Hideout Doodads"
   },
   {
-    "_index": 40,
+    "_index": 41,
     "Id": "Microtransaction",
     "Name": "Microtransactions"
   },
   {
-    "_index": 41,
+    "_index": 42,
     "Id": "Jewel",
     "Name": "Jewels"
   },
   {
-    "_index": 42,
+    "_index": 43,
     "Id": "DivinationCard",
     "Name": "Divination Cards"
   },
   {
-    "_index": 43,
+    "_index": 44,
     "Id": "DONOTUSE8",
     "Name": ""
   },
   {
-    "_index": 44,
+    "_index": 45,
     "Id": "DONOTUSE9",
     "Name": ""
   },
   {
-    "_index": 45,
+    "_index": 46,
     "Id": "DONOTUSE10",
     "Name": ""
   },
   {
-    "_index": 46,
+    "_index": 47,
     "Id": "MiscMapItem",
     "Name": "Misc Map Items"
   },
   {
-    "_index": 47,
+    "_index": 48,
     "Id": "Leaguestone",
     "Name": "Leaguestones"
   },
   {
-    "_index": 48,
+    "_index": 49,
     "Id": "PantheonSoul",
     "Name": "Pantheon Souls"
   },
   {
-    "_index": 49,
+    "_index": 50,
     "Id": "UniqueFragment",
     "Name": "Pieces"
   },
   {
-    "_index": 50,
+    "_index": 51,
     "Id": "AbyssJewel",
     "Name": "Abyss Jewels"
   },
   {
-    "_index": 51,
+    "_index": 52,
     "Id": "IncursionItem",
     "Name": "Incursion Items"
   },
   {
-    "_index": 52,
+    "_index": 53,
     "Id": "DelveSocketableCurrency",
     "Name": "Delve Socketable Currency"
   },
   {
-    "_index": 53,
+    "_index": 54,
     "Id": "Incubator",
     "Name": "Incubators"
   },
   {
-    "_index": 54,
+    "_index": 55,
     "Id": "UniqueShard",
     "Name": "Shards"
   },
   {
-    "_index": 55,
+    "_index": 56,
     "Id": "UniqueShardBase",
     "Name": "Shard Hearts"
   },
   {
-    "_index": 56,
+    "_index": 57,
     "Id": "DONOTUSE11",
     "Name": ""
   },
   {
-    "_index": 57,
+    "_index": 58,
     "Id": "Warstaff",
     "Name": "Quarterstaves"
   },
   {
-    "_index": 58,
+    "_index": 59,
     "Id": "DelveStackableSocketableCurrency",
     "Name": "Delve Stackable Socketable Currency"
   },
   {
-    "_index": 59,
+    "_index": 60,
     "Id": "AtlasUpgradeItem",
     "Name": "Atlas Upgrade Items"
   },
   {
-    "_index": 60,
+    "_index": 61,
     "Id": "DONOTUSE4",
     "Name": ""
   },
   {
-    "_index": 61,
+    "_index": 62,
     "Id": "HiddenItem",
     "Name": "Hidden Items"
   },
   {
-    "_index": 62,
+    "_index": 63,
     "Id": "DONOTUSE1",
     "Name": ""
   },
   {
-    "_index": 63,
+    "_index": 64,
     "Id": "DONOTUSE2",
     "Name": ""
   },
   {
-    "_index": 64,
+    "_index": 65,
     "Id": "DONOTUSE3",
     "Name": ""
   },
   {
-    "_index": 65,
+    "_index": 66,
     "Id": "HeistContract",
     "Name": "Contracts"
   },
   {
-    "_index": 66,
+    "_index": 67,
     "Id": "HeistEquipmentWeapon",
     "Name": "Heist Gear"
   },
   {
-    "_index": 67,
+    "_index": 68,
     "Id": "HeistEquipmentTool",
     "Name": "Heist Tools"
   },
   {
-    "_index": 68,
+    "_index": 69,
     "Id": "HeistEquipmentUtility",
     "Name": "Heist Cloaks"
   },
   {
-    "_index": 69,
+    "_index": 70,
     "Id": "HeistEquipmentReward",
     "Name": "Heist Brooches"
   },
   {
-    "_index": 70,
+    "_index": 71,
     "Id": "HeistBlueprint",
     "Name": "Blueprints"
   },
   {
-    "_index": 71,
+    "_index": 72,
     "Id": "Trinket",
     "Name": "Trinkets"
   },
   {
-    "_index": 72,
+    "_index": 73,
     "Id": "HeistObjective",
     "Name": "Heist Targets"
   },
   {
-    "_index": 73,
+    "_index": 74,
     "Id": "ExpeditionLogbook",
     "Name": "Expedition Logbooks"
   },
   {
-    "_index": 74,
+    "_index": 75,
     "Id": "Expedition2Logbooks",
     "Name": "Expedition Logbook"
   },
   {
-    "_index": 75,
+    "_index": 76,
     "Id": "IncubatorStackable",
     "Name": "Incubators"
   },
   {
-    "_index": 76,
+    "_index": 77,
     "Id": "ArchnemesisMod",
     "Name": "Archnemesis Mods"
   },
   {
-    "_index": 77,
+    "_index": 78,
     "Id": "Meta Skill Gem",
     "Name": ""
   },
   {
-    "_index": 78,
+    "_index": 79,
     "Id": "Spear",
     "Name": "Spears"
   },
   {
-    "_index": 79,
+    "_index": 80,
     "Id": "Crossbow",
     "Name": "Crossbows"
   },
   {
-    "_index": 80,
+    "_index": 81,
     "Id": "Focus",
     "Name": "Foci"
   },
   {
-    "_index": 81,
+    "_index": 82,
     "Id": "InstanceLocalItem",
     "Name": "Instance Local Items"
   },
   {
-    "_index": 82,
+    "_index": 83,
     "Id": "SentinelDrone",
     "Name": "Sentinels"
   },
   {
-    "_index": 83,
+    "_index": 84,
     "Id": "MemoryLine",
     "Name": "Memories"
   },
   {
-    "_index": 84,
+    "_index": 85,
     "Id": "Flail",
     "Name": "Flails"
   },
   {
-    "_index": 85,
+    "_index": 86,
     "Id": "Relic",
     "Name": "Relics"
   },
   {
-    "_index": 86,
+    "_index": 87,
     "Id": "SanctumSpecialRelic",
     "Name": "Sanctified Relics"
   },
   {
-    "_index": 87,
+    "_index": 88,
     "Id": "Breachstone",
     "Name": "Breachstones"
   },
   {
-    "_index": 88,
+    "_index": 89,
     "Id": "GiftBox",
     "Name": ""
   },
   {
-    "_index": 89,
+    "_index": 90,
     "Id": "VaultKey",
     "Name": "Vault Keys"
   },
   {
-    "_index": 90,
+    "_index": 91,
     "Id": "ItemisedSanctum",
     "Name": "Trial Coins"
   },
   {
-    "_index": 91,
+    "_index": 92,
     "Id": "DONOTUSE12",
     "Name": ""
   },
   {
-    "_index": 92,
+    "_index": 93,
     "Id": "UncutSkillGem_OLD",
     "Name": ""
   },
   {
-    "_index": 93,
+    "_index": 94,
     "Id": "Buckler",
     "Name": "Bucklers"
   },
   {
-    "_index": 94,
+    "_index": 95,
     "Id": "Thrown One Hand Axe",
     "Name": ""
   },
   {
-    "_index": 95,
+    "_index": 96,
     "Id": "Thrown Two Hand Axe",
     "Name": ""
   },
   {
-    "_index": 96,
+    "_index": 97,
     "Id": "ConventionTreasure",
     "Name": ""
   },
   {
-    "_index": 97,
+    "_index": 98,
     "Id": "TrapTool",
     "Name": "Traps"
   },
   {
-    "_index": 98,
+    "_index": 99,
     "Id": "Crossbow Attachment REMOVE",
     "Name": ""
   },
   {
-    "_index": 99,
+    "_index": 100,
     "Id": "SkillGemToken",
     "Name": "Currency"
   },
   {
-    "_index": 100,
+    "_index": 101,
     "Id": "Nothing",
     "Name": ""
   },
   {
-    "_index": 101,
+    "_index": 102,
     "Id": "UltimatumKey",
     "Name": "Inscribed Ultimatum"
   },
   {
-    "_index": 102,
+    "_index": 103,
     "Id": "UncutSupportGem_OLD",
     "Name": ""
   },
   {
-    "_index": 103,
+    "_index": 104,
     "Id": "UncutReservationGem_OLD",
     "Name": ""
   },
   {
-    "_index": 104,
+    "_index": 105,
     "Id": "Thrown Shield",
     "Name": ""
   },
   {
-    "_index": 105,
+    "_index": 106,
     "Id": "SoulCore",
     "Name": "Augment"
   },
   {
-    "_index": 106,
+    "_index": 107,
     "Id": "TowerAugmentation",
     "Name": "Tablet"
   },
   {
-    "_index": 107,
+    "_index": 108,
     "Id": "Omen",
     "Name": "Omen"
   },
   {
-    "_index": 108,
+    "_index": 109,
     "Id": "PinnacleKey_OLD",
     "Name": ""
   },
   {
-    "_index": 109,
+    "_index": 110,
     "Id": "Talisman",
     "Name": "Talismans"
   },
   {
-    "_index": 110,
+    "_index": 111,
     "Id": "UncutSkillGemStackable",
     "Name": "Uncut Skill Gems"
   },
   {
-    "_index": 111,
+    "_index": 112,
     "Id": "UncutSupportGemStackable",
     "Name": "Uncut Support Gems"
   },
   {
-    "_index": 112,
+    "_index": 113,
     "Id": "UncutReservationGemStackable",
     "Name": "Uncut Spirit Gems"
   },
   {
-    "_index": 113,
+    "_index": 114,
     "Id": "IncursionArm",
     "Name": "Transcendent Arm"
   },
   {
-    "_index": 114,
+    "_index": 115,
     "Id": "IncursionLeg",
     "Name": "Transcendent Leg"
   },
   {
-    "_index": 115,
+    "_index": 116,
     "Id": "BrequelFruit",
     "Name": "Wombgifts"
   },
   {
-    "_index": 116,
+    "_index": 117,
     "Id": "PinnacleKeyStackable",
     "Name": "Pinnacle Keys"
   }
