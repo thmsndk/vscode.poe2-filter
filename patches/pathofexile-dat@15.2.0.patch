@@ -1,0 +1,33 @@
+diff --git a/dist/bundles/load-util.js b/dist/bundles/load-util.js
+index e01f35f85cf56998e449f831e1ab4877a8a76c94..ab1fcdeea1dd488b284c667bad42f64e92c89c54 100644
+--- a/dist/bundles/load-util.js
++++ b/dist/bundles/load-util.js
+@@ -44,8 +44,9 @@ export class NoFileInfoError extends Error {
+ }
+ export function toCdnUrl(patchVersion, relPath) {
+     const pathname = `/${patchVersion}/${BUNDLES_DIR}/${relPath}`;
+-    return pathname.startsWith('/4.')
+-        ? `https://patch-poe2.poecdn.com${pathname}`
+-        : `https://patch.poecdn.com${pathname}`;
++    // This repo only syncs PoE2. Upstream sends every patch that does not
++    // start with "4." to the PoE1 CDN, which 404s once GGG dropped that prefix
++    // (0.5.5.4 lives on patch-poe2.poecdn.com).
++    return `https://patch-poe2.poecdn.com${pathname}`;
+ }
+ //# sourceMappingURL=load-util.js.map
+\ No newline at end of file
+diff --git a/dist/cli/export-tables.js b/dist/cli/export-tables.js
+index f5887467f3ad319694654f56f1fbf14ab15db844..110290053bd3fcd0ccf08b3756173484cc7bf1fb 100644
+--- a/dist/cli/export-tables.js
++++ b/dist/cli/export-tables.js
+@@ -29,7 +29,9 @@ const TRANSLATIONS_POE2 = [
+     { name: 'Traditional Chinese', path: 'Data/Balance/Traditional Chinese' }
+ ];
+ function getValidFor(config) {
+-    return (config.patch?.startsWith('4.') || config.steam?.includes('Path of Exile 2'))
++    // Upstream treats a patch as PoE2 only when it starts with "4.". PoE2 CDN
++    // paths no longer do (0.5.5.4), and this repo never syncs PoE1.
++    return (config.patch != null || config.steam?.includes('Path of Exile 2'))
+         ? ValidFor.PoE2
+         : ValidFor.PoE1;
+ }
