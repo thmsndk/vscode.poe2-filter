@@ -4,6 +4,11 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+patchedDependencies:
+  pathofexile-dat@15.2.0:
+    hash: f37c7903b2fa305949907ec8c06b86432ed53e319076df8d4ca66da314a37582
+    path: patches/pathofexile-dat@15.2.0.patch
+
 importers:
 
   .:
@@ -55,8 +60,8 @@ importers:
         specifier: ^1.0.2
         version: 1.0.2
       pathofexile-dat:
-        specifier: ^15.1.0
-        version: 15.1.0
+        specifier: ^15.2.0
+        version: 15.2.0(patch_hash=f37c7903b2fa305949907ec8c06b86432ed53e319076df8d4ca66da314a37582)
       ts-node:
         specifier: ^10.9.2
         version: 10.9.2(@types/node@20.17.10)(typescript@6.0.3)
@@ -1966,8 +1971,8 @@ packages:
   pathofexile-dat-schema@8.0.0:
     resolution: {integrity: sha512-sn/8cJHbDCM6HjLMk9LnWXXS5Nbl2YqzqZslbooC7ankKbnr0tBwfl8AxM5fI+IzX49zNnKGuqpFvQQ2UMFuig==}
 
-  pathofexile-dat@15.1.0:
-    resolution: {integrity: sha512-WNf3fDCm777JzD9ghP+7h/HFPQ+YjAI4GJwfa+Xu+zIZHx3bJXpnfnllRcYloq8Zb2CmcIWUzDWcawwCVkjsrA==}
+  pathofexile-dat@15.2.0:
+    resolution: {integrity: sha512-Jb/xHVhdDvkq34VFgQWBDuR69ugm1fb6sxSd/1GhSD1tqe3tukbosCoVgWzwBDI1HoLk1U4xKuvkjGVGNSndeg==}
     engines: {node: '>=20.0.0'}
     hasBin: true
 
@@ -4677,7 +4682,7 @@ snapshots:
 
   pathofexile-dat-schema@8.0.0: {}
 
-  pathofexile-dat@15.1.0:
+  pathofexile-dat@15.2.0(patch_hash=f37c7903b2fa305949907ec8c06b86432ed53e319076df8d4ca66da314a37582):
     dependencies:
       ooz-wasm: 2.0.0
       pathofexile-dat-schema: 8.0.0
